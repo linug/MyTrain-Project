@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getSubscriptionAlerts" doc:id="1d184ece-b8a7-4418-9b03-ef38dd5d100b" >
+		<json-logger:logger doc:name="Start Logger" doc:id="768ab954-c1a7-4cbb-9829-c29be692b991" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Set Subscription Id" doc:id="b3b53d94-b85e-43a3-9880-3dbcc6780e71" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="subscription_Id" ><![CDATA[attributes.uriParams.SubscriptionId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<db:select doc:name="Get Alert Subscriptions" doc:id="03709afd-dd65-40be-8676-7997ed9fd476" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from ALERT where SUBSCRIPTION_ID = :subscriptionid]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	subscriptionid : attributes.uriParams.SubscriptionId
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Output To Json" doc:id="d411c0ac-add2-41df-9124-1c18ddf1a200" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="2032359f-9177-4515-9fc3-01c8863eca84" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+	<flow name="getAlertById" doc:id="3dc7e7f3-fbc4-4146-9458-931f124c9892" >
+		<json-logger:logger doc:name="Start Logger" doc:id="19adf87a-a3c4-4646-bece-3ca818472eb3" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Set Alert Id" doc:id="3044a942-c659-4842-aa20-9dbc3feb303f" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="Alert_Id" ><![CDATA[attributes.uriParams.alertId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<db:select doc:name="Get Alert By Id" doc:id="f7101c9e-a071-4085-8d30-1e141b60ba35" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT * from ALERT where ALERT_TRANSACTION_ID = :alertId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	alertId : vars.Alert_Id
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Output To Json" doc:id="6a7b55a3-fa70-49ad-ae40-2d0ad3ecd6b3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="fd61067e-c035-4b51-a5fe-63ec062618f9" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+	<flow name="createAlert" doc:id="af2f1aa4-30b2-4d6b-81ac-f0cbef461ab8" >
+		<json-logger:logger doc:name="Start Logger" doc:id="f20d5549-0a7c-47ce-ac90-f12ba8bbbf45" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Input To Json" doc:id="614eafb5-0103-4d34-a04a-b13869d285ff" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "Subscription_ID": payload.Subscription_ID,
+  "Delay_type_flag": payload.Delay_type_flag,
+  "Notification_Status": payload.Notification_Status,
+  "Notification_Failure_Detail": payload.Notification_Failure_Detail,
+  "Delay_Time": payload.Delay_Time
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="SubscriptionId" ><![CDATA[payload.Subscription_ID]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<db:insert doc:name="Create Alert" doc:id="3e71e963-da30-4dba-9ee4-1e95d98bbb60" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into ALERT(SUBSCRIPTION_ID,DELAY_TYPE_FLAG,NOTIFICATION_STATUS,NOTIFICATION_FAILURE_DETAIL,DELAY_TIME) 
+values (:subscriptionid , :delay_flag , :notif_status , :notif_details , :delay_time)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+  subscriptionid :  vars.SubscriptionId,
+  delay_flag : payload.Delay_type_flag,
+  notif_status : payload.Notification_Status,
+  notif_details  : payload.Notification_Failure_Detail,
+  delay_time : payload.Delay_Time
+  }]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Output to Json" doc:id="7094202a-93ad-45e5-bd99-8ce8e846cdb3" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="699436f3-7e2e-47d7-b28c-bf757bf8c69f" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+</mule>

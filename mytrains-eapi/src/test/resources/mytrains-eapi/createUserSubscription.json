@@ -1,0 +1,8 @@
+{
+	"status_type_id": 1,
+	"Source_Location": "CSK",
+	"Destination_Location": "LBG",
+	"to_time": "20:20:00",
+	"from_time": "20:25:00",
+	"advance_notify_time_min": 30
+}

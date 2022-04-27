@@ -1,0 +1,14 @@
+[
+  {
+    "USER_ID": "100",
+    "SUBSCRIPTION_ID": 203,
+    "FIRST_NAME": "Priya",
+    "LAST_NAME": "Krishnan",
+    "EMAIL_ID": "priyakrishnan@gmail.com",
+    "SOURCE_LOCATION": "ABW",
+    "DESTINATION_LOCATION": "LBG",
+    "FROM_TIME": "1970-01-01T02:45:00",
+    "TO_TIME": "1970-01-01T03:30:00",
+    "advance_notify_time_min": 30
+  }
+]

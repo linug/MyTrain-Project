@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/servicenow http://www.mulesoft.org/schema/mule/servicenow/current/mule-servicenow.xsd">
+	<sub-flow name="service-now-incident" doc:id="15a221c6-330d-428e-bb1f-1b1b66dc426e" >
+		<ee:transform doc:name="Transform Message" doc:id="33b0afbb-323a-4e5f-a518-90b024c657b7">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 https://dev117124.service-now.com/incident
+---
+{
+	ns0#insert:{
+		active: true,
+		description: error.description,
+		short_description: "MyTrains-" ++ error.errorType.namespace ++"::"++ error.errorType.identifier default null ,
+		comments:"MySQL-SAPI",
+		caller_id:"MyTrains-Project",
+		caller:"MyTrains-Project"
+		
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		<servicenow:invoke service="incident" operation="insert" doc:name="Invoke" doc:id="2667dd14-37f5-4a1e-97f8-34915800ff41" config-ref="ServiceNow_Config" showReferenceValues="ALL" />
+	</sub-flow>
+	<sub-flow name="mysql-sapi-error-response" doc:id="bc82f08d-d65a-41c3-95e0-72de77261e7e" >
+		<ee:transform doc:name="mysql-sapi-error-response" doc:id="ec4e768c-73e3-424a-8320-fb104a30f5a8">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statusCode: vars.httpStatus,
+	message: error.errorType.identifier,
+	description: error.description,
+	dateTime: now() as String
+	
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+	</sub-flow>
+	<error-handler name="global-error-handlerError_Handler" doc:id="1f0b8503-a256-4933-ba00-97f58f3e5e41" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="eb3959b8-1eb8-4083-9544-2fad187d3e2f" type="DB:BAD_SQL_SYNTAX">
+			<json-logger:logger doc:name="Logger" doc:id="6f215300-a413-49e7-a6b3-975106d7ff6a" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -422" doc:id="e655266c-9097-495b-b730-db84f71da8ed" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[422]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="fa012c3a-d46b-4fa8-bb49-195df99ed66d" name="service-now-incident" />
+			<flow-ref doc:name="mysql-sapi-error-response" doc:id="48868f60-2aeb-47dc-bdc9-b30b7683c35e" name="mysql-sapi-error-response" />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e9de09d4-7854-4f5b-b829-68a1be42e2c3" type="DB:CONNECTIVITY">
+			<json-logger:logger doc:name="Logger" doc:id="7cd462cb-b8ef-40bd-8bfa-a4d529edb0d3" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -503" doc:id="cc67583a-990b-475c-9709-7b9818f02f55" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[503]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="2499e933-9ac7-4b61-8d18-c821c4ffdb26" name="service-now-incident"/>
+			<flow-ref doc:name="mysql-sapi-error-response" doc:id="cac6d838-8745-46ca-9315-aae8a24b1e01" name="mysql-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="37e0f2ae-1081-4690-8276-e1840126949b" type="DB:QUERY_EXECUTION">
+			<json-logger:logger doc:name="Logger" doc:id="23549d6a-3355-484c-811e-5fb309beadf0" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -422" doc:id="069c350e-51c5-4955-9259-bddedd037b37" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[422]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="03560c84-dd9f-48ef-aa47-9f0d5667242b" name="service-now-incident"/>
+			<flow-ref doc:name="mysql-sapi-error-response" doc:id="1442f75d-d1ed-4995-a318-2c2cf57cb896" name="mysql-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="083f0efd-6516-4124-a4dd-6f64a7dc5454" type="DB:RETRY_EXHAUSTED">
+			<json-logger:logger doc:name="Logger" doc:id="b33dc38c-01dc-4705-94bf-96dd87bcee0d" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -429" doc:id="ce346acf-01ac-479c-b56e-525887fb81ff" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[429]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="476fd5cb-9c44-4405-bcc3-f43674f4027b" name="service-now-incident"/>
+			<flow-ref doc:name="mysql-sapi-error-response" doc:id="bcaf2dd8-6d89-4846-b23d-f7ef20748af4" name="mysql-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="1d905678-b3bb-4426-94c2-0a4d79488455" type="APIKIT:BAD_REQUEST" >
+			<json-logger:logger doc:name="Logger" doc:id="5111d302-ea5d-4590-a258-0aa3decbeeae" config-ref="JSON_Logger_Config" message="Start Logger"/>
+			<ee:transform doc:name="Set httpStatus -400" doc:id="a148f588-404d-4411-8b2d-23fdc190c9f7" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="b5e57799-e108-4bcf-a6a7-57511e932b27" name="service-now-incident"/>
+			<flow-ref doc:name="mysql-sapi-error-response" doc:id="ffa3b947-02ab-468e-b2ec-f5511435e882" name="mysql-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="1a49fa61-0e40-4107-b3f7-fcd54fb08c77" type="APIKIT:NOT_FOUND" >
+			<json-logger:logger doc:name="Logger" doc:id="a58751dc-8bbd-4260-a9c4-bbb470c78634" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -404" doc:id="56c07e85-6bc3-4b90-a66c-8ee69054f455" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="76f20e12-d4aa-458c-a3a9-11b7912943c8" name="service-now-incident"/>
+			<flow-ref doc:name="mysql-sapi-error-response" doc:id="d2ce96d3-6f58-4e1f-ad4f-c390412befdd" name="mysql-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="736764a6-517d-49de-9944-438b3095d4d0" type="APIKIT:METHOD_NOT_ALLOWED" >
+			<json-logger:logger doc:name="Logger" doc:id="408003b3-ffac-4ac2-b923-3c4ee17fe901" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -405" doc:id="13ee90b0-b16f-4991-a222-ef2d8989a4b9" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[405]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="8d7d435f-1385-4a0d-b595-ff3fe6217737" name="service-now-incident"/>
+			<flow-ref doc:name="mysql-sapi-error-response" doc:id="2842385c-3295-41a0-acd7-bd4aff80ac3f" name="mysql-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="06334d13-3953-41de-b801-5d6aa3c68f51" type="APIKIT:NOT_ACCEPTABLE" >
+			<json-logger:logger doc:name="Logger" doc:id="588d170a-b6be-4518-9d75-c4702c3acd97" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -406" doc:id="c07b0dc9-0fc1-4490-8adf-4981ae85fec3" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[406]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="9ac110eb-4de6-48d5-9e10-cd41c7f530f5" name="service-now-incident"/>
+			<flow-ref doc:name="mysql-sapi-error-response" doc:id="f87fc287-764e-46b7-971e-89b4eae4fbee" name="mysql-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="5a9d090c-b859-451b-bfdf-9deaff687d77" type="APIKIT:UNSUPPORTED_MEDIA_TYPE" >
+			<json-logger:logger doc:name="Logger" doc:id="abaa1fe3-770b-4b43-9e1e-2cf55285e21a" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -415" doc:id="56bdf9b0-c6a9-4ed9-8737-870c59d75a5f" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[415]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="f3900054-4798-4c6c-89c9-126b19197b52" name="service-now-incident"/>
+			<flow-ref doc:name="mysql-sapi-error-response" doc:id="1dd5e67e-10c0-47ce-a291-ecfe7dc29c18" name="mysql-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="3d88c3a2-c0cd-4ade-9d37-74404eb03c51" type="APIKIT:NOT_IMPLEMENTED" >
+			<json-logger:logger doc:name="Logger" doc:id="605c02c5-c509-4f1b-8dd4-90f8072659c0" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -501" doc:id="f20c6f2d-5b53-445d-8336-8b53245ab107" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[501]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="a6c2e67f-8459-42d1-a6fd-80f565dfa1d6" name="service-now-incident"/>
+			<flow-ref doc:name="mysql-sapi-error-response" doc:id="9671ce98-b56c-4291-8234-5612a25116f2" name="mysql-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="56ef2c40-76da-445c-baa3-cf941f13e96f" type="ANY">
+			<json-logger:logger doc:name="Logger" doc:id="f31c1a2b-ac61-4f8a-a96d-977eb4edf3a7" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="2ca3d489-e952-419f-8ccf-7f8de5eb0e7e" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="d5d0a8f3-1178-4e8d-9eeb-5c0a7bfc5688" name="service-now-incident"/>
+			<flow-ref doc:name="mysql-sapi-error-response" doc:id="d4ba7041-ef75-4e9b-a5d2-aaf758c09e68" name="mysql-sapi-error-response"/>
+		</on-error-propagate>
+	</error-handler>
+</mule>

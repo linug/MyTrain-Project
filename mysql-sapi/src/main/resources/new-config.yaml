@@ -1,0 +1,11 @@
+DB:
+ server : "![LM+Fay9e9t238htxHtQTxw==]"
+ database: "![PSI9STSwnUo=]"
+ username: "![uPCEb58QlMA=]"
+ password : "![isw42t7nUAiF3cl/Yiv7hw==]"
+ port: "![QnZZuKPZs6Q=]"
+
+json.logger:
+ application.name: "![PFeq/anaFBw1IJU2Q5CPbA==]"
+ application.version: "![SZvC8YcaNTs=]"
+ mule.env: "![z00nQglVOuU=]"

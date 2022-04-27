@@ -1,0 +1,9 @@
+json.logger:
+ application.name: "mytrains-eapi"
+ application.version: "1.0.0"
+ mule.env: "dev"
+ 
+service.now:
+ username : "admin"
+ password : "doPU3EM7^/hx"
+ address : "https://dev117124.service-now.com" 

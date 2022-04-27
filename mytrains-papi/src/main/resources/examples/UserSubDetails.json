@@ -1,0 +1,26 @@
+[
+ { 
+  "USER_ID": "00u3s93e4kpq7ryLr5d7",
+  "SUBSCRIPTION_ID": 123,
+  "FIRST_NAME": "Isaac",
+  "LAST_NAME": "Brock",
+  "EMAIL_ID":"lg@test.com",
+  "SOURCE_LOCATION": "BSK",
+  "DESTINATION_LOCATION": "WAT",
+  "FROM_TIME": "21:30:00",
+  "TO_TIME": "22:30:00",
+  "advance_notify_time_min": 30
+ },
+ {
+  "USER_ID": "00u3s93e4kpq7ryLr5d9",
+  "SUBSCRIPTION_ID": 122,
+  "FIRST_NAME": "Isaac",
+  "LAST_NAME": "Mark",
+  "EMAIL_ID":"lg123@test.com",
+  "SOURCE_LOCATION": "BSK",
+  "DESTINATION_LOCATION": "WAT",
+  "FROM_TIME": "21:30:00",
+  "TO_TIME": "22:30:00",
+  "advance_notify_time_min": 30
+ }
+]

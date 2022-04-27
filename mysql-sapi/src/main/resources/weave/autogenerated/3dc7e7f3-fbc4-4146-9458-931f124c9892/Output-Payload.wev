@@ -1,0 +1,13 @@
+%dw 2.0
+
+type auto_3dc7e7f3_fbc4_4146_9458_931f124c9892_Output_Payload = {
+  Notification_Status?: String, 
+  Creation_Timestamp?: String, 
+  Delay_type_flag: String, 
+  Notification_Failure_Detail?: String, 
+  Delay_Time?: Number, 
+  Alert_Transaction_ID: Number, 
+  Subscription_ID: Number, 
+  _?: Any
+}
+

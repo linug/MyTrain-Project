@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/servicenow http://www.mulesoft.org/schema/mule/servicenow/current/mule-servicenow.xsd">
+	<sub-flow name="service-now-incident" doc:id="c68ebdb9-2580-45a7-b84f-57dd82d6fdf6" >
+		<ee:transform doc:name="Transform Message" doc:id="34a8b46a-b0e4-4b17-a903-46d7d5150a8e">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 https://dev117124.service-now.com/incident
+---
+{
+	ns0#insert:{
+		active: true,
+		description: error.description,
+		short_description: "MyTrains-" ++ error.errorType.namespace ++"::"++ error.errorType.identifier default null ,
+		comments:"PAPI",
+		caller_id:"MyTrains-Project",
+		caller:"MyTrains-Project"
+		
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		<servicenow:invoke doc:name="Invoke" doc:id="136aa559-6f7d-4849-9916-29969ffc4f39" config-ref="ServiceNow_Config" service="incident" operation="insert" showReferenceValues="ALL" />
+	</sub-flow>
+	<sub-flow name="mytrains-papi-error-response" doc:id="caf666b7-e0a9-4cf6-b868-6c9a285042b7" >
+		<ee:transform doc:name="mytrains-papi-error-response" doc:id="bb6fe8fc-319c-470f-8253-0280e43ce01a">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statusCode: vars.httpStatus,
+	message: error.errorType.identifier,
+	description: error.description,
+	dateTime: now() as String
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+	</sub-flow>
+	<error-handler name="global-error-handler" doc:id="af078ec5-2b60-4e06-a8ed-95d11f729d2e" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="779d6617-7e13-4643-b721-199ab6f5710d" type="SALESFORCE:INVALID_INPUT">
+			<json-logger:logger doc:name="Logger" doc:id="32f56450-a2c5-4ac0-bae4-d2136edeaf4d" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -404" doc:id="7b2a9075-c3cb-4493-a62b-cc32b5dae41a" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="dcca8cf6-5051-4c55-92fe-6c2bf0478257" name="service-now-incident" />
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="239c84e4-6797-4a7f-b9ba-2f82a6828e4a" name="mytrains-papi-error-response" />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="104689b9-5705-4672-add3-39418fee23ab" type="SALESFORCE:INVALID_RESPONSE">
+			<json-logger:logger doc:name="Logger" doc:id="45522a3e-ef14-4260-92ef-c4944d19fdc9" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -404" doc:id="d44fca69-8d63-42c7-af91-52844af08937" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="e6075ad5-6037-4c42-bd42-4e770e1de490" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="f35ad119-0859-49ac-a55d-1d9d1e52a892" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b65e7a35-29ff-49f7-bfa5-ee8b205761c2" type="SALESFORCE:LIMIT_EXCEEDED">
+			<json-logger:logger doc:name="Logger" doc:id="7f6205ff-9689-4714-8fa3-36d474251e30" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -429" doc:id="9889e3c3-0cc4-4034-a889-0d162bf61d9f" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[429]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="16880ce6-21bb-4e9d-9478-db1886e3efa4" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="1c0dd3c2-d00c-49f1-b5c8-419e6e549f72" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6010dc1f-27ff-4718-8008-3b150b038612" type="SALESFORCE:MUTUAL_AUTHENTICATION_FAILED">
+			<json-logger:logger doc:name="Logger" doc:id="872ca4f8-7833-4a29-a026-df0b84cb022a" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -401" doc:id="017b2f55-54d5-4c25-b0f9-7a5ab27b2386" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[401]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="8c8da674-0800-49eb-959b-2ae4091ea619" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="8a7dc1f4-e16d-4e6e-8632-7b3baf479c87" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9476ed17-5894-46ec-b33e-78516cf16211" type="SALESFORCE:NOT_FOUND,MY-SQLSAPI:NOT_FOUND,NRSAPI:NOT_FOUND">
+			<json-logger:logger doc:name="Logger" doc:id="530dc404-6282-4b6e-82b7-170ba6758e79" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -404" doc:id="2fe53417-8997-4ea7-8618-827355a7f6fc" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="25fcf187-3e06-487b-95ff-188a275678f9" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="a6a4578e-5563-40fb-bd3e-6c99184899e9" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="32ec2d76-bfda-420b-b5b4-dc936785fb62" type="SALESFORCE:RETRY_EXHAUSTED,MY-SQLSAPI:RETRY_EXHAUSTED, NRSAPI:RETRY_EXHAUSTED">
+			<json-logger:logger doc:name="Logger" doc:id="cd09c9fe-44e2-4de4-a790-bca9ed51905b" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -429" doc:id="81c1df79-64bc-42d3-bcc9-624928820515" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[429]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="1ec94b8c-da88-4ea0-a5ea-68252d6604be" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="76436f92-ef07-491d-be6e-d7d32fc03294" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a7600b57-fc83-4a1f-8a1a-50962018e712" type="SALESFORCE:TIMEOUT,MY-SQLSAPI:TIMEOUT,NRSAPI:TIMEOUT">
+			<json-logger:logger doc:name="Logger" doc:id="13b8dac9-aca4-4098-8808-6271d42fb426" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -408" doc:id="64d15f5c-6f95-479e-92b5-9c36209ff68f" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[408]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="0828fe74-f628-4955-8b74-579fd29e78c0" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="4cfb062b-fcfc-40e0-b462-f12c2d594abe" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e788da35-61ae-461e-a636-f3e98afc8464" type="MY-SQLSAPI:BAD_REQUEST, NRSAPI:BAD_REQUEST">
+			<json-logger:logger doc:name="Logger" doc:id="8ea92a08-d67a-46a1-a4a2-6df3f8630040" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -400" doc:id="7e404b78-ce7a-4d94-9775-9cb4b9b4ccbf" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="fe726a3e-32f9-4bc5-a1b2-29b62dfbe6dc" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="262585af-d9f8-4849-8ac7-83165293f8a0" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0849703e-3293-4851-9a59-3fd05c80a5c2" type="MY-SQLSAPI:CONNECTIVITY, NRSAPI:CONNECTIVITY,SALESFORCE:CONNECTIVITY">
+			<json-logger:logger doc:name="Logger" doc:id="cd38d693-9c25-4380-af9e-e4f604553172" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -503" doc:id="7dffe610-037c-4379-8069-06b4b73b4b13" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[503]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="62b5f84d-344f-4282-88d1-a7ce8c432456" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="8fd991cd-4097-432b-951f-5362dc52407e" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a55d9c23-7141-4ed6-9662-3b70860deb43" type="MY-SQLSAPI:FORBIDDEN, NRSAPI:FORBIDDEN">
+			<json-logger:logger doc:name="Logger" doc:id="9e0c8253-b6cb-4577-843e-746e59211841" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -403" doc:id="e5c11ba9-3d03-4c75-b6d6-f9b18971bba2" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[403]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="09ba2fc3-0277-4443-931f-f9e5c32f790c" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="a5a40d23-e8b5-4bed-97be-3f7a8e3be57e" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1ad65672-7961-499b-8ae4-98110b6e25ce" type="MY-SQLSAPI:INTERNAL_SERVER_ERROR, NRSAPI:INTERNAL_SERVER_ERROR">
+			<json-logger:logger doc:name="Logger" doc:id="2a51c53b-ff6d-4332-8a21-349be0b362a9" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="b02ec4d8-1fa3-4946-bc08-709ad29be8cc" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="38b7a928-835b-4793-b587-f08909c94da3" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="88d51dad-ee40-4c01-9c2d-e58b2d9e1f86" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e4b2d8e0-2732-410f-955d-0c6a7179dde2" type="MY-SQLSAPI:METHOD_NOT_ALLOWED, NRSAPI:METHOD_NOT_ALLOWED">
+			<json-logger:logger doc:name="Logger" doc:id="cce1676b-8a04-4409-b8e3-dc3753c742af" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -405" doc:id="78d6db9e-cf90-4432-ad96-d2412823d4d5" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[405]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="a2b34114-fd81-4d8a-b983-f0516ce99326" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="0579e7b1-75ce-4f3d-871e-9877143b9be6" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9f1aa816-2b71-44e0-9ffd-3af62d062f92" type="MY-SQLSAPI:NOT_ACCEPTABLE, NRSAPI:NOT_ACCEPTABLE">
+			<json-logger:logger doc:name="Logger" doc:id="dbfddd51-8ad3-4d04-b8dc-dcb0fe22a5f2" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -406" doc:id="ffea6514-1373-402a-8b7e-da744ef506bd" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[406]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="08424e5c-0424-45f3-abce-31939f594f9a" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="14a83f35-1b63-4e1b-ba81-8cc4113097ec" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c8269373-7de8-4c7f-b32a-2a308563a8cd" type="MY-SQLSAPI:SECURITY, NRSAPI:SECURITY">
+			<json-logger:logger doc:name="Logger" doc:id="3bd6c784-2d93-4d69-a5c6-6b912812db2f" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="a71d79a0-ce55-4cf2-bc14-2d2f80086d0d" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="a1dff6d0-6ab2-4884-b9d1-6dee9fa10467" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="e1e1cedb-344c-483d-b077-d3781d73b64e" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="db42c09b-5f61-4d1e-b3d4-d9ae7a739884" type="MY-SQLSAPI:SERVICE_UNAVAILABLE, NRSAPI:SERVICE_UNAVAILABLE">
+			<json-logger:logger doc:name="Logger" doc:id="30e6711e-5e6e-47e7-8b0c-bbb66bf3c049" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -503" doc:id="b4b28d41-3032-4e3d-8d17-4c463f227a48" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[503]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="a6ba498c-bf6a-4488-a1eb-a4226fb61ab7" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="fe37a989-8f45-46fe-ab81-7cf079371585" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="591ee2b9-fda5-4e1c-88e6-e6f5fd9d569a" type="MY-SQLSAPI:TOO_MANY_REQUESTS, NRSAPI:TOO_MANY_REQUESTS">
+			<json-logger:logger doc:name="Logger" doc:id="c53f2819-9f9a-49c1-b14b-2f957eca76b5" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -429" doc:id="1b94171f-0784-48fd-a4e4-230ff902c7ea" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[429]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="c427fa30-5bb2-4ea4-b8d0-4ad5ea17b479" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="cf3b5d7a-4ea2-4d03-95aa-77faba8f4ee2" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ee2b42fe-c716-4b82-9286-53324632fc28" type="MY-SQLSAPI:UNAUTHORIZED, NRSAPI:UNAUTHORIZED">
+			<json-logger:logger doc:name="Logger" doc:id="795184a8-c6d4-41ca-ba80-fac6b7f09488" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -401" doc:id="10d12599-9b08-44a9-9684-c4f4ff18ad3c" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[401]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="1e5769fb-52cc-4eb8-8d22-5983dc4e8da5" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="8e253905-9115-4ec1-b674-cc905d4895ac" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="72a6bd23-54f1-4b9c-a72f-fe2c23c4f0c0" type="MY-SQLSAPI:UNSUPPORTED_MEDIA_TYPE, NRSAPI:UNSUPPORTED_MEDIA_TYPE">
+			<json-logger:logger doc:name="Logger" doc:id="ff6cf5ca-de7c-4ec2-ad07-e53f9350a730" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -415" doc:id="607b384b-e1bc-462c-a09a-054f8082676c" >
+				<ee:message />
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[415]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="5771dc25-1591-4fc9-b4b2-63e7a50cfcd9" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="fa061bd1-cae3-4af3-9aca-b08855e26d39" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="91fb42c9-d7bb-4efd-8a6e-b612226b0756" type="ANY">
+			<json-logger:logger doc:name="Logger" doc:id="e6491012-cb9e-4b10-a6b0-b05903e09172" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="b41184d3-edbb-4950-a593-67ec7560bf5c" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="b3b1a4c6-9c77-4e6e-9f83-0ae9ab12998b" name="service-now-incident"/>
+			<flow-ref doc:name="mytrains-papi-error-response" doc:id="1088d4e7-da69-420c-bbba-2b5257be1bf9" name="mytrains-papi-error-response"/>
+		</on-error-propagate>
+	</error-handler>
+</mule>

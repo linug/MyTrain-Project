@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/servicenow http://www.mulesoft.org/schema/mule/servicenow/current/mule-servicenow.xsd">
+	<sub-flow name="service-now-incident" doc:id="5396542d-74f1-4d8c-8fbf-0b4480e0f0bb" >
+		<ee:transform doc:name="Transform Message" doc:id="44ee7e83-fc3f-4347-9966-04b2dc15ecd0">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 https://dev117124.service-now.com/incident
+---
+{
+	ns0#insert:{
+		active: true,
+		description: error.description,
+		short_description: "MyTrains-" ++ error.errorType.namespace ++"::"++ error.errorType.identifier default null ,
+		comments:"Okta-SAPI",
+		caller_id:"MyTrains-Project",
+		caller:"MyTrains-Project"
+		
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		<servicenow:invoke doc:name="Invoke" doc:id="3bb72f2d-6f31-4ade-8777-1d101ecdfc62" config-ref="ServiceNow_Config" service="incident" operation="insert" showReferenceValues="ALL" />
+	</sub-flow>
+	<sub-flow name="okta-sapi-error-response" doc:id="28423764-887e-424b-af61-a0568d887b57" >
+		<ee:transform doc:name="okta-sapi-error-response" doc:id="1e14929a-3da9-4511-a5b9-8f2aaf9920de">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statusCode: vars.httpStatus,
+	message: error.errorType.identifier,
+	description: error.description,
+	dateTime: now() as String
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+	</sub-flow>
+	<error-handler name="global-error-handler" doc:id="305a9b01-82fa-4b7b-9f4c-60ae73d3a477" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c834e2ee-e4a0-454a-93fa-d86433f6f85f" type="HTTP:BAD_GATEWAY">
+			<json-logger:logger doc:name="Logger" doc:id="706f11a9-6a8c-4c66-8872-17f28db0e45c" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -502" doc:id="c3c40c95-e814-45ac-a0bd-efc0654d9f93" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 https://dev117124.service-now.com/incident
+---
+{
+	ns0#insert:{
+		active: true,
+		description: error.description,
+		short_description: error.errorType.identifier,
+		comments:"Okta-SAPI",
+		caller_id:"MyTrains-Project"
+	}
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[502]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<servicenow:invoke service="incident" operation="insert" doc:name="Invoke" doc:id="902d3ed2-dd48-44d8-aeed-f17238adc3c5" config-ref="ServiceNow_Config" showReferenceValues="ALL"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="51afa618-cffb-4380-a4e5-b148008b95cd" name="okta-sapi-error-response" />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a52c76f7-a7d8-4bc5-b39c-2a8e5b8d02b3" type="HTTP:BAD_REQUEST">
+			<json-logger:logger doc:name="Logger" doc:id="7dc5a158-3728-43c9-9746-c25b7c7470b7" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -400" doc:id="d92d4c3f-57dc-49d5-ad9e-df66da1995e1" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="07870dbf-d0cf-4418-9a8b-875ae5304b11" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="2ce1ac64-d367-4fba-82da-2fd5547693a8" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ea999372-ae31-45c9-92f1-a259cf4ddf18" type="HTTP:CLIENT_SECURITY">
+			<json-logger:logger doc:name="Logger" doc:id="bb673529-b181-4efe-addd-a9409ce4e8bc" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="2c5d742c-e57e-46df-b875-09b273a29cee" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 https://dev117124.service-now.com/incident
+---
+{
+	ns0#insert:{
+		active: true,
+		description: error.description,
+		short_description: error.errorType.identifier,
+		comments:"Okta-SAPI",
+		caller_id:"MyTrains-Project"
+	}
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="100ee41c-a58c-4106-8a3b-c225184c805a" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ce70e26d-4418-4b71-a850-a02f451189ae" type="HTTP:CONNECTIVITY">
+			<json-logger:logger doc:name="Logger" doc:id="89c39582-15f3-4856-9a60-80c483746250" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -503" doc:id="31ba5f55-c00e-475d-8549-aa400941255a" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[503]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="c6ed118a-200f-4e39-89b6-6decb35fde23" name="service-now-incident" />
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="85bc0e6f-8ad6-4f3f-b717-ab89c409cefc" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="8720ae35-9155-4031-9054-20b70d32f619" type="HTTP:FORBIDDEN">
+			<json-logger:logger doc:name="Logger" doc:id="392a539c-bc40-4dc6-9df6-50ebd1ef57ad" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -403" doc:id="5cf981f2-1e93-41b5-a00f-e0cfaf6f8d95" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[403]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="17ab150c-6ba1-4be3-9795-6a83b3568cbd" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="6d170ae0-02be-44c9-be38-c284bf8c6b0d" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="d09e3fad-6354-4147-82d6-f574f3eaf81c" type="HTTP:INTERNAL_SERVER_ERROR">
+			<json-logger:logger doc:name="Logger" doc:id="54ee0d05-7885-4840-bc28-0e0b9bfb76b6" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="f84708a0-c96d-481a-a847-54c56b4b1569" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="01189abc-ef92-4767-8e81-2b4c5f87d2cf" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="3e3ec031-7d91-47f3-81a7-f26b75d5787e" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f8de3f14-ab56-40f7-8bf2-29dbee570081" type="HTTP:METHOD_NOT_ALLOWED">
+			<json-logger:logger doc:name="Logger" doc:id="962998c7-0230-440c-b064-8f08361c7f15" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -405" doc:id="72b1f348-19f9-436a-8055-41c20fa6b99e" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[405]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="d0d6ec23-fb78-4c9d-afc4-dab5be6e7409" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="54a300cc-5ca4-407a-9ea7-b52fa5485290" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ead9f819-ae5b-459b-8f98-c76e4ec40fa7" type="HTTP:NOT_ACCEPTABLE">
+			<json-logger:logger doc:name="Logger" doc:id="ba5091e4-9112-4478-b957-ef8b95d02ac4" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -406" doc:id="418d5556-4a92-40ee-8242-b35ab0c647ee" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[406]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="3da653fe-939c-49ee-982b-a1e9b3491616" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="7560c139-0bd6-4e9d-b6ef-2704c52990e4" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a0dbb6ce-121f-425f-8b76-c8284edc9d55" type="HTTP:NOT_FOUND">
+			<json-logger:logger doc:name="Logger" doc:id="190fe22a-446e-48e6-a61f-e06522a33f94" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -404" doc:id="f3d53952-e599-4bbd-96dd-ea355bc5ab2f" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="ecd906b4-192a-419e-84aa-38465ea09cf3" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="15e67b44-550c-4207-9912-e6145d4dcd20" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="144a2482-f5a5-47d2-a749-a84b081f1622" type="HTTP:PARSING">
+			<json-logger:logger doc:name="Logger" doc:id="b58b2f83-13f8-43cf-8444-de87895b821b" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="0b23dc69-6ee9-473f-b2d0-a9668181db8c" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="9da7cc7b-b3f2-4920-8448-6a757a0a5e16" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="bc2c59f1-6594-4468-aeb7-3d0b0d421bea" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c8bba1d5-9707-4d83-a4c4-af1eaccf87cd" type="HTTP:RETRY_EXHAUSTED">
+			<json-logger:logger doc:name="Logger" doc:id="95b54a0b-b723-44f1-8c57-c07c362e1804" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -429" doc:id="d56fc53b-7d08-4964-a23b-62d201800e0f" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[429]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="1d034778-1145-40d0-9d12-53216e8578c5" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="8694ce49-8f11-4d1a-9957-e7d290a3fb9c" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="5ccf37b3-88e7-4980-809b-20e00fbddc21" type="HTTP:SECURITY">
+			<json-logger:logger doc:name="Logger" doc:id="4b4068e4-28c2-4824-a93b-581a84f1fac8" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="327202ff-d227-40a2-b3e9-144b7e5fb98d" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="a4683661-262e-446f-bb5d-8af16e3d9122" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="aabad072-3274-4955-94a6-ffe6b440d4e4" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b8fd328f-5bbd-470a-be31-58e9a9946c61" type="HTTP:SERVICE_UNAVAILABLE">
+			<json-logger:logger doc:name="Logger" doc:id="65ec9b38-08c7-4d9b-8116-7bb9bdc69b4f" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -503" doc:id="5d496529-ad64-4f63-93b4-59bbec32f905" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[503]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="e8ac1498-2fb6-4efa-8db9-ec17208d919c" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="67bc06c4-227b-41c4-ae81-9fc92667033e" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="5c2a14ab-4721-4af9-9268-adf181c86937" type="HTTP:TIMEOUT">
+			<json-logger:logger doc:name="Logger" doc:id="39b7b7f3-fb4f-4ef9-bd8e-69c16f34e585" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -408" doc:id="b6247fde-3000-492d-a605-c8ac98ff4776" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[408]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="8b2df64f-c1c3-4a56-af4b-e52f0c054c40" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="eb4918f9-1879-4c49-89fd-77eb4a39580e" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6fab0577-e9b2-469a-9e55-55049767144a" type="HTTP:TOO_MANY_REQUESTS">
+			<json-logger:logger doc:name="Logger" doc:id="4e19ce4c-7697-43b9-8564-1c56c4267820" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -429" doc:id="2fda7043-75a9-44c8-bfa3-e1dd9d232fd1" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[429]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="538ff5e1-6881-4710-a7e2-59efc6da862b" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="3d49eae8-79bb-414d-b623-6d575c0f6c61" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="677c26c3-d192-46c6-b34d-08d554ffc439" type="HTTP:UNAUTHORIZED">
+			<json-logger:logger doc:name="Logger" doc:id="8837e1f9-4591-4fd2-ad40-74680f70fbb8" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -401" doc:id="2fb33021-4ae5-4c95-8e32-659781bd0113" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[401]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="11817750-4eb7-48d5-88b7-241f277570f4" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="98ae055e-b2e5-443d-817b-176dc803fafa" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="4d9d8b0f-34b1-42fc-91ca-230acb197b29" type="HTTP:UNSUPPORTED_MEDIA_TYPE">
+			<json-logger:logger doc:name="Logger" doc:id="2c1ef347-41d1-4e34-9dee-0c6bf98a4201" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -415" doc:id="868c1e22-4864-4976-a9e0-7c707ab4b6e1" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[415]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="06b0c689-e6a2-4c5f-bba3-ad246090c5ca" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="ee3bf4d1-b8c9-4cef-a517-9f48856f41d6" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="a1afcaa6-9e88-4cfb-8c78-fbb05cb868d2" type="APIKIT:BAD_REQUEST" >
+			<json-logger:logger doc:name="Logger" doc:id="1450958d-7793-4ffb-b218-68226bd4412c" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -400" doc:id="afaf6ab8-e5cd-412f-8a5e-654915ef7dbf" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="7b567aaa-1960-4b11-9436-dea0cc84c7c2" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="2c5ab08b-b4c9-495d-8ab2-e673d91c393a" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="5a8f73e3-a49a-4b6c-9456-e5d19b7fc0b7" type="APIKIT:NOT_FOUND" >
+			<json-logger:logger doc:name="Logger" doc:id="67f10198-4917-4186-bfc2-a5bdfc454831" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -404" doc:id="c6e71673-1dd2-4fb7-879f-928d328fbb0d" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="5e4968c3-219b-4e1b-ba6f-74bc3225d855" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="ff980a46-05b6-4701-b4a4-2f9bdc75d33f" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="4b14c58c-d832-4fd3-a8da-69a89cc4abc5" type="APIKIT:METHOD_NOT_ALLOWED" >
+			<json-logger:logger doc:name="Logger" doc:id="b82261e5-7404-4302-bef1-18b214346f38" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -405" doc:id="7e9b23de-e3a0-4ce4-b960-0a0535b2a216" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[405]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="f7aa0e8d-d9b2-4b44-8d2d-e92b952efc83" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="0128816d-eb9a-4881-af69-23ad73281089" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="7b1f1b64-d8c0-4669-807d-aa83827b1ed6" type="APIKIT:NOT_ACCEPTABLE" >
+			<json-logger:logger doc:name="Logger" doc:id="96311100-0099-4613-9892-7e9a489944df" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -406" doc:id="3d451b1b-4241-43e3-a8b8-3d4ed67ab73e" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[406]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="ef19e1ce-1113-4a3f-adb8-1e00dc77247c" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="49f27866-a72c-40d0-be8d-b24ab9d842ed" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="2806b3ea-ecae-43c6-98b4-42b1fa55966b" type="APIKIT:UNSUPPORTED_MEDIA_TYPE" >
+			<json-logger:logger doc:name="Logger" doc:id="a2a4b978-efa1-4078-99b9-594c111c99f8" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -415" doc:id="ee0261aa-7bc9-4d9a-9dba-e125933a0f8f" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[415]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="2d2421a7-1d20-4d4c-812c-11229ea60390" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="30f46f66-25bb-4d1b-8033-ded9456c69d7" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="1c895e0a-a48b-4054-839c-e6236b11c23d" type="APIKIT:NOT_IMPLEMENTED" >
+			<json-logger:logger doc:name="Logger" doc:id="08b5a264-ed52-406f-9311-7ebfcba64cdd" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -501" doc:id="2fa982ca-28f4-4295-ad51-e39e1306de9e" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[501]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="250c873b-408c-421e-85ce-71f0e4f489a4" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="de3dc288-fe3f-47c5-8b90-3bc87fe5e19d" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="fe4a8d3f-63d5-401a-ba37-d2ba490d187f" type="ANY">
+			<json-logger:logger doc:name="Logger" doc:id="340ff40e-afee-470f-ad0a-2fbf813a8fb7" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="5d82026e-8738-444b-88c9-1bd936f80254" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="a8ae9f10-d1ad-4178-bdbd-e1088cebc420" name="service-now-incident"/>
+			<flow-ref doc:name="okta-sapi-error-response" doc:id="6014423f-8f3c-4df1-acf4-4c3e34e9e213" name="okta-sapi-error-response"/>
+		</on-error-propagate>
+	</error-handler>
+</mule>

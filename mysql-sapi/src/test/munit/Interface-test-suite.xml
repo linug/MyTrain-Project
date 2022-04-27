@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="Interface-test-suite.xml" />
+	<munit:test name="Interface-test-suite-mysqlsapi-mainTest-BAD_REQUEST" doc:id="51a74648-e6c8-4c12-b1f7-013818c1e57b" description="Test" expectedErrorType="APIKIT:BAD_REQUEST">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="49bdb5b1-ff86-4ad8-aa92-20a23107dc29" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="mysqlsapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to mysqlsapi-main" doc:id="57f0ceaa-b172-430f-87e2-f4161303efd5" name="mysqlsapi-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="b4e63dcb-e292-43ea-878b-fc3445d8d231" actual="#[vars.httpStatus]" expected="#[400]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-mysqlsapi-mainTest-NOT_FOUND" doc:id="299a4e5e-1e6f-4005-8058-ec97f90841ff" description="Test" expectedErrorType="APIKIT:NOT_FOUND">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="e959f4ac-3f8c-45d6-8628-8d7f2355b2cc" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="mysqlsapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to mysqlsapi-main" doc:id="512b15f0-170a-44a6-b5c5-eeced57b1002" name="mysqlsapi-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="b32461ba-86e6-49b4-83a7-1f1b9351e47c" actual="#[vars.httpStatus]" expected="#[404]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-mysqlsapi-mainTest-METHOD_NOT_ALLOWED" doc:id="700e27c5-989b-4993-b34e-5fda7bb5bb36" description="Test" expectedErrorType="APIKIT:METHOD_NOT_ALLOWED">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="854293ee-3dc6-47bf-bd8b-2f00a37c226a" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="mysqlsapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to mysqlsapi-main" doc:id="40e6c6b3-ea27-47fa-b206-7f6528725c7a" name="mysqlsapi-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="6d68dda1-aa9a-4270-b6cf-249698448212" actual="#[vars.httpStatus]" expected="#[405]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-mysqlsapi-mainTest-NOT_ACCEPTABLE" doc:id="0790420e-6bea-4648-a642-35a53ce6fbec" description="Test" expectedErrorType="APIKIT:NOT_ACCEPTABLE">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="e4d58355-86a5-49c6-a7d7-df737636f2e1" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="mysqlsapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_ACCEPTABLE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to mysqlsapi-main" doc:id="47de7079-9e0a-4466-9508-d82160ba866d" name="mysqlsapi-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="ab364200-a5f9-48b6-a693-f6d416ea28e5" actual="#[vars.httpStatus]" expected="#[406]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-get:\users:mysqlsapi-configTest-DB:CONNECTIVITY" doc:id="4c177017-827e-4f34-9ab0-c4a0b92acfc1" description="Test" expectedErrorType="DB:CONNECTIVITY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="dd086d9c-2346-4978-827e-548d49362c37" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getAllUsers" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="26c93112-506d-41ba-a5c6-c0a247e139da" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getAllUsers" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="DB:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\users:mysqlsapi-config" doc:id="cd7e2936-dfab-44d1-8a4c-af7362e23d55" name="get:\users:mysqlsapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="bbd11ef0-bff4-497e-bb47-69eeaee46e0b" actual="#[vars.httpStatus]" expected="#[503]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-get:\users\(userId)\subscription:mysqlsapi-configTest-DB:QUERY_EXECUTION" doc:id="f6397996-5ab8-442d-9a36-323f43a4fd81" description="Test" expectedErrorType="DB:QUERY_EXECUTION">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="64c6da1f-64f8-4b6a-8586-658e53b4b01d" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getUserSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="6725bcc7-49ff-4e8b-90e8-96aa93928df6" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getUserSubscriptions" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="DB:QUERY_EXECUTION" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="d30ee6b1-8c1b-4ea3-8563-73f1ba52983d" >
+				<munit:attributes value="#[{uriParams:{userId : '00u4i0pkxoyRBWmdF5d7'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get:\users\(userId)\subscription:mysqlsapi-config" doc:id="f7180322-b3c7-4f5b-b6d8-a25647d20931" name="get:\users\(userId)\subscription:mysqlsapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="838ba2f7-7de2-407f-984d-0c032df22403" actual="#[vars.httpStatus]" expected="#[422]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-get:\users\(userId)\subscription\(SubscriptionId):mysqlsapi-configTest-DB:RETRY_EXHAUSTED" doc:id="889c8516-657f-454b-8350-06d80e14bcc3" description="Test" expectedErrorType="DB:RETRY_EXHAUSTED">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="7f934c32-45ef-4a61-bf3d-50c5ccf3d5bb" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getSubscriptionById" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="f4ae02ba-f471-4946-9a22-d386283df14d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getSubscriptionById" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="DB:RETRY_EXHAUSTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="0c8ba367-02be-4dcb-be22-07f5ecc85fb0">
+				<munit:attributes value="#[{uriParams:{userId : '601',SubscriptionId:200}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get:\users\(userId)\subscription\(SubscriptionId):mysqlsapi-config" doc:id="ebec16c8-1558-4b0f-a8d0-bbe97a7f9411" name="get:\users\(userId)\subscription\(SubscriptionId):mysqlsapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="95872195-ccc1-4662-bcbf-3f370cc017b0" is="#[MunitTools::equalTo(429)]" expression="vars.httpStatus"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-get:\users\(userId):mysqlsapi-configTest-ANY" doc:id="38fe52ac-0bc0-4e9f-a755-be1308265d40" description="Test" expectedErrorType="ANY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0503abb1-87f4-4296-acb1-8faa64100dd2" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getUserById" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="a6c57777-5127-4592-a3d3-06822aaf2c70" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getUserById" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="4037c415-7eae-49d9-8bff-3c846d374be6">
+				<munit:attributes value="#[{uriParams:{userId : '601'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get:\users\(userId):mysqlsapi-config" doc:id="30a7bfa3-1dee-41f7-b2e9-98aa3bb20de1" name="get:\users\(userId):mysqlsapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="12c1bb52-24f8-444f-af3e-d6014a237402" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-put:\users\(userId):application\json:mysqlsapi-configTest-DB:CONNECTIVITY" doc:id="77830206-9c62-4c23-b2af-55a4992d8a6f" description="Test" expectedErrorType="DB:CONNECTIVITY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="9587206c-147a-49e6-bdd8-2802879442b2" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="updateUser" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="840c0943-4555-4171-8cc1-fb2ddd103b93" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="updateUser" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="DB:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="ef6457b1-a327-49f4-b998-868dd0e12d17">
+				<munit:attributes value="#[{uriParams:{userId : '601'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to put:\users\(userId):application\json:mysqlsapi-config" doc:id="b9cae2e4-a905-433c-847d-ed6ce9c8b5b5" name="put:\users\(userId):application\json:mysqlsapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="fce5ffdd-fc50-460b-8e5e-435ccb6ef13a" actual="#[vars.httpStatus]" expected="#[503]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-get:\users\(userId)\subscription\(SubscriptionId)\alert:mysqlsapi-configTest-ANY" doc:id="b8529f76-c8d9-4968-ad7d-c57b035b5959" description="Test" expectedErrorType="ANY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="bb62d516-b2b6-445a-a82e-5f371725aeb1" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getAlerts" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="3a2384fe-78f8-46b3-824c-75bbeca12fcf" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getSubscriptionAlerts" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="dd8446e4-045e-404a-ae0f-94f1e45f8894">
+				<munit:attributes value="#[{uriParams:{userId : '601',SubscriptionId:200}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to get:\users\(userId)\subscription\(SubscriptionId)\alert:mysqlsapi-config" doc:id="f7ce4347-83a9-495f-be44-62aa80692b70" name="get:\users\(userId)\subscription\(SubscriptionId)\alert:mysqlsapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="4f77e19e-657d-42a6-8930-e1748fa5a20f" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-get:\subscribedUsers:mysqlsapi-configTest-ANY" doc:id="6709fd80-d050-462d-9883-6d6bfea8dbaa" description="Test" expectedErrorType="ANY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="3e960900-143d-468f-ac46-ac10b159a3cf" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="subscribedUserList" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="efe6a0eb-74fa-4e6b-b3ee-2535341b583b" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="subscribedUserList" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\subscribedUsers:mysqlsapi-config" doc:id="8b6b9eff-2096-4991-bb93-e890d3ef805c" name="get:\subscribedUsers:mysqlsapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="6be0ca91-9df1-4406-86b1-cfae47211603" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-post:\users\(userId)\subscription:application\json:mysqlsapi-configTest-DB:CONNECTIVITY" doc:id="b162c83a-2dab-4c77-b8b5-8e7a3ac9d0da" description="Test" expectedErrorType="DB:CONNECTIVITY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="aa12a372-5166-4819-a4a2-a9a493bbdb3d" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="createUserSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="ce84d39f-ea78-47f6-bad5-1fd558e0a434" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="createUserSubscriptions" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="DB:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\users\(userId)\subscription:application\json:mysqlsapi-config" doc:id="666cae7d-26de-4534-b7df-6fd1a5f02a74" name="post:\users\(userId)\subscription:application\json:mysqlsapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="3ec8cc4b-f9a4-4a56-9a38-8d003f36675b" actual="#[vars.httpStatus]" expected="#[503]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-get:\users\(userId)\subscription\(SubscriptionId)\alert\(alertId):mysqlsapi-configTest-ANY" doc:id="e7899588-03b9-46db-bb74-872d43d81703" description="Test" expectedErrorType="ANY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="63abe613-1f61-466d-932b-de2121aba20c" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getAlertById" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="d7a78ec3-7761-4118-98e2-bb39def9dff6" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getAlertById" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\users\(userId)\subscription\(SubscriptionId)\alert\(alertId):mysqlsapi-config" doc:id="2fe11f98-4def-4d61-a73b-a6f6e7187ed3" name="get:\users\(userId)\subscription\(SubscriptionId)\alert\(alertId):mysqlsapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="c435493a-a8b5-4b95-9636-e7d62053b5c9" actual="#[vars.httpStatus]" expected="#[500]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-post:\users:application\json:mysqlsapi-configTest" doc:id="b6ac4c3d-8d8b-4b31-b4d7-8dfd958b91a8" description="Test" expectedErrorType="ANY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b3a04aba-7ac9-41d2-bd1b-25b04c493c71" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="createUser" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="c66c4d24-ea87-404d-bb1a-f84326b42ea9" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="createUser" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\users:application\json:mysqlsapi-config" doc:id="ade37eea-d5ef-4e40-bed7-40f8a7febe85" name="post:\users:application\json:mysqlsapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="2e3eaa3f-3305-4fd3-83b0-960c0600279a" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-post:\users\(userId)\subscription\(SubscriptionId)\alert:application\json:mysqlsapi-configTest-ANY" doc:id="ce513f6d-85f5-46cf-b70d-012e02f928a9" description="Test" expectedErrorType="ANY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="9c408d4e-a26f-4605-aa27-cbb46088d6e4" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="createAlert" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="a8eeb5f7-ca6e-404c-856f-c92583b7446c" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="createAlert" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\users\(userId)\subscription\(SubscriptionId)\alert:application\json:mysqlsapi-config" doc:id="f2025058-89cb-489d-b244-d7508f24db8d" name="post:\users\(userId)\subscription\(SubscriptionId)\alert:application\json:mysqlsapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="1c6e31b2-2cf1-4fcb-beb6-0c295d1f6cee" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Interface-test-suite-get:\subsbedUsersForFromTime:mysqlsapi-configTest-ANY" doc:id="ad8eb0cf-61b1-4d9d-861c-c2be2190ad03" description="Test" expectedErrorType="ANY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="bfb69807-dfd1-489a-b8db-43c55ffa2d7c" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="FgetSubscUsersForFromTime" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="386e20d8-0f59-4469-b51a-3d3914455882" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getSubscUsersForFromTime" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to get:\subsbedUsersForFromTime:mysqlsapi-config" doc:id="2d7e34bc-fc5a-44e3-b7ec-c88e5e87c64e" name="get:\subsbedUsersForFromTime:mysqlsapi-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="4818c4da-c4e6-4e1c-b634-75e01766ed20" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

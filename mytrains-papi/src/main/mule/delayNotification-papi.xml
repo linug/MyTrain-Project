@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:nrsapi="http://www.mulesoft.org/schema/mule/nrsapi"
+	xmlns:my-sqlsapi="http://www.mulesoft.org/schema/mule/my-sqlsapi"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/my-sqlsapi http://www.mulesoft.org/schema/mule/my-sqlsapi/current/mule-my-sqlsapi.xsd
+http://www.mulesoft.org/schema/mule/nrsapi http://www.mulesoft.org/schema/mule/nrsapi/current/mule-nrsapi.xsd">
+		<flow name="delayNotification" doc:id="a9c83d00-6b08-4d9b-bb56-71c9e3b2af4d" >
+		<http:listener doc:name="Listener" doc:id="6356ec29-2227-4f46-837f-9e88823438cd" config-ref="HTTP_Listener_config" path="/delaynotif" allowedMethods="GET"/>
+		<json-logger:logger doc:name="startLogger Delay Notif" doc:id="244e5440-2528-4a64-bb35-1a7a7f351610" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<my-sqlsapi:get-qualified-subscriptions doc:name="getQualifiedSubscriptions" doc:id="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" config-ref="MySQLSAPI_Config" start-time-within="2"/>
+		<choice doc:name="Choice" doc:id="43d0c8ed-e8fb-4139-9044-6dd0d859122d" >
+			<when expression="not isEmpty (payload)">
+				<ee:transform doc:name="Payload to Json" doc:id="89fd18eb-bd0f-4e4e-a091-332f39da8dd8">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+				<foreach doc:name="For Each" doc:id="fc34cfeb-5ee2-4e23-9453-0beb4a96474e">
+					<flow-ref doc:name="trainDelayStatus" doc:id="4b292e83-4735-4905-bea1-47176943ff60" name="trainDelayStatus"/>
+		</foreach>
+			</when>
+		</choice>
+		<json-logger:logger doc:name="endLoggerDelayNotif" doc:id="dc99cbee-7759-4117-883b-9c64c4fee375" config-ref="JSON_Logger_Config" tracePoint="BEFORE_TRANSFORM" message="End Logging"/>
+	
+</flow>
+	<flow name="trainDelayStatus" doc:id="e3747f17-b704-4f1c-8e9a-bc7bb703b525" >
+		<nrsapi:get-trainstatuses doc:name="getTrainStatuses" doc:id="34e713dd-2c0a-4b45-84e9-1d0b9dd3ded4" sourceloc="#[payload.SOURCE_LOCATION]" destinationloc="#[payload.DESTINATION_LOCATION]" timewindow="120" config-ref="NRSAPI_Config"/>
+		<ee:transform doc:name="Payload to Json" doc:id="cce11fcc-ed57-463d-bd39-b76c86d3c398" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload filter ((value,index) -> !(value."ExpectedTimeOfArrival" == ("On time")))
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<choice doc:name="Choice" doc:id="00ce27ca-e9b2-4418-b4f0-4f3322be4f47" >
+			<when expression="not isEmpty (payload)">
+				<foreach doc:name="For Each" doc:id="6f937c19-c241-4071-85d3-36a1e75701b8" >
+					<ee:transform doc:name="Payload to Json" doc:id="fa315bdd-1f41-43ad-8b1e-a7324a12540d" >
+						<ee:message >
+						</ee:message>
+						<ee:variables >
+							<ee:set-variable variableName="DelayDetail" ><![CDATA[%dw 2.0
+import * from dw::core::Arrays
+import * from dw::core::Periods
+output application/json
+
+---
+{
+ "SourceLoc":payload."SourceLoc",
+ "DestinationLoc":payload."DestinationLoc",	 
+ "Delayed" : "True",
+ "Reason" : payload.DelayReason,
+ "STA" : payload.StandardTimeOfArrival as String {format:"HH:mm:ss"},
+ "ETA" : payload.ExpectedTimeOfArrival as String {format:"HH:mm:ss"},
+ "DelayMts" : if(payload.ExpectedTimeOfArrival == "Cancelled")("") else((payload.ExpectedTimeOfArrival - payload.StandardTimeOfArrival).minutes)
+}]]></ee:set-variable>
+						</ee:variables>
+					</ee:transform>
+					<my-sqlsapi:get-subsbed-users-for-from-times doc:name="getSubscribedUsersForFromTime" doc:id="ffc5a1ee-eb36-4788-8f01-eb055e5ead59" config-ref="MySQLSAPI_Config" srcloc='#[payload."SourceLoc"]' destloc='#[payload."DestinationLoc"]' fromtime='#[vars.DelayDetail."STA" as String {format:"HH:mm:ss"}]'/>
+					<foreach doc:name="For Each" doc:id="7a62079d-c68d-4aab-b26a-452948e5daec" >
+						<parse-template doc:name="Parse Template" doc:id="363e41c3-2250-4539-aaf9-84bf3317e5fb" target="Emailbody" targetValue="#[payload]">
+							<content >Delay in your train between #[payload.SOURCE_LOCATION] and #[payload.DESTINATION_LOCATION] 
+
+Dear #[payload.FIRST_NAME] #[payload.LAST_NAME] 
+ 
+Please find the Delay details below 
+ 
+Your Train Scheduled for #[vars.DelayDetail.STA] is arriving at #[vars.DelayDetail.ETA] 
+</content>
+						</parse-template>
+						<try doc:name="Try" doc:id="61f5ec2a-0754-412d-a1cf-d253b6e111a0" >
+							<email:send doc:name="Send" doc:id="901a6084-9150-4368-8a3a-d723aab9e627" config-ref="Email_SMTP" fromAddress="linu83@gmail.com" subject='#["Delay in your train between " ++ payload.SOURCE_LOCATION ++ " and " ++ payload.DESTINATION_LOCATION]'>
+							<email:to-addresses>
+								<email:to-address value="linu.broadband@gmail.com" />
+							</email:to-addresses>
+							<email:body>
+								<email:content><![CDATA[#[vars.Emailbody]]]></email:content>
+							</email:body>
+						</email:send>
+							<ee:transform doc:name="Set Notif Status" doc:id="cd0c86c5-2655-4d39-966d-596be862d1b1" >
+								<ee:message >
+								</ee:message>
+								<ee:variables >
+									<ee:set-variable variableName="Notif_Status" ><![CDATA["Sent"]]></ee:set-variable>
+									<ee:set-variable variableName='"Notif_Failure_Detail"' ><![CDATA["NA"]]></ee:set-variable>
+								</ee:variables>
+							</ee:transform>
+							<error-handler >
+								<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="2597fc2c-fa03-41d1-8cbd-7ed1bb45a0b3" >
+									<ee:transform doc:name="Set Notif Status" doc:id="bba49ed2-690f-43bf-b1c5-361cd04d6e77" >
+										<ee:message >
+										</ee:message>
+										<ee:variables >
+											<ee:set-variable variableName="Notif_Status" ><![CDATA["Not Sent"]]></ee:set-variable>
+											<ee:set-variable variableName='"Notif_Failure_Detail"' ><![CDATA["Failed"]]></ee:set-variable>
+										</ee:variables>
+									</ee:transform>
+								</on-error-continue>
+							</error-handler>
+						</try>
+						<ee:transform doc:name="Payload to Json" doc:id="c01f06e4-3bf9-4085-ac14-15af682e5b15" >
+							<ee:message >
+								<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "Subscription_ID": payload.SUBSCRIPTION_ID,
+  "Delay_type_flag":"Delayed",
+  "Notification_Status":vars.Notif_Status ,
+  "Notification_Failure_Detail":vars."Notif_Failure_Detail" default "",
+  "Delay_Time": vars.DelayDetail.DelayMts default 0
+}]]></ee:set-payload>
+							</ee:message>
+						</ee:transform>
+						<my-sqlsapi:create-alert-by-user-id-subscription-id doc:name="createAlertByUserIdSubscriptionId" doc:id="3aa471b4-216e-4094-8611-721ada5f445a" config-ref="MySQLSAPI_Config" subscription-id="payload.SUBSCRIPTION_ID" user-id='payload.USER_ID'/>
+					</foreach>
+				</foreach>
+			</when>
+		</choice>
+	
+
+</flow>
+	</mule>

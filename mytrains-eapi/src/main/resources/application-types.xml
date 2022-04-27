@@ -1,0 +1,1104 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="UserRegistration" format="json">
+      <types:shape format="weave" example="Examples/UserRegistration.json"><![CDATA[%dw 2.0
+
+type UserRegistration = {|
+  First_Name: String, 
+  Last_Name: String, 
+  password: String, 
+  Email_ID: String
+|} {"example": "{\\\"First_Name\\\":\\\"Matt\\\",\\\"Last_Name\\\":\\\"Perry\\\",\\\"password\\\":\\\" abcd1234\\\",\\\"Email_ID\\\":\\\"abc123@gmail.com\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="OktaUser" format="json">
+      <types:shape format="weave" example="Examples/OktaUser.json"><![CDATA[%dw 2.0
+
+type OktaUser = {|
+  id: String, 
+  status: String, 
+  created: String, 
+  activated: String, 
+  statusChanged: String, 
+  lastLogin: Null, 
+  lastUpdated: String, 
+  passwordChanged: String, 
+  "type": {| id: String |}, 
+  profile: {|
+    firstName: String, 
+    lastName: String, 
+    mobilePhone: Null, 
+    secondEmail: Null, 
+    login: String, 
+    email: String
+  |}, 
+  credentials: {|
+    password: {|  |}, 
+    emails: Array<{|      value: String,       status: String,       "type": String    |}>, 
+    provider: {|
+      "type": String, 
+      name: String
+    |}
+  |}, 
+  "_links": {|
+    suspend: {|
+      href: String, 
+      method: String
+    |}, 
+    schema: {| href: String |}, 
+    resetPassword: {|
+      href: String, 
+      method: String
+    |}, 
+    forgotPassword: {|
+      href: String, 
+      method: String
+    |}, 
+    expirePassword: {|
+      href: String, 
+      method: String
+    |}, 
+    changeRecoveryQuestion: {|
+      href: String, 
+      method: String
+    |}, 
+    self: {| href: String |}, 
+    "type": {| href: String |}, 
+    changePassword: {|
+      href: String, 
+      method: String
+    |}, 
+    deactivate: {|
+      href: String, 
+      method: String
+    |}
+  |}
+|} {"example": "{\\\"id\\\":\\\"00u4amoh2pFPZYu3b5d7\\\",\\\"status\\\":\\\"ACTIVE\\\",\\\"created\\\":\\\"2022-03-20T12:12:33.000Z\\\",\\\"activated\\\":\\\"2022-03-20T12:12:34.000Z\\\",\\\"statusChanged\\\":\\\"2022-03-20T12:12:34.000Z\\\",\\\"lastLogin\\\":null,\\\"lastUpdated\\\":\\\"2022-03-20T12:12:34.000Z\\\",\\\"passwordChanged\\\":\\\"2022-03-20T12:12:34.000Z\\\",\\\"type\\\":{\\\"id\\\":\\\"oty3rstoh89MAi3RN5d7\\\"},\\\"profile\\\":{\\\"firstName\\\":\\\"Ethaniel\\\",\\\"lastName\\\":\\\"Mark\\\",\\\"mobilePhone\\\":null,\\\"secondEmail\\\":null,\\\"login\\\":\\\"maxwell420@gmail.com\\\",\\\"email\\\":\\\"maxwell420@gmail.com\\\"},\\\"credentials\\\":{\\\"password\\\":{},\\\"emails\\\":[{\\\"value\\\":\\\"maxwell420@gmail.com\\\",\\\"status\\\":\\\"VERIFIED\\\",\\\"type\\\":\\\"PRIMARY\\\"}],\\\"provider\\\":{\\\"type\\\":\\\"OKTA\\\",\\\"name\\\":\\\"OKTA\\\"}},\\\"_links\\\":{\\\"suspend\\\":{\\\"href\\\":\\\"https:\\/\\/dev-11473016.okta.com\\/api\\/v1\\/users\\/00u4amoh2pFPZYu3b5d7\\/lifecycle\\/suspend\\\",\\\"method\\\":\\\"POST\\\"},\\\"schema\\\":{\\\"href\\\":\\\"https:\\/\\/dev-11473016.okta.com\\/api\\/v1\\/meta\\/schemas\\/user\\/osc3rstoh89MAi3RN5d7\\\"},\\\"resetPassword\\\":{\\\"href\\\":\\\"https:\\/\\/dev-11473016.okta.com\\/api\\/v1\\/users\\/00u4amoh2pFPZYu3b5d7\\/lifecycle\\/reset_password\\\",\\\"method\\\":\\\"POST\\\"},\\\"forgotPassword\\\":{\\\"href\\\":\\\"https:\\/\\/dev-11473016.okta.com\\/api\\/v1\\/users\\/00u4amoh2pFPZYu3b5d7\\/credentials\\/forgot_password\\\",\\\"method\\\":\\\"POST\\\"},\\\"expirePassword\\\":{\\\"href\\\":\\\"https:\\/\\/dev-11473016.okta.com\\/api\\/v1\\/users\\/00u4amoh2pFPZYu3b5d7\\/lifecycle\\/expire_password\\\",\\\"method\\\":\\\"POST\\\"},\\\"changeRecoveryQuestion\\\":{\\\"href\\\":\\\"https:\\/\\/dev-11473016.okta.com\\/api\\/v1\\/users\\/00u4amoh2pFPZYu3b5d7\\/credentials\\/change_recovery_question\\\",\\\"method\\\":\\\"POST\\\"},\\\"self\\\":{\\\"href\\\":\\\"https:\\/\\/dev-11473016.okta.com\\/api\\/v1\\/users\\/00u4amoh2pFPZYu3b5d7\\\"},\\\"type\\\":{\\\"href\\\":\\\"https:\\/\\/dev-11473016.okta.com\\/api\\/v1\\/meta\\/types\\/user\\/oty3rstoh89MAi3RN5d7\\\"},\\\"changePassword\\\":{\\\"href\\\":\\\"https:\\/\\/dev-11473016.okta.com\\/api\\/v1\\/users\\/00u4amoh2pFPZYu3b5d7\\/credentials\\/change_password\\\",\\\"method\\\":\\\"POST\\\"},\\\"deactivate\\\":{\\\"href\\\":\\\"https:\\/\\/dev-11473016.okta.com\\/api\\/v1\\/users\\/00u4amoh2pFPZYu3b5d7\\/lifecycle\\/deactivate\\\",\\\"method\\\":\\\"POST\\\"}}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="UserAuthentication" format="json">
+      <types:shape format="weave" example="Examples/Authentication.json"><![CDATA[%dw 2.0
+
+type UserAuthentication = {|
+  username: String, 
+  password: String, 
+  multiOptionalFactorEnroll: Boolean, 
+  warnBeforePasswordExpired: Boolean
+|} {"example": "{\\\"username\\\":\\\"Maay420@gmail.com\\\",\\\"password\\\":\\\"eat123\$&\\\",\\\"multiOptionalFactorEnroll\\\":true,\\\"warnBeforePasswordExpired\\\":true}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="UserSubscription" format="json">
+      <types:shape format="weave" example="Examples/UserSubscription.json"><![CDATA[%dw 2.0
+
+type UserSubscription = {|
+  user_id: String, 
+  status_type_id: Number {"typeId": "int"}, 
+  Source_Location: String, 
+  Destination_Location: String, 
+  from_time: String, 
+  to_time: String, 
+  advance_notify_time_min: Number {"typeId": "int"}
+|} {"example": "{\\\"user_id\\\":\\\"00u4ap732jRekaAp55d7\\\",\\\"status_type_id\\\":1,\\\"Source_Location\\\":\\\"ABW\\\",\\\"Destination_Location\\\":\\\"LBG\\\",\\\"from_time\\\":\\\"06:15\\\",\\\"to_time\\\":\\\"06:30\\\",\\\"advance_notify_time_min\\\":30}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_1fa423ac-a35d-4032-8c6e-baa64dafd40d_Input-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="a3c5dbbc-6602-442b-9dd8-f69e03a24513"><![CDATA[#%RAML 1.0 DataType
+type: number]]></types:shape>
+    </types:type>
+    <types:type name="auto_1fa423ac-a35d-4032-8c6e-baa64dafd40d_Output-Payload" format="json">
+      <types:shape format="weave" example="weave/autogenerated/1fa423ac-a35d-4032-8c6e-baa64dafd40d/Output-Payload.wev" autogeneratedOrigin="a3c5dbbc-6602-442b-9dd8-f69e03a24513"><![CDATA[%dw 2.0
+
+type auto_1fa423ac_a35d_4032_8c6e_baa64dafd40d_Output_Payload = {|
+  statusCode: Number, 
+  message: String | Null, 
+  description: String | Null
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_1fa423ac-a35d-4032-8c6e-baa64dafd40d_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="a3c5dbbc-6602-442b-9dd8-f69e03a24513"><![CDATA[#%RAML 1.0 DataType
+type: number]]></types:shape>
+    </types:type>
+    <types:type name="auto_3d8914a5-f628-45e9-9ad6-d2c1e21847f2_Input-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="8397d544-8442-48eb-8533-a17ea93cef81"><![CDATA[#%RAML 1.0 DataType
+type: number]]></types:shape>
+    </types:type>
+    <types:type name="auto_3d8914a5-f628-45e9-9ad6-d2c1e21847f2_Output-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/3d8914a5-f628-45e9-9ad6-d2c1e21847f2/Output-Payload.wev" autogeneratedOrigin="8397d544-8442-48eb-8533-a17ea93cef81"><![CDATA[%dw 2.0
+
+type auto_3d8914a5_f628_45e9_9ad6_d2c1e21847f2_Output_Payload = {|
+  attachments?: { _?: Binary }, 
+  body?: Binary, 
+  headers?: { _?: String }
+|} {"typeAlias": "SoapOutputEnvelope",
+"typeId": "com.mulesoft.connectors.servicenow.api.SoapOutputEnvelope"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_3d8914a5-f628-45e9-9ad6-d2c1e21847f2_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/3d8914a5-f628-45e9-9ad6-d2c1e21847f2/Output-Attributes.wev" autogeneratedOrigin="8397d544-8442-48eb-8533-a17ea93cef81"><![CDATA[%dw 2.0
+
+type auto_3d8914a5_f628_45e9_9ad6_d2c1e21847f2_Output_Attributes = {|
+  additionalTransportData?: { _?: String }, 
+  protocolHeaders?: { _?: String }
+|} {"typeAlias": "SoapAttributes",
+"typeId": "com.mulesoft.connectors.servicenow.api.SoapAttributes"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_3d8914a5-f628-45e9-9ad6-d2c1e21847f2_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="8397d544-8442-48eb-8533-a17ea93cef81"><![CDATA[#%RAML 1.0 DataType
+type: number]]></types:shape>
+    </types:type>
+    <types:type name="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Input-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/4f453dfb-03c1-4cd1-9ffb-632ccae29ba5/Input-Payload.wev" autogeneratedOrigin="9f254351-66a0-4217-b14b-a9975524687c"><![CDATA[%dw 2.0
+
+type auto_4f453dfb_03c1_4cd1_9ffb_632ccae29ba5_Input_Payload = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/4f453dfb-03c1-4cd1-9ffb-632ccae29ba5/Input-Attributes.wev" autogeneratedOrigin="9f254351-66a0-4217-b14b-a9975524687c"><![CDATA[%dw 2.0
+
+type auto_4f453dfb_03c1_4cd1_9ffb_632ccae29ba5_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {| userId: String |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Input-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/4f453dfb-03c1-4cd1-9ffb-632ccae29ba5/Input-Variables-outboundHeaders.wev" autogeneratedOrigin="9f254351-66a0-4217-b14b-a9975524687c"><![CDATA[%dw 2.0
+
+type auto_4f453dfb_03c1_4cd1_9ffb_632ccae29ba5_Input_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Input-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="9f254351-66a0-4217-b14b-a9975524687c"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Output-Payload" format="json">
+      <types:shape format="weave" autogeneratedOrigin="9f254351-66a0-4217-b14b-a9975524687c"><![CDATA[%dw 2.0
+
+type auto_4f453dfb_03c1_4cd1_9ffb_632ccae29ba5_Output_Payload = Array<{|  subscription_id?: Number {"typeId": "int"},   user_id?: String,   status_type_id?: Number {"typeId": "int"},   Source_Location?: String,   Destination_Location?: String,   from_time?: String,   to_time?: String,   advance_notify_time_min?: Number {"typeId": "int"},   creation_timestamp?: String,   "updated_timestamp:"?: String|}> {"example": "[{\\\"subscription_id\\\":123,\\\"user_id\\\":\\\"00u3s93e4kpq7ryLr5d7\\\",\\\"status_type_id\\\":1,\\\"Source_Location\\\":\\\"BSK\\\",\\\"Destination_Location\\\":\\\"WAT\\\",\\\"from_time\\\":\\\"21:30:00\\\",\\\"to_time\\\":\\\"22:30:00\\\",\\\"advance_notify_time_min\\\":30,\\\"creation_timestamp\\\":\\\"2022-02-09T06:18:29.000Z\\\",\\\"updated_timestamp:\\\":\\\"2022-02-09T06:18:29.000Z\\\"},{\\\"subscription_id\\\":124,\\\"user_id\\\":\\\"00u3s93e4kpq7ryLr5d7\\\",\\\"status_type_id\\\":1,\\\"Source_Location\\\":\\\"ADV\\\",\\\"Destination_Location\\\":\\\"WCH\\\",\\\"from_time\\\":\\\"21:30:00\\\",\\\"to_time\\\":\\\"22:30:00\\\",\\\"advance_notify_time_min\\\":30,\\\"creation_timestamp\\\":\\\"2022-02-09T06:18:29.000Z\\\",\\\"updated_timestamp:\\\":\\\"2022-02-09T06:18:29.000Z\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/4f453dfb-03c1-4cd1-9ffb-632ccae29ba5/Output-Attributes.wev" autogeneratedOrigin="9f254351-66a0-4217-b14b-a9975524687c"><![CDATA[%dw 2.0
+
+type auto_4f453dfb_03c1_4cd1_9ffb_632ccae29ba5_Output_Attributes = {|
+  headers?: { _?: String }, 
+  reasonPhrase?: String, 
+  statusCode?: Number
+|} {"typeId": "org.mule.extension.http.api.HttpResponseAttributes"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Output-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/4f453dfb-03c1-4cd1-9ffb-632ccae29ba5/Output-Variables-outboundHeaders.wev" autogeneratedOrigin="9f254351-66a0-4217-b14b-a9975524687c"><![CDATA[%dw 2.0
+
+type auto_4f453dfb_03c1_4cd1_9ffb_632ccae29ba5_Output_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="9f254351-66a0-4217-b14b-a9975524687c"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Input-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/04870778-cd31-453c-90be-daa7ed57aa7c/Input-Payload.wev" autogeneratedOrigin="51328a88-d087-49e9-869f-a73b373213e1"><![CDATA[%dw 2.0
+
+type auto_04870778_cd31_453c_90be_daa7ed57aa7c_Input_Payload = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/04870778-cd31-453c-90be-daa7ed57aa7c/Input-Attributes.wev" autogeneratedOrigin="51328a88-d087-49e9-869f-a73b373213e1"><![CDATA[%dw 2.0
+
+type auto_04870778_cd31_453c_90be_daa7ed57aa7c_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|
+    userId: String, 
+    SubscriptionId: String
+  |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Input-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/04870778-cd31-453c-90be-daa7ed57aa7c/Input-Variables-outboundHeaders.wev" autogeneratedOrigin="51328a88-d087-49e9-869f-a73b373213e1"><![CDATA[%dw 2.0
+
+type auto_04870778_cd31_453c_90be_daa7ed57aa7c_Input_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Input-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="51328a88-d087-49e9-869f-a73b373213e1"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Output-Payload" format="json">
+      <types:shape format="weave" autogeneratedOrigin="51328a88-d087-49e9-869f-a73b373213e1"><![CDATA[%dw 2.0
+
+type auto_04870778_cd31_453c_90be_daa7ed57aa7c_Output_Payload = {|
+  subscription_id?: Number {"typeId": "int"}, 
+  user_id?: String, 
+  status_type_id?: Number {"typeId": "int"}, 
+  Source_Location?: String, 
+  Destination_Location?: String, 
+  from_time?: String, 
+  to_time?: String, 
+  advance_notify_time_min?: Number {"typeId": "int"}, 
+  creation_timestamp?: String, 
+  "updated_timestamp:"?: String
+|} {"example": "{\\\"subscription_id\\\":124,\\\"user_id\\\":\\\"00u3s93e4kpq7ryLr5d7\\\",\\\"status_type_id\\\":1,\\\"Source_Location\\\":\\\"ADV\\\",\\\"Destination_Location\\\":\\\"WCH\\\",\\\"from_time\\\":\\\"21:30:00\\\",\\\"to_time\\\":\\\"22:30:00\\\",\\\"advance_notify_time_min\\\":30,\\\"creation_timestamp\\\":\\\"2022-02-09T06:18:29.000Z\\\",\\\"updated_timestamp:\\\":\\\"2022-02-09T06:18:29.000Z\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/04870778-cd31-453c-90be-daa7ed57aa7c/Output-Attributes.wev" autogeneratedOrigin="51328a88-d087-49e9-869f-a73b373213e1"><![CDATA[%dw 2.0
+
+type auto_04870778_cd31_453c_90be_daa7ed57aa7c_Output_Attributes = {|
+  headers?: { _?: String }, 
+  reasonPhrase?: String, 
+  statusCode?: Number
+|} {"typeId": "org.mule.extension.http.api.HttpResponseAttributes"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Output-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/04870778-cd31-453c-90be-daa7ed57aa7c/Output-Variables-outboundHeaders.wev" autogeneratedOrigin="51328a88-d087-49e9-869f-a73b373213e1"><![CDATA[%dw 2.0
+
+type auto_04870778_cd31_453c_90be_daa7ed57aa7c_Output_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="51328a88-d087-49e9-869f-a73b373213e1"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Input-Payload" format="json">
+      <types:shape format="weave" example="weave/autogenerated/4ceef748-9389-4b69-ad56-a843fd1fec3c/Input-Payload.wev" autogeneratedOrigin="ebdb6e91-45ea-4265-b498-986c669772e5"><![CDATA[%dw 2.0
+
+type auto_4ceef748_9389_4b69_ad56_a843fd1fec3c_Input_Payload = {
+  advance_notify_time_min?: Number, 
+  status_type_id?: Number, 
+  Destination_Location?: String, 
+  Source_Location?: String, 
+  to_time?: String, 
+  from_time?: String, 
+  _?: Any
+}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/4ceef748-9389-4b69-ad56-a843fd1fec3c/Input-Attributes.wev" autogeneratedOrigin="ebdb6e91-45ea-4265-b498-986c669772e5"><![CDATA[%dw 2.0
+
+type auto_4ceef748_9389_4b69_ad56_a843fd1fec3c_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|
+    userId: String, 
+    SubscriptionId: String
+  |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Input-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/4ceef748-9389-4b69-ad56-a843fd1fec3c/Input-Variables-outboundHeaders.wev" autogeneratedOrigin="ebdb6e91-45ea-4265-b498-986c669772e5"><![CDATA[%dw 2.0
+
+type auto_4ceef748_9389_4b69_ad56_a843fd1fec3c_Input_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Input-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="ebdb6e91-45ea-4265-b498-986c669772e5"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Output-Payload" format="json">
+      <types:shape format="weave" autogeneratedOrigin="ebdb6e91-45ea-4265-b498-986c669772e5"><![CDATA[%dw 2.0
+
+type auto_4ceef748_9389_4b69_ad56_a843fd1fec3c_Output_Payload = {| message?: String |} {"example": "{\\\"message\\\":\\\"Subscription updated successfully\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/4ceef748-9389-4b69-ad56-a843fd1fec3c/Output-Attributes.wev" autogeneratedOrigin="ebdb6e91-45ea-4265-b498-986c669772e5"><![CDATA[%dw 2.0
+
+type auto_4ceef748_9389_4b69_ad56_a843fd1fec3c_Output_Attributes = {|
+  headers?: { _?: String }, 
+  reasonPhrase?: String, 
+  statusCode?: Number
+|} {"typeId": "org.mule.extension.http.api.HttpResponseAttributes"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Output-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/4ceef748-9389-4b69-ad56-a843fd1fec3c/Output-Variables-outboundHeaders.wev" autogeneratedOrigin="ebdb6e91-45ea-4265-b498-986c669772e5"><![CDATA[%dw 2.0
+
+type auto_4ceef748_9389_4b69_ad56_a843fd1fec3c_Output_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="ebdb6e91-45ea-4265-b498-986c669772e5"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Input-Payload" format="json">
+      <types:shape format="weave" example="weave/autogenerated/90d7183e-3076-4c8f-856a-d82876e786dd/Input-Payload.wev" autogeneratedOrigin="99e7c509-3ca4-4574-9977-b529aa6a4be3"><![CDATA[%dw 2.0
+
+type auto_90d7183e_3076_4c8f_856a_d82876e786dd_Input_Payload = {
+  advance_notify_time_min: Number, 
+  user_id: String, 
+  Destination_Location: String, 
+  Source_Location: String, 
+  to_time: String, 
+  from_time: String, 
+  _?: Any
+}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/90d7183e-3076-4c8f-856a-d82876e786dd/Input-Attributes.wev" autogeneratedOrigin="99e7c509-3ca4-4574-9977-b529aa6a4be3"><![CDATA[%dw 2.0
+
+type auto_90d7183e_3076_4c8f_856a_d82876e786dd_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {| userId: String |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Input-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/90d7183e-3076-4c8f-856a-d82876e786dd/Input-Variables-outboundHeaders.wev" autogeneratedOrigin="99e7c509-3ca4-4574-9977-b529aa6a4be3"><![CDATA[%dw 2.0
+
+type auto_90d7183e_3076_4c8f_856a_d82876e786dd_Input_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Input-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="99e7c509-3ca4-4574-9977-b529aa6a4be3"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Output-Payload" format="json">
+      <types:shape format="weave" autogeneratedOrigin="99e7c509-3ca4-4574-9977-b529aa6a4be3"><![CDATA[%dw 2.0
+
+type auto_90d7183e_3076_4c8f_856a_d82876e786dd_Output_Payload = {| message?: String |} {"example": "{\\\"message\\\":\\\"User Subscription created successfully\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/90d7183e-3076-4c8f-856a-d82876e786dd/Output-Attributes.wev" autogeneratedOrigin="99e7c509-3ca4-4574-9977-b529aa6a4be3"><![CDATA[%dw 2.0
+
+type auto_90d7183e_3076_4c8f_856a_d82876e786dd_Output_Attributes = {|
+  headers?: { _?: String }, 
+  reasonPhrase?: String, 
+  statusCode?: Number
+|} {"typeId": "org.mule.extension.http.api.HttpResponseAttributes"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Output-Variables-UserId" format="java">
+      <types:shape format="weave" example="weave/autogenerated/90d7183e-3076-4c8f-856a-d82876e786dd/Output-Variables-UserId.wev" autogeneratedOrigin="99e7c509-3ca4-4574-9977-b529aa6a4be3"><![CDATA[%dw 2.0
+
+type auto_90d7183e_3076_4c8f_856a_d82876e786dd_Output_Variables_UserId = String | Null
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Output-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/90d7183e-3076-4c8f-856a-d82876e786dd/Output-Variables-outboundHeaders.wev" autogeneratedOrigin="99e7c509-3ca4-4574-9977-b529aa6a4be3"><![CDATA[%dw 2.0
+
+type auto_90d7183e_3076_4c8f_856a_d82876e786dd_Output_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="99e7c509-3ca4-4574-9977-b529aa6a4be3"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Input-Payload" format="json">
+      <types:shape format="weave" example="weave/autogenerated/bd0b45ca-a5b9-4184-830c-b4b86c13115b/Input-Payload.wev" autogeneratedOrigin="775ccd04-46a4-4c4b-97d4-0d919fc29d2d"><![CDATA[%dw 2.0
+
+type auto_bd0b45ca_a5b9_4184_830c_b4b86c13115b_Input_Payload = {
+  First_Name: String, 
+  Last_Name: String, 
+  Email_ID: String, 
+  Phone_Number: String, 
+  Password: String, 
+  _?: Any
+}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/bd0b45ca-a5b9-4184-830c-b4b86c13115b/Input-Attributes.wev" autogeneratedOrigin="775ccd04-46a4-4c4b-97d4-0d919fc29d2d"><![CDATA[%dw 2.0
+
+type auto_bd0b45ca_a5b9_4184_830c_b4b86c13115b_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Input-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/bd0b45ca-a5b9-4184-830c-b4b86c13115b/Input-Variables-outboundHeaders.wev" autogeneratedOrigin="775ccd04-46a4-4c4b-97d4-0d919fc29d2d"><![CDATA[%dw 2.0
+
+type auto_bd0b45ca_a5b9_4184_830c_b4b86c13115b_Input_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Input-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="775ccd04-46a4-4c4b-97d4-0d919fc29d2d"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Output-Payload" format="json">
+      <types:shape format="weave" autogeneratedOrigin="775ccd04-46a4-4c4b-97d4-0d919fc29d2d"><![CDATA[%dw 2.0
+
+type auto_bd0b45ca_a5b9_4184_830c_b4b86c13115b_Output_Payload = {|
+  User_Id?: String, 
+  Email_ID?: String, 
+  Status_Type_ID?: Number {"typeId": "int"}, 
+  First_Name?: String, 
+  Last_Name?: String, 
+  Phone_Number?: String, 
+  created_timestamp?: String, 
+  updated_timestamp?: String
+|} {"example": "{\\\"User_Id\\\":\\\"00u3u96x25K8fhkeo5d7\\\",\\\"Email_ID\\\":\\\"isaac@test.com\\\",\\\"Status_Type_ID\\\":1,\\\"First_Name\\\":\\\"Isaac\\\",\\\"Last_Name\\\":\\\"Brock\\\",\\\"Phone_Number\\\":\\\"+44 783456234235\\\",\\\"created_timestamp\\\":\\\"2022-02-09T06:18:29.000Z\\\",\\\"updated_timestamp\\\":\\\"2022-02-09T06:18:29.000Z\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/bd0b45ca-a5b9-4184-830c-b4b86c13115b/Output-Attributes.wev" autogeneratedOrigin="775ccd04-46a4-4c4b-97d4-0d919fc29d2d"><![CDATA[%dw 2.0
+
+type auto_bd0b45ca_a5b9_4184_830c_b4b86c13115b_Output_Attributes = {|
+  headers?: { _?: String }, 
+  reasonPhrase?: String, 
+  statusCode?: Number
+|} {"typeId": "org.mule.extension.http.api.HttpResponseAttributes"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Output-Variables-UserId" format="json">
+      <types:shape format="weave" example="weave/autogenerated/bd0b45ca-a5b9-4184-830c-b4b86c13115b/Output-Variables-UserId.wev" autogeneratedOrigin="775ccd04-46a4-4c4b-97d4-0d919fc29d2d"><![CDATA[%dw 2.0
+
+type auto_bd0b45ca_a5b9_4184_830c_b4b86c13115b_Output_Variables_UserId = String
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Output-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/bd0b45ca-a5b9-4184-830c-b4b86c13115b/Output-Variables-outboundHeaders.wev" autogeneratedOrigin="775ccd04-46a4-4c4b-97d4-0d919fc29d2d"><![CDATA[%dw 2.0
+
+type auto_bd0b45ca_a5b9_4184_830c_b4b86c13115b_Output_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="775ccd04-46a4-4c4b-97d4-0d919fc29d2d"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Input-Payload" format="json">
+      <types:shape format="weave" example="weave/autogenerated/d6ec267d-523b-466a-b095-ce6169e003e6/Input-Payload.wev" autogeneratedOrigin="45ce5dbb-60b2-4434-957d-1121d1997948"><![CDATA[%dw 2.0
+
+type auto_d6ec267d_523b_466a_b095_ce6169e003e6_Input_Payload = {
+  Email_ID: String, 
+  Password: String, 
+  _?: Any
+}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/d6ec267d-523b-466a-b095-ce6169e003e6/Input-Attributes.wev" autogeneratedOrigin="45ce5dbb-60b2-4434-957d-1121d1997948"><![CDATA[%dw 2.0
+
+type auto_d6ec267d_523b_466a_b095_ce6169e003e6_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Input-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/d6ec267d-523b-466a-b095-ce6169e003e6/Input-Variables-outboundHeaders.wev" autogeneratedOrigin="45ce5dbb-60b2-4434-957d-1121d1997948"><![CDATA[%dw 2.0
+
+type auto_d6ec267d_523b_466a_b095_ce6169e003e6_Input_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Input-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="45ce5dbb-60b2-4434-957d-1121d1997948"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Output-Payload" format="json">
+      <types:shape format="weave" autogeneratedOrigin="45ce5dbb-60b2-4434-957d-1121d1997948"><![CDATA[%dw 2.0
+
+type auto_d6ec267d_523b_466a_b095_ce6169e003e6_Output_Payload = {| message?: String |} {"example": "{\\\"message\\\":\\\"User logged in successfully\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/d6ec267d-523b-466a-b095-ce6169e003e6/Output-Attributes.wev" autogeneratedOrigin="45ce5dbb-60b2-4434-957d-1121d1997948"><![CDATA[%dw 2.0
+
+type auto_d6ec267d_523b_466a_b095_ce6169e003e6_Output_Attributes = {|
+  headers?: { _?: String }, 
+  reasonPhrase?: String, 
+  statusCode?: Number
+|} {"typeId": "org.mule.extension.http.api.HttpResponseAttributes"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Output-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/d6ec267d-523b-466a-b095-ce6169e003e6/Output-Variables-outboundHeaders.wev" autogeneratedOrigin="45ce5dbb-60b2-4434-957d-1121d1997948"><![CDATA[%dw 2.0
+
+type auto_d6ec267d_523b_466a_b095_ce6169e003e6_Output_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="45ce5dbb-60b2-4434-957d-1121d1997948"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Input-Payload" format="java">
+      <types:shape format="weave" example="weave/autogenerated/4db75653-df39-4ba2-ba72-5ee296f2ee1a/Input-Payload.wev" autogeneratedOrigin="c7c2cff1-b2f0-463d-9bbc-4bb9476f796b"><![CDATA[%dw 2.0
+
+type auto_4db75653_df39_4ba2_ba72_5ee296f2ee1a_Input_Payload = Any
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/4db75653-df39-4ba2-ba72-5ee296f2ee1a/Input-Attributes.wev" autogeneratedOrigin="c7c2cff1-b2f0-463d-9bbc-4bb9476f796b"><![CDATA[%dw 2.0
+
+type auto_4db75653_df39_4ba2_ba72_5ee296f2ee1a_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {|  |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Input-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/4db75653-df39-4ba2-ba72-5ee296f2ee1a/Input-Variables-outboundHeaders.wev" autogeneratedOrigin="c7c2cff1-b2f0-463d-9bbc-4bb9476f796b"><![CDATA[%dw 2.0
+
+type auto_4db75653_df39_4ba2_ba72_5ee296f2ee1a_Input_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Input-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="c7c2cff1-b2f0-463d-9bbc-4bb9476f796b"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Output-Payload" format="json">
+      <types:shape format="weave" autogeneratedOrigin="c7c2cff1-b2f0-463d-9bbc-4bb9476f796b"><![CDATA[%dw 2.0
+
+type auto_4db75653_df39_4ba2_ba72_5ee296f2ee1a_Output_Payload = Array<{|  User_Id?: String,   Email_ID?: String,   Status_Type_ID?: Number {"typeId": "int"},   First_Name?: String,   Last_Name?: String,   Phone_Number?: String,   created_timestamp?: String,   updated_timestamp?: String|}> {"example": "[{\\\"User_Id\\\":\\\"00u3u96x25K8fhkeo5d7\\\",\\\"Email_ID\\\":\\\"isaac@test.com\\\",\\\"Status_Type_ID\\\":1,\\\"First_Name\\\":\\\"Isaac\\\",\\\"Last_Name\\\":\\\"Brock\\\",\\\"Phone_Number\\\":\\\"+44 783456234235\\\",\\\"created_timestamp\\\":\\\"2022-02-09T06:18:29.000Z\\\",\\\"updated_timestamp\\\":\\\"2022-02-09T06:18:29.000Z\\\"},{\\\"User_Id\\\":\\\"00u3u96x25K8fhkeo5d8\\\",\\\"Email_ID\\\":\\\"ann@test.com\\\",\\\"Status_Type_ID\\\":1,\\\"First_Name\\\":\\\"Ann\\\",\\\"Last_Name\\\":\\\"Brock\\\",\\\"Phone_Number\\\":\\\"+44 783456234234\\\",\\\"created_timestamp\\\":\\\"2022-02-09T06:18:29.000Z\\\",\\\"updated_timestamp\\\":\\\"2022-02-09T06:18:29.000Z\\\"}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/4db75653-df39-4ba2-ba72-5ee296f2ee1a/Output-Attributes.wev" autogeneratedOrigin="c7c2cff1-b2f0-463d-9bbc-4bb9476f796b"><![CDATA[%dw 2.0
+
+type auto_4db75653_df39_4ba2_ba72_5ee296f2ee1a_Output_Attributes = {|
+  headers?: { _?: String }, 
+  reasonPhrase?: String, 
+  statusCode?: Number
+|} {"typeId": "org.mule.extension.http.api.HttpResponseAttributes"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Output-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/4db75653-df39-4ba2-ba72-5ee296f2ee1a/Output-Variables-outboundHeaders.wev" autogeneratedOrigin="c7c2cff1-b2f0-463d-9bbc-4bb9476f796b"><![CDATA[%dw 2.0
+
+type auto_4db75653_df39_4ba2_ba72_5ee296f2ee1a_Output_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="c7c2cff1-b2f0-463d-9bbc-4bb9476f796b"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Input-Payload" format="json">
+      <types:shape format="weave" example="weave/autogenerated/d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7/Input-Payload.wev" autogeneratedOrigin="522b1af0-25bb-4630-a0f1-fae85c890bac"><![CDATA[%dw 2.0
+
+type auto_d2e3a4a9_bca5_4c07_9d7b_f5bcd260d1b7_Input_Payload = {
+  oldPassword: String, 
+  newPassword: String, 
+  _?: Any
+}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Input-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7/Input-Attributes.wev" autogeneratedOrigin="522b1af0-25bb-4630-a0f1-fae85c890bac"><![CDATA[%dw 2.0
+
+type auto_d2e3a4a9_bca5_4c07_9d7b_f5bcd260d1b7_Input_Attributes = {|
+  clientCertificate?: {|
+    publicKey?: {|  |}, 
+    "type"?: String, 
+    encoded?: Binary
+  |}, 
+  headers: {|  |}, 
+  listenerPath: String, 
+  method: String, 
+  queryParams: {|  |}, 
+  queryString: String, 
+  relativePath: String, 
+  remoteAddress: String, 
+  requestPath: String, 
+  requestUri: String, 
+  scheme: String, 
+  uriParams: {| userId: String |}, 
+  version: String, 
+  localAddress: String
+|}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Input-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7/Input-Variables-outboundHeaders.wev" autogeneratedOrigin="522b1af0-25bb-4630-a0f1-fae85c890bac"><![CDATA[%dw 2.0
+
+type auto_d2e3a4a9_bca5_4c07_9d7b_f5bcd260d1b7_Input_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Input-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="522b1af0-25bb-4630-a0f1-fae85c890bac"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Output-Payload" format="json">
+      <types:shape format="weave" autogeneratedOrigin="522b1af0-25bb-4630-a0f1-fae85c890bac"><![CDATA[%dw 2.0
+
+type auto_d2e3a4a9_bca5_4c07_9d7b_f5bcd260d1b7_Output_Payload = {| message?: String |} {"example": "{\\\"message\\\":\\\" User Password updated successfully\\\"}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Output-Attributes" format="java">
+      <types:shape format="weave" example="weave/autogenerated/d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7/Output-Attributes.wev" autogeneratedOrigin="522b1af0-25bb-4630-a0f1-fae85c890bac"><![CDATA[%dw 2.0
+
+type auto_d2e3a4a9_bca5_4c07_9d7b_f5bcd260d1b7_Output_Attributes = {|
+  headers?: { _?: String }, 
+  reasonPhrase?: String, 
+  statusCode?: Number
+|} {"typeId": "org.mule.extension.http.api.HttpResponseAttributes"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Output-Variables-outboundHeaders" format="java">
+      <types:shape format="weave" example="weave/autogenerated/d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7/Output-Variables-outboundHeaders.wev" autogeneratedOrigin="522b1af0-25bb-4630-a0f1-fae85c890bac"><![CDATA[%dw 2.0
+
+type auto_d2e3a4a9_bca5_4c07_9d7b_f5bcd260d1b7_Output_Variables_outboundHeaders = {|  |}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Output-Variables-httpStatus" format="java">
+      <types:shape format="raml" autogeneratedOrigin="522b1af0-25bb-4630-a0f1-fae85c890bac"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#73223461-6731-4c3d-881d-eaaf7428e525">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="OktaUser"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#a9fb8ef5-e1e2-45c2-adb4-b1b83241f3f1">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="UserRegistration"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#15087f0b-3372-4e00-a135-930af7befe0f">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="UserAuthentication"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#b4bc95c2-5133-4342-9f39-d9f7cbd38e30">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="UserSubscription"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#2eb42ed7-968d-4cd0-9db4-6a1056a49533">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="UserSubscription"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#75efa607-a5ae-4d70-92eb-f8fdcf2430c5"/>
+  <types:enrichment select="#214fc04a-02bb-411b-8817-0bd669816d0c"/>
+  <types:enrichment select="#fc09c750-1e47-4346-8ce1-37bd44b6536c"/>
+  <types:enrichment select="#2edfac02-0458-4d0b-982f-f54d9bf76e88"/>
+  <types:enrichment select="#b8c3844d-9242-44f6-a73c-0a5e93c96e67"/>
+  <types:enrichment select="#163a70d8-9ead-4441-893e-426af1dae7de"/>
+  <types:enrichment select="#5bd4e5b9-3a49-4f3d-a162-c33d6486c6c6"/>
+  <types:enrichment select="#6e579573-f765-46b0-bc13-0eb03d818189"/>
+  <types:enrichment select="#21d9e8fb-1d3b-485f-9bd3-ecde3518ffce"/>
+  <types:enrichment select="#1fa423ac-a35d-4032-8c6e-baa64dafd40d">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:variables>
+          <types:variable name="httpStatus" type="auto_1fa423ac-a35d-4032-8c6e-baa64dafd40d_Input-Variables-httpStatus"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_1fa423ac-a35d-4032-8c6e-baa64dafd40d_Output-Payload"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="httpStatus" type="auto_1fa423ac-a35d-4032-8c6e-baa64dafd40d_Output-Variables-httpStatus"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#1d4d824d-950b-4900-bb08-4544140e98d6"/>
+  <types:enrichment select="#82fe56f2-e02e-4880-a10a-204d20bcb103"/>
+  <types:enrichment select="#2ce792a0-5868-476e-be87-956cf6444a1a"/>
+  <types:enrichment select="#1e1c370f-a9bb-42b5-ad5b-9d94346eaca7"/>
+  <types:enrichment select="#3d8914a5-f628-45e9-9ad6-d2c1e21847f2">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:variables>
+          <types:variable name="httpStatus" type="auto_3d8914a5-f628-45e9-9ad6-d2c1e21847f2_Input-Variables-httpStatus"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_3d8914a5-f628-45e9-9ad6-d2c1e21847f2_Output-Payload"/>
+          <types:attributes type="auto_3d8914a5-f628-45e9-9ad6-d2c1e21847f2_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="httpStatus" type="auto_3d8914a5-f628-45e9-9ad6-d2c1e21847f2_Output-Variables-httpStatus"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#3ddad9ef-d81d-45bf-b796-5b693bb09490"/>
+  <types:enrichment select="#38b5441c-7c9c-496f-8571-ed47579f0e23"/>
+  <types:enrichment select="#4f453dfb-03c1-4cd1-9ffb-632ccae29ba5">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Input-Payload"/>
+          <types:attributes type="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Input-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Input-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Input-Variables-httpStatus"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Output-Payload"/>
+          <types:attributes type="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Output-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_4f453dfb-03c1-4cd1-9ffb-632ccae29ba5_Output-Variables-httpStatus"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#04870778-cd31-453c-90be-daa7ed57aa7c">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Input-Payload"/>
+          <types:attributes type="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Input-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Input-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Input-Variables-httpStatus"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Output-Payload"/>
+          <types:attributes type="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Output-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_04870778-cd31-453c-90be-daa7ed57aa7c_Output-Variables-httpStatus"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#4ceef748-9389-4b69-ad56-a843fd1fec3c">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Input-Payload"/>
+          <types:attributes type="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Input-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Input-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Input-Variables-httpStatus"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Output-Payload"/>
+          <types:attributes type="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Output-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_4ceef748-9389-4b69-ad56-a843fd1fec3c_Output-Variables-httpStatus"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#90d7183e-3076-4c8f-856a-d82876e786dd">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Input-Payload"/>
+          <types:attributes type="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Input-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Input-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Input-Variables-httpStatus"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Output-Payload"/>
+          <types:attributes type="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Output-Variables-outboundHeaders"/>
+          <types:variable name="UserId" type="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Output-Variables-UserId"/>
+          <types:variable name="httpStatus" type="auto_90d7183e-3076-4c8f-856a-d82876e786dd_Output-Variables-httpStatus"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#bd0b45ca-a5b9-4184-830c-b4b86c13115b">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Input-Payload"/>
+          <types:attributes type="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Input-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Input-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Input-Variables-httpStatus"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Output-Payload"/>
+          <types:attributes type="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Output-Variables-outboundHeaders"/>
+          <types:variable name="UserId" type="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Output-Variables-UserId"/>
+          <types:variable name="httpStatus" type="auto_bd0b45ca-a5b9-4184-830c-b4b86c13115b_Output-Variables-httpStatus"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#d6ec267d-523b-466a-b095-ce6169e003e6">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Input-Payload"/>
+          <types:attributes type="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Input-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Input-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Input-Variables-httpStatus"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Output-Payload"/>
+          <types:attributes type="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Output-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_d6ec267d-523b-466a-b095-ce6169e003e6_Output-Variables-httpStatus"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#4db75653-df39-4ba2-ba72-5ee296f2ee1a">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Input-Payload"/>
+          <types:attributes type="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Input-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Input-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Input-Variables-httpStatus"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Output-Payload"/>
+          <types:attributes type="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Output-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_4db75653-df39-4ba2-ba72-5ee296f2ee1a_Output-Variables-httpStatus"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Input-Payload"/>
+          <types:attributes type="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Input-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Input-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Input-Variables-httpStatus"/>
+        </types:variables>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Output-Payload"/>
+          <types:attributes type="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Output-Attributes"/>
+        </types:message>
+        <types:variables>
+          <types:variable name="outboundHeaders" type="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Output-Variables-outboundHeaders"/>
+          <types:variable name="httpStatus" type="auto_d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7_Output-Variables-httpStatus"/>
+        </types:variables>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

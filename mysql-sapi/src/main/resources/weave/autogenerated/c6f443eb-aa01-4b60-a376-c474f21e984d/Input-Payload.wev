@@ -1,0 +1,16 @@
+%dw 2.0
+
+type auto_c6f443eb_aa01_4b60_a376_c474f21e984d_Input_Payload = {
+  subscription_id?: Number, 
+  advance_notify_time_min?: Number, 
+  user_id: String, 
+  status_type_id: Number, 
+  updated_timestamp?: String, 
+  creation_timestamp?: String, 
+  Destination_Location: String, 
+  Source_Location: String, 
+  to_time?: String, 
+  from_time?: String, 
+  _?: Any
+}
+

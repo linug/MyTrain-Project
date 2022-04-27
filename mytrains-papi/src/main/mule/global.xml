@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow"
+	xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:nrsapi="http://www.mulesoft.org/schema/mule/nrsapi" xmlns:my-sqlsapi="http://www.mulesoft.org/schema/mule/my-sqlsapi"
+	xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd 
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/my-sqlsapi http://www.mulesoft.org/schema/mule/my-sqlsapi/current/mule-my-sqlsapi.xsd
+http://www.mulesoft.org/schema/mule/nrsapi http://www.mulesoft.org/schema/mule/nrsapi/current/mule-nrsapi.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/servicenow http://www.mulesoft.org/schema/mule/servicenow/current/mule-servicenow.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="acbd041d-5158-4f48-960d-26e194ea4aca" >
+		<db:my-sql-connection host="${DB.server}" port="${DB.port}" user="${DB.username}" password="${DB.password}" database="${DB.database}" />
+	</db:config>
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5e499079-bb89-4f3f-8e64-efe96721dcb3" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<email:smtp-config name="Email_SMTP" doc:name="Email SMTP" doc:id="dee4675d-da6c-4518-9330-0cddee2dea60" >
+		<email:smtp-connection host="${Email.host}" user="${secure::Email.user}" password="${secure::Email.password}" port="${Email.port}" timeoutUnit="MINUTES">
+			<pooling-profile />
+			<email:properties >
+				<email:property key="mail.smtp.starttls.enable" value="true" />
+			</email:properties>
+		</email:smtp-connection>
+	</email:smtp-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="2a59b6dc-20be-4247-bc3a-6058103a6619" file="config.yaml" />
+	<json-logger:config name="JSON_Logger_Config" doc:name="JSON Logger Config" doc:id="7609ae52-45b7-460e-9899-10349942d648" environment="${json.logger.mule.env}" applicationName="mytrains-papi"/>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="44addad4-b804-4a01-b39c-c96438a0b61f" >
+		<salesforce:basic-connection username="${secure::SF.username}" password="${secure::SF.password}" securityToken="${secure::SF.security.token}"/>
+	</salesforce:sfdc-config>
+	<my-sqlsapi:config name="MySQLSAPI_Config" doc:name="MySQLSAPI Config" doc:id="f26f2eda-78cb-485b-a6ba-2a6952b27327" property_host="localhost" property_protocol="HTTP" property_basePath="/api" property_port="8083" property_responseTimeout="500000"/>
+	<nrsapi:config name="NRSAPI_Config" doc:name="NRSAPI Config" doc:id="5ad0488a-8396-4eac-941b-c28a3a9d5abe" property_host="localhost" property_port="8085" property_protocol="HTTP" property_basePath="/api" property_responseTimeout="500000"/>
+	<os:object-store name="Object_store" doc:name="Object store" doc:id="e2acbd24-1b8c-48e8-944f-5bbf31235738" />
+	<configuration doc:name="Configuration" doc:id="ae2fa8ad-2985-46d1-b7fb-e84039299103" defaultErrorHandler-ref="global-error-handler" />
+	<servicenow:config name="ServiceNow_Config" doc:name="ServiceNow Config" doc:id="bbe590b4-71ca-41f4-8713-f26f9fdbc08a" >
+		<servicenow:basic-connection username="${service.now.username}" password="${service.now.password}" serviceAddress="${service.now.address}" serviceNowVersion="QUEBEC" />
+	</servicenow:config>
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="31991471-9779-4eac-910c-a0116f57813e" file="config.yaml" key="trains" >
+		<secure-properties:encrypt algorithm="Blowfish" />
+	</secure-properties:config>
+	
+	
+</mule>

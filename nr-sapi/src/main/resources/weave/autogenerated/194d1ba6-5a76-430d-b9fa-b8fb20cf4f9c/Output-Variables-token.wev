@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_194d1ba6_5a76_430d_b9fa_b8fb20cf4f9c_Output_Variables_token = {| headers: {| AccessToken: {| TokenValue: String |} |} |}
+

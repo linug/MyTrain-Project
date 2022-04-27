@@ -1,0 +1,28 @@
+json.logger:
+ application.name: "mytrains-papi"
+ application.version: "1.0.0"
+ mule.env: "dev"
+ 
+DB:
+ server : "64.227.37.97"
+ database: "nrs"
+ username: "njclabs"
+ password : "training"
+ port: "3306" 
+ 
+SF:
+ username: "![sIMZu0K5V5PzrxPIHxvBFluU+XX1unmI]"
+ password: "![XPnXDH2VxAZwXV7hkFA+Qw==]"
+ security.token: "![9QW7iJQXgrdsec+BO77XKfvZC/doZ2K/xce8Qkom3lA=]"
+
+service.now:
+ username : "admin"
+ password : "doPU3EM7^/hx"
+ address : "https://dev117124.service-now.com"
+ 
+Email:
+ host: "smtp.gmail.com"
+ port: "587"
+ user: "![6P0lJ7eGowfcGckeJ4YH6jMVC48vxZQfatQzf/m94so=]"
+ password: "![XPnXDH2VxAZwXV7hkFA+Qw==]"  
+ 

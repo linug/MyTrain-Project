@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/servicenow http://www.mulesoft.org/schema/mule/servicenow/current/mule-servicenow.xsd">
+	<sub-flow name="incidentForServicenow" doc:id="3d8914a5-f628-45e9-9ad6-d2c1e21847f2" >
+		<ee:transform doc:name="Transform Message for ServiceNow" doc:id="e4858a84-d19e-4d16-8df5-158a5840cffb">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 https://dev117124.service-now.com/incident
+---
+{
+	ns0#insert:{
+		active: true,
+		description: error.description,
+		short_description: "MyTrains-" ++ error.errorType.namespace ++"::"++ error.errorType.identifier default null ,
+		comments:"EAPI",
+		caller_id:"MyTrains-Project",
+		caller:"MyTrains-Project"
+		
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		<servicenow:invoke doc:name="Invoke" doc:id="771adefa-151c-441c-bb10-26181c421fc9" config-ref="ServiceNow_Config" service="incident" operation="insert" showReferenceValues="ALL" />
+	</sub-flow>
+	<sub-flow name="mytrains-eapi-error-response" doc:id="1fa423ac-a35d-4032-8c6e-baa64dafd40d" >
+		<ee:transform doc:name="Transform Message" doc:id="dfb646b1-7eb4-4351-96d7-235f0a1d6722">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statusCode: vars.httpStatus,
+	message: error.errorType.identifier,
+	description: error.description,
+	dateTime: now() as String
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+	</sub-flow>
+	<error-handler name="global-error-handler">
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="709b2105-b474-47aa-9599-71f9eadd0848" type="MY-SQLSAPI:BAD_REQUEST,OKTASAPI:BAD_REQUEST,APIKIT:BAD_REQUEST">
+			<json-logger:logger doc:name="Logger" doc:id="8694a240-33c8-4f91-9544-a11b871c4f27" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -400" doc:id="75efa607-a5ae-4d70-92eb-f8fdcf2430c5" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="8397d544-8442-48eb-8533-a17ea93cef81" name="incidentForServicenow" />
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="a3c5dbbc-6602-442b-9dd8-f69e03a24513" name="mytrains-eapi-error-response" />
+
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b6af41f7-4d2c-47ab-8e76-7f1a6e322fb8" type="MY-SQLSAPI:CONNECTIVITY,OKTASAPI:CONNECTIVITY">
+			<json-logger:logger doc:name="Logger" doc:id="163cfef0-a34c-4a17-a3c5-028c72575be8" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -503" doc:id="2edfac02-0458-4d0b-982f-f54d9bf76e88" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[503]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="d5bb01b2-02ed-4354-8dc9-976a88b0f0e8" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="a7515bae-9410-4c66-aa42-ba1b7ec8035e" name="mytrains-eapi-error-response"/>
+
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b553490a-ba36-45e7-940d-b193d91ddb74" type="MY-SQLSAPI:INTERNAL_SERVER_ERROR,OKTASAPI:INTERNAL_SERVER_ERROR">
+			<json-logger:logger doc:name="Logger" doc:id="cbc8208d-77ff-4266-9e9e-853ba7cb2d06" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="fc09c750-1e47-4346-8ce1-37bd44b6536c" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="27c1b412-b01d-4144-8e93-7056503a5454" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="e8670b2c-0078-4b78-b64f-1e4119aeaf92" name="mytrains-eapi-error-response"/>
+
+			</on-error-propagate>
+			<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="dc2a453b-5ea2-4ab9-b249-92e3f1a00f29" type="OKTASAPI:FORBIDDEN,MY-SQLSAPI:FORBIDDEN">
+			<json-logger:logger doc:name="Logger" doc:id="c4d29337-302b-4532-8413-73eacda8eddf" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -403" doc:id="b8c3844d-9242-44f6-a73c-0a5e93c96e67" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[403]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="c2816819-1d98-43a6-b55e-53fcd3e174d1" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="70eb2764-29f1-4522-875c-2cbc430d36b6" name="mytrains-eapi-error-response"/>
+
+			</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="cdef874d-c0f5-40c4-be02-9553c6bae4cb" type="MY-SQLSAPI:METHOD_NOT_ALLOWED,OKTASAPI:METHOD_NOT_ALLOWED,APIKIT:METHOD_NOT_ALLOWED">
+			<json-logger:logger doc:name="Logger" doc:id="930f65a8-97cc-446d-a1df-b12818a5118e" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -405" doc:id="214fc04a-02bb-411b-8817-0bd669816d0c">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="httpStatus" ><![CDATA[405]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="8bfca319-f584-47ba-a88f-aa70e05531ca" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="25deb20e-c5d4-47d9-a2bc-b8db8608d0f2" name="mytrains-eapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="f0e6d566-14ca-44ac-af29-65fd8c1aa37d" type="MY-SQLSAPI:NOT_FOUND,OKTASAPI:NOT_FOUND,APIKIT:NOT_FOUND">
+			<json-logger:logger doc:name="Logger" doc:id="8ca00f22-2441-42fb-8bc3-d0841ca2fe31" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -404" doc:id="163a70d8-9ead-4441-893e-426af1dae7de" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="bc936c2b-ee54-43b5-a50b-041aff7a156f" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="490de183-7494-4da1-97b5-fa108fd36781" name="mytrains-eapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="081a9185-bcf9-4ca0-b7d1-3a64e3be6b45" type="MY-SQLSAPI:SERVICE_UNAVAILABLE,OKTASAPI:SERVICE_UNAVAILABLE">
+			<json-logger:logger doc:name="Logger" doc:id="b104d2b3-7e7b-4f7a-abf7-b12722f27782" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -503" doc:id="5bd4e5b9-3a49-4f3d-a162-c33d6486c6c6" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[503]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="66aaa57a-0048-458d-8499-5c9f6427eb92" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="ad736842-21c1-45b0-8adb-1c9bf369d0df" name="mytrains-eapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="1ae5d17f-50a8-4cc9-8f6a-0d34b4e2e4d4" type="MY-SQLSAPI:UNAUTHORIZED,OKTASAPI:UNAUTHORIZED">
+			<json-logger:logger doc:name="Logger" doc:id="3eb11ef9-4b37-45ba-9b9e-e1556f5abf8d" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -401" doc:id="e7dec4e6-022a-4e8e-ad69-6fe89f5f9761" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[401]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="50d24c34-ffea-48ca-a69e-141542a06281" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="f23032b8-a1c2-43ce-bde2-2c298e7b8d9a" name="mytrains-eapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ca91b11e-aa0e-4351-a79e-5b687d8953f5" type="MY-SQLSAPI:UNSUPPORTED_MEDIA_TYPE,OKTASAPI:UNSUPPORTED_MEDIA_TYPE,APIKIT:UNSUPPORTED_MEDIA_TYPE">
+			<json-logger:logger doc:name="Logger" doc:id="c0e36487-c0f6-4537-a5fb-5146f685c664" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -415" doc:id="6e579573-f765-46b0-bc13-0eb03d818189" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[415]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="b9b61fae-b5d8-48a9-b739-360bd574ee94" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="53b61eec-dfa0-4618-b3f2-390b82b86d6f" name="mytrains-eapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="e2375992-df52-49ce-824c-cfbfb5f8b438" type="MY-SQLSAPI:TOO_MANY_REQUESTS, OKTASAPI:TOO_MANY_REQUESTS">
+			<json-logger:logger doc:name="Logger" doc:id="24d62640-81e0-41c5-bf07-88f6699a063a" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -429" doc:id="800fbc8a-3265-4255-b15c-04ec5488172b" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[429]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="d10f0f3a-5fe7-43d6-83c0-e76cdd0fede9" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="3238c9e4-ffed-4660-a52f-ff9837eede04" name="mytrains-eapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="64f033cb-4419-4f9e-94a1-6f425a83a853" type="MY-SQLSAPI:NOT_ACCEPTABLE,OKTASAPI:NOT_ACCEPTABLE,APIKIT:NOT_ACCEPTABLE">
+			<json-logger:logger doc:name="Logger" doc:id="3ce393fe-a982-4293-8801-a600aeb56147" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -406" doc:id="21d9e8fb-1d3b-485f-9bd3-ecde3518ffce" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[406]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="eab9e61d-f1f9-427f-9339-f9b32384b9d3" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="14c5f9c0-6a19-4a86-86d3-a6f2bc7c2eaf" name="mytrains-eapi-error-response" />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="853994d0-0d3d-4478-bb7d-d678bf832a5f" type="MY-SQLSAPI:RETRY_EXHAUSTED,OKTASAPI:RETRY_EXHAUSTED">
+			<json-logger:logger doc:name="Logger" doc:id="7d6b2985-6cbb-4343-b923-e5fd1636fa25" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -509" doc:id="1e1c370f-a9bb-42b5-ad5b-9d94346eaca7" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[509]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="0a774696-2e85-4e0f-ac14-32cf70a5f1aa" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="429b8a4b-da5d-4faa-9933-01e8ab05db96" name="mytrains-eapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6f051293-de19-490c-ac54-ab95b6895bd1" type="MY-SQLSAPI:SECURITY,OKTASAPI:SECURITY">
+			<json-logger:logger doc:name="Logger" doc:id="66c113f6-304a-439b-970f-f5336b2b19e7" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="1d4d824d-950b-4900-bb08-4544140e98d6" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="893ae9fd-9512-4c1f-b52a-45ad7aead670" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="35bd8760-0b30-40d0-8d95-0348fd0ed936" name="mytrains-eapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="defca657-31e1-45db-a287-cb420011eb55" type="MY-SQLSAPI:TIMEOUT,OKTASAPI:TIMEOUT">
+			<json-logger:logger doc:name="Logger" doc:id="b699c1e6-e355-4bcc-8094-3f92ec2716d0" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -408" doc:id="82fe56f2-e02e-4880-a10a-204d20bcb103" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[408]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="7523f0b2-b54f-42e3-9084-fb5dabc35216" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="4f6c0967-0498-4bbf-8c6e-ea9dd5ec7cac" name="mytrains-eapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="84af08ca-0735-4150-b7ed-3b8607b6b536" type="MY-SQLSAPI:PARSING,OKTASAPI:PARSING">
+			<json-logger:logger doc:name="Logger" doc:id="183f9d74-25de-45dc-b725-8cc8a77e4ed6" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="2ce792a0-5868-476e-be87-956cf6444a1a" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="c0768718-7934-49fe-83f7-4f38272485c6" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="a9462543-b59d-41ec-8a5e-e586e992a9c9" name="mytrains-eapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="bae972a1-bcff-407a-8a2a-1cc2c8641a77" type="ANY">
+			<json-logger:logger doc:name="Logger" doc:id="d11b17da-db7c-416e-944c-f87f5b1ecf61" config-ref="JSON_Logger_Config" message="Start Logger"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="3ddad9ef-d81d-45bf-b796-5b693bb09490" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="ef79715a-d097-49f8-ba3a-ca105244499f" name="incidentForServicenow"/>
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="b2687b2d-c655-4063-b034-68b48e235c37" name="mytrains-eapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="a9a9100e-8f04-4197-bcc5-d3d7f9f330d4" type="APIKIT:NOT_IMPLEMENTED">
+			<json-logger:logger doc:name="Logger" doc:id="ca94884c-b508-4351-8aa7-1d8542e05cd9" config-ref="JSON_Logger_Config" message="Start Logging" />
+			<ee:transform doc:name="Set httpStatus -501" doc:id="38b5441c-7c9c-496f-8571-ed47579f0e23">
+				<ee:message>
+				</ee:message>
+				<ee:variables>
+					<ee:set-variable variableName="httpStatus"><![CDATA[501]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="incidentForServicenow" doc:id="16438613-5312-4019-ad86-3f384dd00826" name="incidentForServicenow" />
+			<flow-ref doc:name="mytrains-eapi-error-response" doc:id="61779a17-68a4-4074-a59a-cf86e53d14a7" name="mytrains-eapi-error-response" />
+		</on-error-propagate>
+		
+</error-handler>
+</mule>

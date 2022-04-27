@@ -1,0 +1,20 @@
+%dw 2.0
+
+type auto_a206d1e8_a387_4a3e_acc0_61a319a86175_Input_Payload = {
+  credentials: {
+    password: {
+      value: String, 
+      _?: Any
+    }, 
+    _?: Any
+  }, 
+  profile: {
+    firstName: String, 
+    lastName: String, 
+    login: String, 
+    email: String, 
+    _?: Any
+  }, 
+  _?: Any
+}
+

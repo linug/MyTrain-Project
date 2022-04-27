@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<munit:config name="mytrains-eapi-test-suite.xml" />
+	<munit:test name="mytrains-eapi-test-suite-userRegistrationTest" doc:id="04503a8c-ec6f-4efe-a59b-90cb4d6f1a3b" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="db3cd1dc-3247-42af-873a-6e1ae24f1f73" processor="oktasapi:create-user">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Create user in Okta" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="be54a9c8-3982-41c0-9bd6-510835317165" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="OKTASAPI_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://mytrains-eapi/oktaCreateUserResp.json')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="8305041b-0d21-447f-a5ee-6c065c4b7751" processor="my-sqlsapi:create-user">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Create user in SQL" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="65939963-d11c-4737-9fa1-265998fe1e3a" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="MySQLSAPI_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#["One row affected"]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="35446dc1-e008-403f-bad6-4c131d7ad9c3">
+				<munit:payload value='#[{&#10;   First_Name :  "Risaac", &#10;   Last_Name :  "BrockGG", &#10;   Email_ID : "risaac@test12345.com", &#10;   password : "rabc123457"&#10; }]' encoding="UTF-8" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to userRegistration" doc:id="a6fe20fe-071d-4eee-bb54-ec48e9c4adf1" name="userRegistration"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="50593f36-1928-4d45-8176-39946c353ebd" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="76cc6353-4417-41a4-a776-3238a114e601" actual="#[vars.UserId]" expected='#["00u4etaisxOWor9gs5d7"]'/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-getOktaUsersTest" doc:id="67860820-094c-41c0-9867-f153da5b3712" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="10d39e00-a8b8-408b-b7a2-ffed709fd792" processor="oktasapi:get-users">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Get users" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="304d935a-d711-47e1-82b9-55221644cd3e" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="OKTASAPI_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://mytrains-eapi/oktaGetAllUsersResp.json')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getOktaUsers" doc:id="98edff65-aeaa-4a05-90e7-026480be43e6" name="getOktaUsers"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="f5a32c2d-2db2-4fd1-8982-bdf6778366d7" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-getOktaUsersTest-OKTASAPI:CONNECTIVITY" doc:id="02c0a2e9-01f2-45c9-b705-bc8731fb622b" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="372265a1-7b38-4f2d-bb1e-65e264e83021" processor="oktasapi:get-users">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Get users" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="304d935a-d711-47e1-82b9-55221644cd3e" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="OKTASAPI_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="OKTASAPI:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="9c29a97c-c61f-44bc-9d04-7f61898d19bc" >
+				<flow-ref doc:name="Flow-ref to getOktaUsers" doc:id="8b4e240d-dc49-481f-b4e1-09d6532f3967" name="getOktaUsers" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="998b76c9-8c1d-4d76-a8d7-f014854a242f" >
+						<json-logger:logger doc:name="Logger" doc:id="faa14cfc-cb8e-4120-bf80-7cd97d9cd31c" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="ca3d68e3-5d57-4c6a-894a-bd7745862a9e" actual="#[vars.httpStatus]" expected="#[503]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-userLoginTest" doc:id="8aa5174c-9b9f-44b8-a8f4-57fa1eff6c73" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="28cccd28-78f5-407b-a72e-c7339081af89" processor="oktasapi:create-login">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Create login" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="41fff85f-80e3-4936-9ae2-e810dcb5d2f3" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="OKTASAPI_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:attributes value='#[output application/json --- readUrl("classpath://mytrains-eapi/statusCode.json")]' mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="e54c2256-1f0b-4443-a543-8cbb1dc433f5" >
+				<munit:payload value='#[output application/json --- readUrl("classpath://mytrains-eapi/userLoginReq.json")]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to userLogin" doc:id="19fab833-c97d-4b1f-b89b-1dc1e065ff46" name="userLogin"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="8a1a0128-bf48-44cb-8843-3966409d653f" actual="#[attributes.statusCode]" expected="#[200]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-getRegisteredUsersTest" doc:id="a45bfb8a-5184-4987-bcbf-66f3ced7a86a" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="567a6cf0-0532-43b9-8e0c-732aafbe415d" processor="my-sqlsapi:get-users">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Get users" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="2a1fbac5-be04-4aeb-877c-e06fce51dbb1" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="MySQLSAPI_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:attributes value='#[output application/json --- readUrl("classpath://mytrains-eapi/statusCode.json")]' mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getRegisteredUsers" doc:id="8225a9e7-69a9-4a63-a0bd-43ec2a976690" name="getRegisteredUsers"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="8bc540a3-7ecd-4176-a510-7fa338d349cf" expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-userChangePasswordTest" doc:id="c1029aab-cb57-42ed-a459-aacbd74ec286" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="25993e29-42d4-402a-bb74-b7756e16d423" processor="oktasapi:update-change-passwords-by-user-id">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update change passwords by user id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="9b8913d8-5c55-4c56-885f-0e8f55e90eea" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="OKTASAPI_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:attributes value='#[output application/json --- readUrl("classpath://mytrains-eapi/statusCode.json")]&#10;' mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to userChangePassword" doc:id="96be712f-c017-492e-bf46-62f0ad9b6663" name="userChangePassword"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="d4c12072-0e35-413b-93d4-71f5ff92c563" expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-userPasswordRecoveryTest" doc:id="884bd229-6d4b-4520-9891-7c9393a3277a" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="85459f70-5fcc-4596-ac10-f27e4824b00b" processor="oktasapi:create-password-recovery">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Create password recovery" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="ac407a9f-304b-4c0d-9ac7-55bae60a20b8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="OKTASAPI_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:attributes value='#[output application/json --- readUrl("classpath://mytrains-eapi/statusCode.json")]' mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to userPasswordRecovery" doc:id="58ad92d7-5a71-4922-9737-2a19ac534b8f" name="userPasswordRecovery"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="0a2bfaa6-cc25-4f81-8827-e14924d5edc3" expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-getSubscriptionByIdTest-MY-SQLSAPI:SERVICE_UNAVAILABLE" doc:id="4fef7f7f-4b3e-4296-ac51-8c3d6cae12d6" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="eacdbfb5-f0df-40ad-bf89-84f52a93e028" processor="my-sqlsapi:get-subscription-by-user-id-subscription-id">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Get subscription by user id subscription id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="cc971713-1222-4881-b0b7-6f5ea069368a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:SERVICE_UNAVAILABLE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="9324dd01-925e-41e4-a9ea-2d1cfc9141ba" >
+				<flow-ref doc:name="Flow-ref to getSubscriptionById" doc:id="07f30c03-62fe-4fc6-905d-43fe023e8f8b" name="getSubscriptionById" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="af3b0c9b-8532-4f4f-8b15-197b142e825c" >
+						<json-logger:logger doc:name="Logger" doc:id="b3032301-94af-42ca-8ab6-70331a8db825" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="4bb4648b-8526-4e40-bd60-036ff08bf248" actual="#[vars.httpStatus]" expected="#[503]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-updateSubscriptionIdTest-MY-SQLSAPI:TOO_MANY_REQUESTS" doc:id="9e5830c8-5658-45c2-b971-261aa6317c3e" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="6d107dc2-6c02-4297-812f-582cfb7ca6f5" processor="my-sqlsapi:update-subscription-by-user-id-subscription-id">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update subscription by user id subscription id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="4e303fbb-c788-4094-ae74-1f4e51abd134" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:TOO_MANY_REQUESTS" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="3c0ef548-9459-41a0-9f37-e112bf540c09" >
+				<flow-ref doc:name="Flow-ref to updateSubscriptionId" doc:id="9bdb2821-0079-47cb-b95f-f80d9f9a64dd" name="updateSubscriptionId" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f1d1bad7-810b-4969-9168-44040af3ce50" >
+						<json-logger:logger doc:name="Logger" doc:id="94dca924-4084-4d8b-b0b4-d7f2cd83c60b" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="b1bf8f22-3104-43b5-8a23-1400c9644162" actual="#[vars.httpStatus]" expected="#[429]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-getUserSubscriptionsTest-MY-SQLSAPI:TIMEOUT" doc:id="e6b8b927-4d64-44f6-add3-7e444ddfc5bb" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="6e9693a5-0b10-4d01-b27a-f7edc9a7a1fe" processor="my-sqlsapi:get-subscriptions-by-user-id">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Get subscriptions by user id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="72e63e32-b4de-42cc-b821-4ceeb555f23a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:TIMEOUT" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="89bedef6-a87a-4523-8eb7-48b021d16174" >
+				<flow-ref doc:name="Flow-ref to getUserSubscriptions" doc:id="02ca148b-afe6-4931-8f91-c36099f7d4c2" name="getUserSubscriptions" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="91c21919-7143-4cba-8cdc-0cfecb189420" >
+						<json-logger:logger doc:name="Logger" doc:id="7c169c73-615d-405e-b19c-14a32e2cb6cf" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="fd169487-c848-409d-ad63-061c5bf3c42d" actual="#[vars.httpStatus]" expected="#[408]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-createUserSubscriptionTest-MY-SQLSAPI:RETRY_EXHAUSTED" doc:id="bd99f731-aa72-47e9-835f-0209a5d982cc" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="2ee02f2e-ba93-455c-9e9c-e6c7518e9aa5" processor="my-sqlsapi:create-subscription-by-user-id">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Create subscription by user id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="483a9370-c879-4187-aacf-0d1444f94038" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:RETRY_EXHAUSTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="6de99eb5-23b8-4382-b7c7-2688343f0403">
+				<munit:payload value='#[output application/json --- readUrl("classpath://mytrains-eapi/createUserSubscription.json")]' />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="33c44e46-0ad9-410d-831d-ff0f01d082d9" >
+				<flow-ref doc:name="Flow-ref to createUserSubscription" doc:id="c73b68f3-6d86-4a78-9f69-7988dfb0eecf" name="createUserSubscription" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f717b6f1-3afb-4a3c-939a-75c5b611d3eb" >
+						<json-logger:logger doc:name="Logger" doc:id="b3d8aad0-bdc6-4433-8a76-ba43526c5c73" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="5ca0e4d4-1e7e-498e-ade4-c519fe470cb9" actual="#[vars.httpStatus]" expected="#[509]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-getSubscriptionByIdTest-MY-SQLSAPI:BAD_REQUEST" doc:id="2eb6f9be-9d46-4c39-be80-455cb1649a1b" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="f746c084-0ba5-4ade-9fe9-a32ec3362536" processor="my-sqlsapi:get-subscription-by-user-id-subscription-id">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Get subscription by user id subscription id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="cc971713-1222-4881-b0b7-6f5ea069368a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="63332e11-254f-4a7f-8dbf-585a1aeb8bee" >
+				<flow-ref doc:name="Flow-ref to getSubscriptionById" doc:id="22522797-0445-422c-b8cc-3aa6cb11999d" name="getSubscriptionById" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="bb26ece6-d65b-4e08-a48b-d259753dd477" >
+						<json-logger:logger doc:name="Logger" doc:id="d114c040-606b-45ce-b00a-7f1d7807b1d6" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="38133e39-b08e-4000-a344-129033b0b419" actual="#[vars.httpStatus]" expected="#[400]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-getOktaUsersTest1-OKTASAPI:FORBIDDEN" doc:id="c716af31-1d28-40f7-b90b-300144f232f1" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="aeb105b6-c2ae-4dcd-a238-dd17ac103c86" processor="oktasapi:get-users">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Get users" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="304d935a-d711-47e1-82b9-55221644cd3e" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="OKTASAPI_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="OKTASAPI:FORBIDDEN" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="553f9004-b02d-4419-8221-e8cffc1a92fe" >
+				<flow-ref doc:name="Flow-ref to getOktaUsers" doc:id="36cda05a-9695-4413-a9e5-73d8b17e150d" name="getOktaUsers" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="798f4b8a-a298-401e-9f99-3850c04471ee" >
+						<json-logger:logger doc:name="Logger" doc:id="81cf0119-b539-4149-94ab-833aed69277c" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="d1347fa9-8560-416e-9f7e-1b2ba7c66b30" actual="#[vars.httpStatus]" expected="#[403]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-userLoginTest1-OKTASAPI:METHOD_NOT_ALLOWED" doc:id="daffa233-6217-457f-bec3-0358ec4a4dd1" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="912a507e-3273-48e4-bfe9-53cfc88e824f" processor="oktasapi:create-login">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Create login" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="41fff85f-80e3-4936-9ae2-e810dcb5d2f3" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="OKTASAPI_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="OKTASAPI:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="7256bac2-b548-47e2-8c3b-638192f4f3e5">
+				<munit:payload value='#[output application/json --- readUrl("classpath://mytrains-eapi/userLoginReq.json")]' />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="7675934b-255a-4034-9cc1-36458aeb65ab" >
+				<flow-ref doc:name="Flow-ref to userLogin" doc:id="4333262c-4595-4567-a4de-640adac0876e" name="userLogin" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0899965a-38b0-4173-b6a2-a6de71b43c67" >
+						<json-logger:logger doc:name="Logger" doc:id="17c45cf2-73e4-4dd2-940d-9483c27eee31" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="45c634bd-d9f9-4082-9662-b6252717bb24" actual="#[vars.httpStatus]" expected="#[405]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-getOktaUsersTest1-OKTASAPI:UNAUTHORIZED" doc:id="b47756a7-646a-4872-b4da-695cb889f9a0" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="56aca515-223f-416c-a069-70e2f1169826" processor="oktasapi:get-users">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Get users" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="304d935a-d711-47e1-82b9-55221644cd3e" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="OKTASAPI_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="OKTASAPI:UNAUTHORIZED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="9806523e-2664-4cb8-bf58-aee6af2bdfc8" >
+				<flow-ref doc:name="Flow-ref to getOktaUsers" doc:id="3b4e13bf-98e8-4253-871f-d7a02acbbfc8" name="getOktaUsers" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="fe2211fd-0454-4d67-8cb0-71cf59c895b0" >
+						<json-logger:logger doc:name="Logger" doc:id="520b9cee-c306-4a8d-b717-5ccc6471c20f" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="0d271b59-2ced-46a6-980b-dba7c349a445" actual="#[vars.httpStatus]" expected="#[401]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-getServiceNowIncidentsTest-ANY" doc:id="db55f432-228a-49db-8326-25f5bb574789" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="9b05a938-aef4-4a89-bf13-c5acd8c790e6" processor="servicenow:invoke">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="18630848-a55d-482d-a110-5b049a4f4e57" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="ServiceNow_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="ae50df90-5847-451d-8ea4-4a22be826083" >
+				<flow-ref doc:name="Flow-ref to getServiceNowIncidents" doc:id="7c286c06-93db-4c26-bb32-86fbf0458292" name="getServiceNowIncidents" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="bb697c45-c89f-4530-9481-6732cf208469" >
+						<json-logger:logger doc:name="Logger" doc:id="a69ea882-e898-4ad7-8575-bff5732a577d" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="ee1fa374-898f-49c5-8ee2-01cf07e0c088" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-getUserSubscriptionsTest-MY-SQLSAPI:NOT_FOUND" doc:id="a9e4bd92-74c1-485a-a34c-87470c21b64f" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="ad16ede7-6bbb-4a76-94e0-b583d75ebab7" processor="my-sqlsapi:get-subscriptions-by-user-id">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Get subscriptions by user id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="72e63e32-b4de-42cc-b821-4ceeb555f23a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="14e8d6fa-34fb-458e-a053-ec4f7d0a7da2" >
+				<flow-ref doc:name="Flow-ref to getUserSubscriptions" doc:id="ebb0d78d-959c-4118-9ccd-c92d3b8473d4" name="getUserSubscriptions" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="853be56b-0e69-4b21-a3bc-3791715264d6" >
+						<json-logger:logger doc:name="Logger" doc:id="93b2135a-3e89-4d11-ba28-f03d57487278" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="fe69736a-ef70-4af4-80f1-ea8a7f820647" actual="#[vars.httpStatus]" expected="#[404]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-userPasswordRecoveryTest1-OKTASAPI:UNSUPPORTED_MEDIA_TYPE" doc:id="ac45b0f1-cdbe-47f2-9297-9d50934d2b78" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="f4aec4a6-857b-4192-87cc-68fba10aae84" processor="oktasapi:create-password-recovery">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Create password recovery" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="ac407a9f-304b-4c0d-9ac7-55bae60a20b8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="OKTASAPI_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="OKTASAPI:UNSUPPORTED_MEDIA_TYPE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="105bc291-bc3c-427c-b4f1-50d337eae1bf" >
+				<flow-ref doc:name="Flow-ref to userPasswordRecovery" doc:id="d947bf2c-727d-40c1-92c1-433af62e297e" name="userPasswordRecovery" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ac4d6a83-a38e-4a22-82ed-713b624ed726" >
+						<json-logger:logger doc:name="Logger" doc:id="93383576-19ee-466b-a0b8-75859d0b33fa" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="c9f5ec5f-c1aa-4516-8a25-db07090f19ab" actual="#[vars.httpStatus]" expected="#[415]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-userChangePasswordTest1-OKTASAPI:SECURITY" doc:id="691814a1-dc44-4c96-a2e3-6958ad6db7cb" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="f555e651-5072-4c52-9366-c3cf06c66089" processor="oktasapi:update-change-passwords-by-user-id">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update change passwords by user id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="9b8913d8-5c55-4c56-885f-0e8f55e90eea" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="OKTASAPI:SECURITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="28e5d0d0-65ab-4407-ae91-49edf98f18c2" >
+				<flow-ref doc:name="Flow-ref to userChangePassword" doc:id="2b5b37b9-9572-4fee-bab3-a3968683424f" name="userChangePassword" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0b6bda36-dbb2-4201-a0eb-d367384a3ec9" >
+						<json-logger:logger doc:name="Logger" doc:id="24e34c3b-a517-4670-8343-1a7d56262c39" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="4f5c0048-2a31-4c48-87cf-00732a392404" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-updateSubscriptionIdTest-MY-SQLSAPI:INTERNAL_SERVER_ERROR" doc:id="5b489438-8d9c-4e21-a03f-c492afd56c5e" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0dd45038-6b7b-49fa-86be-7840ad797f14" processor="my-sqlsapi:update-subscription-by-user-id-subscription-id">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update subscription by user id subscription id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="4e303fbb-c788-4094-ae74-1f4e51abd134" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="e47f30ae-88a9-46e6-b793-3197e7a44c66" >
+				<flow-ref doc:name="Flow-ref to updateSubscriptionId" doc:id="6af12504-4655-4d98-bac7-8045bb2b2140" name="updateSubscriptionId" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0701d390-4f95-4c3f-9416-4ca996270243" >
+						<json-logger:logger doc:name="Logger" doc:id="428917b5-7165-4efe-8741-8f2a62764ef9" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="5ac487bd-0d5d-4cf2-8a34-4b25188cc885" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-updateSubscriptionIdTest-MY-SQLSAPI:NOT_ACCEPTABLE" doc:id="a6b38b70-c5e6-4148-8f1a-8f6b8de3eddc" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="e2f6c632-db55-4423-9080-86b0299d18d1" processor="my-sqlsapi:update-subscription-by-user-id-subscription-id">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update subscription by user id subscription id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="4e303fbb-c788-4094-ae74-1f4e51abd134" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:NOT_ACCEPTABLE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="f00801bb-2b9e-4ce4-9d9b-cfa18fb217b9" >
+				<flow-ref doc:name="Flow-ref to updateSubscriptionId" doc:id="932b668c-2739-4988-8e77-4b2cc1ec4ba4" name="updateSubscriptionId" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="45fd6e16-9a1a-475d-998d-b9737e8893a3" >
+						<json-logger:logger doc:name="Logger" doc:id="fd383d38-9136-4d4a-bd2a-545c5f160f72" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="92cb98b9-20c5-4099-81ed-c4e47d7ca459" actual="#[vars.httpStatus]" expected="#[406]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-getServiceNowIncidentsTest-MY-SQLSAPI:PARSING" doc:id="cfcc6209-64e7-47eb-a82d-d58885c7fea9" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a8bece7c-f060-44b4-adb3-11b0e3d87b57" processor="servicenow:invoke">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="incident" attributeName="service" />
+					<munit-tools:with-attribute whereValue="Invoke" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="18630848-a55d-482d-a110-5b049a4f4e57" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:PARSING" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="932af805-8dda-41b3-a0f3-099c567e4ad5" >
+				<flow-ref doc:name="Flow-ref to getServiceNowIncidents" doc:id="22cded16-8443-4176-a0de-39b23efbe632" name="getServiceNowIncidents" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="070c09c4-be6a-49db-82a8-dfc535ee4554" >
+						<json-logger:logger doc:name="Logger" doc:id="b2c29538-5b22-4ab9-8723-8470d66401ec" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="b613d878-6481-4ffe-9644-1d717dd0b0db" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-createUserSubscriptionTest" doc:id="f4426677-6afd-410b-9f65-b2bde06da752" description="Test" ignore="true">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="95ba3944-0f12-47c3-b631-bfda159357d9" processor="my-sqlsapi:create-subscription-by-user-id">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Create subscription by user id" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="483a9370-c879-4187-aacf-0d1444f94038" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="#[vars.UserId]" attributeName="user-id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:attributes value="#[output application/json --- readUrl('classpath://mytrains-eapi/statusCode.json')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="aaaa63e5-62e7-43f6-ab86-771594361e9b" >
+				<munit:payload value="#[output application/json --- readUrl('classpath://mytrains-eapi/createUserSubscription.json')]" />
+				<munit:attributes value="#[{uriParams:{UserId:100}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to createUserSubscription" doc:id="b8c6df6e-777f-4faf-95c8-5ba5d16d9417" name="createUserSubscription"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="90ecc0cc-8095-4a40-a86e-a5181b79d2b1" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="mytrains-eapi-test-suite-createUserSubscriptionTest1" doc:id="01262c10-1eb1-45bb-8666-264805c123aa" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to createUserSubscription" doc:id="005fb355-eeac-4ddd-b221-c95155ddc68c" name="createUserSubscription"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>

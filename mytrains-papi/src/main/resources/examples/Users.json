@@ -1,0 +1,13 @@
+
+ [
+   {
+    "USER_ID" : "00u3u96x25K8fhkeo5d7",
+    "EMAIL_ID": "isaac@test.com",
+    "STATUS_TYPE_ID": 1,
+    "FIRST_NAME": "Isaac",
+    "LAST_NAME": "Brock",
+    "PHONE_NUMBER" : "+44 783456234235",
+    "CREATED_TIMESTAMP" :"2022-02-09T06:18:29.000Z",
+    "UPDATED_TIMESTAMP" :"2022-02-09T06:18:29.000Z"  
+  }
+ ]

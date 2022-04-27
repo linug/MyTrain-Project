@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="userCreation" doc:id="a206d1e8-a387-4a3e-acc0-61a319a86175" >
+		<json-logger:logger doc:name="Start Logger" doc:id="e6fd73f3-d179-4dc9-88df-7864b426a697" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Input To Json" doc:id="f4f59e77-bc8f-41ce-a900-1069f2d0a617" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[output application/json
+---
+{
+	credentials: {
+		password: payload.password
+	},
+	profile: {
+		firstName: payload.First_Name,
+		lastName: payload.Last_Name,
+		login: payload.Email_ID,
+		email: payload.Email_ID
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="User Creation Request" doc:id="19301452-ed31-43e9-ab25-0d8e1b4b5ecf" config-ref="HTTP_Request_configuration" path="${okta.usercreation.path}" responseTimeout="500000">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "${secure::okta.apikey}",
+	"Accept" : "application/json",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"activate" : "true"
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Output To Json" doc:id="bda82284-b323-48c0-80b0-4accaef06ff2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="413539f4-2400-4938-9124-a4dba02deef6" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+	<flow name="updateUser" doc:id="a9c09954-2f9d-4602-b58a-e187e930356c" >
+		<json-logger:logger doc:name="Start Logger" doc:id="1f613501-a980-48e1-886d-0692aff6cf32" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Input To Json" doc:id="5c40dcde-b4b5-499a-8349-4b6a693f85bb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "profile": {
+    "firstName": payload.First_Name,
+    "lastName" : payload.Last_Name,
+    "email": payload.Email_ID,
+    "mobilePhone": payload.MobilePhone
+ }
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="UserId" ><![CDATA[attributes.uriParams.UserId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="POST" doc:name="Update User Request " doc:id="ef333ee9-64db-4dbd-91dc-d96cc3f8e01e" config-ref="HTTP_Request_configuration" path="${okta.updateuser.path}" responseTimeout="500000">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "${secure::okta.apikey}",
+	"Accept" : "application/json",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"userId" : vars.UserId
+}]]]></http:uri-params>
+		</http:request>
+		<ee:transform doc:name="Output To Json" doc:id="ea1a62a5-c220-47db-a6be-71bf02d6987a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="419712c5-2c84-4448-a6e6-19b3aaa7bdd1" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+	<flow name="changePassword" doc:id="739692db-469c-43c7-92d0-32595b8df4bc" >
+		<json-logger:logger doc:name="Start Logger" doc:id="332dbe50-4d95-45c8-8494-5b22ff6144b8" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Input To Json" doc:id="955a8c85-7909-4756-86bf-1dae1d10664b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "oldPassword": { "value": payload.oldPassword },
+  "newPassword": { "value": payload.newPassword }
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="userId" ><![CDATA[attributes.uriParams.UserId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="POST" doc:name="Change Password Request" doc:id="6ebe72d0-f39b-4be1-a7f8-25d3215bddce" config-ref="HTTP_Request_configuration" path="${okta.changepswd.path}" responseTimeout="500000">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "${secure::okta.apikey}"
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	userId : vars.UserId
+}]]]></http:uri-params>
+		</http:request>
+		<ee:transform doc:name="Output To Json" doc:id="221018bb-60fa-4ac3-8621-5c9a3efa18bd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="f33adc53-4fab-435e-b8b4-408ef8c8460a" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+	<flow name="getAllUsers" doc:id="310928d1-2fe0-449f-93c5-9a85f5f5f4c0" >
+		<json-logger:logger doc:name="Start Logger" doc:id="76a2f38b-d054-4e52-b02e-6247c48debdf" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<http:request method="GET" doc:name="Get All Users Request" doc:id="25987667-a19c-421b-b4d4-ce23c07bc156" config-ref="HTTP_Request_configuration" path="${okta.getallusers.path}" responseTimeout="500000">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "${secure::okta.apikey}",
+	"Accept" : "application/json",
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	"limit" : "25"
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="Output To Json" doc:id="70a98242-fa71-4f0a-b63b-2280b356504a" >
+			<ee:message >
+				
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="03ab9df5-5ee9-49fb-9142-65032f9eb6aa" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+	<flow name="userLogin" doc:id="19062a17-87fa-47cb-9933-45b8151bd1f4" >
+		<json-logger:logger doc:name="Start Logger" doc:id="186ed311-91ac-44ee-9dcf-af205b84aa2a" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Input To Json" doc:id="845c16c9-8e03-416e-abbc-b4746a340acb" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "username": payload.username,
+  "password": payload.password,
+  "options": {
+    "multiOptionalFactorEnroll": payload.multiOptionalFactorEnroll,
+    "warnBeforePasswordExpired": payload.warnBeforePasswordExpired
+  }  
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="User Login Request" doc:id="94586d70-b9a3-4efa-aac7-df3020959aef" config-ref="HTTP_Request_configuration" path="${okta.userlogin.path}" responseTimeout="500000"/>
+		<ee:transform doc:name="Output To Json" doc:id="42411aa1-83cf-409c-b5f3-da7dd587b9c1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="793dc3bd-19b9-41b3-afd4-1fc48ee3f423" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+	<flow name="getUserByID" doc:id="fd90dd3c-045e-4988-9c95-a57b953c3c7b" >
+		<json-logger:logger doc:name="Start Logger" doc:id="85dba787-2a0f-4127-a89c-af412e59c075" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Set UserId" doc:id="714a6e08-d1f5-4af1-9e23-fb620f50ad34" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="UserId" ><![CDATA[attributes.uriParams.UserId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<http:request method="GET" doc:name="Get User By Id Request" doc:id="5510e687-d46b-4876-9377-a6ac929bae24" config-ref="HTTP_Request_configuration" path="${okta.getuser.path}" responseTimeout="500000">
+			<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Authorization" : "${secure::okta.apikey}"
+}]]]></http:headers>
+			<http:uri-params ><![CDATA[#[output application/java
+---
+{
+	"userId" : vars.UserId
+}]]]></http:uri-params>
+		</http:request>
+		<ee:transform doc:name="Output To Json" doc:id="31edb70e-2324-4c99-9d23-60b53c312e24" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="2f7af142-5d86-4377-8c56-fce74e3b0d65" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+	<flow name="passwordRecovery" doc:id="ea3bcd0f-85e1-4c11-9ec5-3291832d5c50" >
+		<json-logger:logger doc:name="Start Logger" doc:id="94f05e23-02f8-46ee-96e8-9faee1e59647" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Input To Json" doc:id="ce586412-e4bd-4802-a8b1-5f67becd366e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "username": payload.username,
+  "factorType": payload.factorType,
+  "relayState": payload.relayState
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<http:request method="POST" doc:name="Password Recovery Request" doc:id="025d9be9-d9e2-4c22-888b-b527b6963298" config-ref="HTTP_Request_configuration" path="${okta.pswdrecovery.path}" responseTimeout="500000"/>
+		<ee:transform doc:name="Output To Json" doc:id="b77ccce5-857d-4eb3-b355-1f4dc4c52aec" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="45d0948c-1a8b-4f9d-b762-18abe8c93661" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+</mule>

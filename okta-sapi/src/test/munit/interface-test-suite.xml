@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<munit:config name="interface-test-suite.xml" />
+	<munit:test name="interface-test-suite-oktasapi-mainTest-APIKIT:BAD_REQUEST" doc:id="cfd85922-6f1e-4d69-a3f2-abbe863ce8a3" description="Test" expectedErrorType="APIKIT:BAD_REQUEST">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="7899b68a-7294-4156-a9a5-14da5ef3ef03" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="oktasapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to oktasapi-main" doc:id="06a85c45-d666-4244-80c6-440b4055b1ed" name="oktasapi-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="50ddfab9-4054-4e20-903a-719dad68e4a8" actual="#[vars.httpStatus]" expected="#[400]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-oktasapi-mainTest-APIKIT:NOT_FOUND" doc:id="cccafa0c-1af8-46ac-beda-86ef5a8a51df" description="Test" expectedErrorType="APIKIT:NOT_FOUND">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="e3b32fd7-3279-4c9b-aa5a-a3124146f03d" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="oktasapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to oktasapi-main" doc:id="5229512f-5935-482b-9dc9-46ee9daf2a16" name="oktasapi-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="20224f8a-b9ed-4294-adfa-abac4f630658" actual="#[vars.httpStatus]" expected="#[404]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-oktasapi-mainTest-APIKIT:METHOD_NOT_ALLOWED" doc:id="501ce0c9-d6c0-470e-9019-43854ffeb7a5" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="c629a213-a3ea-4e3e-a79b-08ddf60dbe17" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="oktasapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="b0314a8a-8437-4515-82c1-1f3bd406ba84" >
+				<flow-ref doc:name="Flow-ref to oktasapi-main" doc:id="bef4abca-91e9-4029-b528-326e0763c453" name="oktasapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="29eaa17a-2194-4075-adfc-84e2e36137d0" >
+						<json-logger:logger doc:name="Logger" doc:id="b43f33ec-1cb6-494e-915a-a91aec71ff47" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="751e3fb2-65da-4a97-9fc4-27b51b10c116" actual="#[vars.httpStatus]" expected="#[405]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-oktasapi-mainTest-APIKIT:NOT_ACCEPTABLE" doc:id="090303d3-eabc-4b23-b5ed-de41d920ee13" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="dd8b052d-49ec-4fd7-994c-a6ff3bcd3ce9" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="oktasapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_ACCEPTABLE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="5ff8d750-7b2b-43b7-b395-8fc494ab911e" >
+				<flow-ref doc:name="Flow-ref to oktasapi-main" doc:id="00a4d8cc-8611-4d0a-b57d-2379e0bd41e6" name="oktasapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="c6177795-eef4-4c47-804b-a3b3d48ae30a" >
+						<json-logger:logger doc:name="Logger" doc:id="2ba19f48-849d-42c9-afe1-dab8b129198e" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="6534b41d-0522-448f-8013-118d7b802ae9" actual="#[vars.httpStatus]" expected="#[406]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-oktasapi-mainTest-APIKIT:NOT_IMPLEMENTED" doc:id="708f8b79-b55c-4edf-999d-d60b162a036a" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="58f149d4-a62b-4951-a7a2-6f92515f41c7" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="oktasapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="APIKIT:NOT_IMPLEMENTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="c87c8a1b-c29e-46dc-83ac-1607ec4dcce8" >
+				<flow-ref doc:name="Flow-ref to oktasapi-main" doc:id="5683e889-d4b7-497d-98fd-2ae8debc1e42" name="oktasapi-main" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="4dc7791c-01f7-4643-9777-77d5cfe6e681" >
+						<json-logger:logger doc:name="Logger" doc:id="fc17d22a-b0b3-4ade-b01d-e89728777b73" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="780cfc85-3018-4e4b-b9c0-9ea9b37f1f4d" actual="#[vars.httpStatus]" expected="#[501]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-get:\Users\(UserId):oktasapi-configTest-HTTP:NOT_FOUND" doc:id="2802884a-28c0-49cf-8c6b-1fc13b69a54b" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="d68fd45c-2c50-4757-bae8-3970bdf07248" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getUserByID" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="dd8bd086-be91-4547-b164-3dbfbf3ddfc2" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getUserByID" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:NOT_FOUND" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="439545ad-c290-4a8f-8d73-f873c247eeb8" >
+				<flow-ref doc:name="Flow-ref to get:\Users\(UserId):oktasapi-config" doc:id="9d4f5a5b-914c-4587-adff-557894d4323a" name="get:\Users\(UserId):oktasapi-config" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3fad78d2-827b-456b-bfe0-b07955b62f90" >
+						<json-logger:logger doc:name="Logger" doc:id="abbc5e4e-7fe6-43c7-81df-18b7f889ff80" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="2a62ae72-9192-40d0-b2c0-cb25421071b3" expression="#[vars.httpStatus]" is="#[MunitTools::equalTo(404)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-get:\Users:oktasapi-configTest-HTTP:RETRY_EXHAUSTED" doc:id="665f937e-9036-4bd5-b643-11680bad0c75" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="ff872501-b79d-4649-a29c-58e1434cb303" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getAllUsers" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="3c64f78b-d6c8-404b-a5aa-bc1f4c4eafec" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getAllUsers" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:RETRY_EXHAUSTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="cee6a406-f55f-4532-ba1f-9c18fbc78c3c" >
+				<flow-ref doc:name="Flow-ref to get:\Users:oktasapi-config" doc:id="2891df54-fe00-433c-94af-bbfcdf13ae9b" name="get:\Users:oktasapi-config" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7c3b8bac-1c60-4aeb-aca6-4c068a0eaa47" >
+						<json-logger:logger doc:name="Logger" doc:id="c21b8f36-55b3-4ace-afd9-dc734cb6cdb7" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="92b576c8-8c2f-4543-9129-137b8fc47f47" actual="#[vars.httpStatus]" expected="#[429]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-post:\Password_recovery:application\json:oktasapi-configTest-HTTP:SERVICE_UNAVAILABLE" doc:id="81c73570-d57e-4e96-9a4d-f436d27a4a0c" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="d0ee5f24-0f6d-40f0-81e7-99b313ab8744" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="passwordRecovery" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="eda64d26-c511-49cd-b0c0-f2e6d851c5f3" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="passwordRecovery" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:SERVICE_UNAVAILABLE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="5446e69d-ad0b-4f5b-bbcc-bf8e5ee1668e" >
+				<flow-ref doc:name="Flow-ref to post:\Password_recovery:application\json:oktasapi-config" doc:id="739fe8f7-e127-4e10-b88a-da84619a2f14" name="post:\Password_recovery:application\json:oktasapi-config" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="6d4ed9ce-0467-404e-969b-e304a9a81483" >
+						<json-logger:logger doc:name="Logger" doc:id="129b0f15-a8a8-49f7-9506-58c305c15466" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="54c77e90-2c5b-497f-bbde-fe63f944ddf2" expression="#[vars.httpStatus]" is="#[MunitTools::equalTo(503)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-post:\Users:application\json:oktasapi-configTest-HTTP:INTERNAL_SERVER_ERROR" doc:id="add8ee31-a47c-4a87-b6ef-d79196d2bb56" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="81af7549-6826-4fdb-9bc6-ade9b18eb0e4" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="userCreation" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="53484091-2499-4f45-adfe-475d539c709f" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="userCreation" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="d91be31b-1336-408a-b462-0846d21b5949" >
+				<flow-ref doc:name="Flow-ref to post:\Users:application\json:oktasapi-config" doc:id="4f93b2c5-8794-4ade-82ae-9c23122a39ec" name="post:\Users:application\json:oktasapi-config" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d599b899-a09e-45ce-9b8a-c8cdbabe2d91" >
+						<json-logger:logger doc:name="Logger" doc:id="48d3628d-abfd-427e-88bf-f42e5a5f7f6f" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="482c2484-783e-4a26-84c1-fc9a2becd6cd" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-post:\Login:application\json:oktasapi-configTest-HTTP:CONNECTIVITY" doc:id="a91d7fd6-dd91-4ecd-a554-37612ddbe63c" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="fbbbef3b-2018-4284-970a-ed11cececf85" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="userLogin" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="d99f0470-bd7f-47fb-aa68-96459466ddaf" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="userLogin" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="3ac89203-7978-4d0d-bc7f-b1a1879476dd" >
+				<flow-ref doc:name="Flow-ref to post:\Login:application\json:oktasapi-config" doc:id="dfbd8313-dbf1-4eb0-bf10-bdc4918c8d66" name="post:\Login:application\json:oktasapi-config" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="280e761d-d71c-492e-a827-e0422ac0b805" >
+						<json-logger:logger doc:name="Logger" doc:id="cbedc349-fe2b-408c-962f-ad930e6bdde3" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="56bddcd4-e340-4b96-8bf0-910d7b6f5887" actual="#[vars.httpStatus]" expected="#[503]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-put:\Users\(UserId)\Change_password:application\json:oktasapi-configTest-HTTP:TOO_MANY_REQUESTS" doc:id="040b4e3e-8550-450f-b14f-57de0b83677b" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="51ff7a08-9c8c-4fd1-b3fc-8cda7ac85127" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="changePassword" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="42fa0b70-529a-42fe-86c7-fa560003b9aa" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="changePassword" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:TOO_MANY_REQUESTS" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="d42deb24-0c6c-4114-8a07-7b782b5679ee" >
+				<flow-ref doc:name="Flow-ref to put:\Users\(UserId)\Change_password:application\json:oktasapi-config" doc:id="629f6e6f-17e1-47d7-b85c-d85de1ee632a" name="put:\Users\(UserId)\Change_password:application\json:oktasapi-config" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="2b7f35c7-413e-4242-b58d-774b84b407b3" >
+						<json-logger:logger doc:name="Logger" doc:id="4ebdec94-5293-48cd-b9e3-80788abc0809" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="45fde110-293e-42bc-a4c2-fc34d0c23fe5" actual="#[vars.httpStatus]" expected="#[429]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-put:\Users\(UserId):application\json:oktasapi-configTest-HTTP:SECURITY" doc:id="7d797ad5-585d-431c-aad5-a28efd4cd1c2" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a190b57c-93cb-406b-b281-1944d193aa14" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="updateUser" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="13f9b35b-f755-4c7b-9a52-4698ce7e75cf" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="updateUser" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:SECURITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="f5bd7cba-7ff6-481a-90c7-dda296681c16" >
+				<flow-ref doc:name="Flow-ref to put:\Users\(UserId):application\json:oktasapi-config" doc:id="3bad4f71-0007-4074-bf66-f55f5285b8ec" name="put:\Users\(UserId):application\json:oktasapi-config" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="607df7bf-a2a1-4dfb-8bb7-2a7c300a2eaf" >
+						<json-logger:logger doc:name="Logger" doc:id="1eb491b2-8013-4893-a546-f75804b7c06f" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="dec442fb-b92d-4d20-9756-4c74b9cbe5c8" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-get:\Users:oktasapi-configTest-HTTP:FORBIDDEN" doc:id="48c3d850-a2f3-4dba-8694-4ce35ed0a81d" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="48300d78-581b-43c5-b3b7-1216710f820d" processor="flow-ref">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getAllUsers" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="3c64f78b-d6c8-404b-a5aa-bc1f4c4eafec" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getAllUsers" attributeName="name" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:FORBIDDEN" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="629f8d15-de48-43d4-af5e-1b58eba97785" >
+				<flow-ref doc:name="Flow-ref to get:\Users:oktasapi-config" doc:id="56d5faa1-2ea5-4b62-861a-fda544c96012" name="get:\Users:oktasapi-config" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="94350b91-f0d8-4be2-95b1-87c4c4410398" >
+						<json-logger:logger doc:name="Logger" doc:id="c0f033c0-e51c-4c93-8c73-301127f9bd5f" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="3089231e-0f3c-473d-9d6d-8c864c8235a4" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="interface-test-suite-oktasapi-mainTest" doc:id="b88bc92c-2090-47b8-afe4-56cad3dc98d4" description="Test" expectedErrorType="ANY">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="93e2c501-1c0b-4b57-a822-eebd63fdca2f" processor="apikit:router">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="oktasapi-config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to oktasapi-main" doc:id="479c11fa-e867-48ea-8589-02959dad9f97" name="oktasapi-main"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="279694f1-818d-481a-bf5a-2f661183d453" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

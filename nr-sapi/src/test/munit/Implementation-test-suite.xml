@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<munit:config name="Implementation-test-suite.xml" />
+	<sub-flow name="setQueryParams" doc:id="22bbedcc-3b09-4d53-9158-58b51c70ac99" >
+		<munit:set-event doc:name="Set Event" doc:id="0f138999-47dd-4cb9-95b8-aea4b94d878e">
+				<munit:attributes value="#[{queryParams:{sourceloc:'ABW',destinationloc:'LBG',timewindow:120}}]" />
+			</munit:set-event>
+	</sub-flow>
+	<munit:test name="Implementation-test-suite-trainStatusTest" doc:id="1afbfd23-b6b9-41b3-80e6-333474b418cc" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="setQueryParams" doc:id="120535d1-4396-4b03-aa74-5d1b49e0e99e" name="setQueryParams" />
+			<flow-ref doc:name="Flow-ref to trainStatus" doc:id="f7a14896-0dd5-41c4-9f25-8ed7db688ab8" name="trainStatus"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="ffc0cfd7-ec7d-48da-81ae-c1a711a59a86" expression="#[payload]" is="#[MunitTools::withMediaType('application/json')]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Implementation-test-suite-trainStatus-SOAP-FAULT" doc:id="c5701a32-170a-4a3d-a4d9-f91524c80433" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when -web service consume" doc:id="0db59cab-a901-46d8-a616-ca89330cda17" processor="wsc:consume">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Consume" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="71f03969-ac54-4302-8956-9a7367c389f8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="GetArrBoardWithDetails" attributeName="operation" />
+					<munit-tools:with-attribute whereValue="Web_Service_Consumer_Config" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="Consume" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="71f03969-ac54-4302-8956-9a7367c389f8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="GetArrBoardWithDetails" attributeName="operation" />
+					<munit-tools:with-attribute whereValue="Web_Service_Consumer_Config" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="Consume" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="71f03969-ac54-4302-8956-9a7367c389f8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="GetArrBoardWithDetails" attributeName="operation" />
+					<munit-tools:with-attribute whereValue="Web_Service_Consumer_Config" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="Consume" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="71f03969-ac54-4302-8956-9a7367c389f8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="GetArrBoardWithDetails" attributeName="operation" />
+					<munit-tools:with-attribute whereValue="Web_Service_Consumer_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="WSC:SOAP_FAULT" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="setQueryParams" doc:id="64a9a242-d75e-4dd8-baa1-402ecb95132e" name="setQueryParams"/>
+			<try doc:name="Try" doc:id="cef09499-4b3e-45f0-a596-c6eb43c1d6b1" >
+				<flow-ref doc:name="Flow-ref to trainStatus" doc:id="d11a3c35-61e9-40f3-ad5f-5c7d8a8d4916" name="trainStatus" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3623cc0e-5eb0-4103-afa3-1cbefd1fbd86" >
+						<json-logger:logger doc:name="Logger" doc:id="91c1b9b8-eb90-4381-a788-86338ce866ad" config-ref="JSON_Logger_Config" message="Start Soap Fault"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="3da74a77-4107-485f-9e2b-7319c209e0f2" actual="#[vars.httpStatus]" expected="#[500]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Implementation-test-suite-trainStatus-BAD_REQUEST" doc:id="95fbef55-47e3-47b3-875c-1cdb81e8b44e" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b5c1db34-50b7-4e0c-a123-b31c032d76d1" processor="wsc:consume">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Consume" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="71f03969-ac54-4302-8956-9a7367c389f8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="GetArrBoardWithDetails" attributeName="operation" />
+					<munit-tools:with-attribute whereValue="Web_Service_Consumer_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="WSC:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="setQueryParams" doc:id="b39cbd27-9eda-4895-9e58-7f664e99ba98" name="setQueryParams"/>
+			<try doc:name="Try" doc:id="5aa74e39-a077-4132-aaaf-44742aba0ef7" >
+				<flow-ref doc:name="Flow-ref to trainStatus" doc:id="ad64c29e-cdd2-4e54-bf7d-53a88752fcc2" name="trainStatus" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="f8c30ec2-e3bb-4f69-81c2-7202157a3edf" >
+						<json-logger:logger doc:name="Logger" doc:id="47ce0941-5321-4dd3-8fd9-56b24bab4580" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="928fcae0-16e6-4ba0-84ad-1ca332e60fb2" actual="#[vars.httpStatus]" expected="#[400]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Implementation-test-suite-trainStatusTest-BAD_RESPONSE" doc:id="11ad6083-207c-4ae0-8323-8dec9eac3f5b" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0e139a6c-20bf-4018-98f0-0f536ad65f42" processor="wsc:consume">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Consume" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="71f03969-ac54-4302-8956-9a7367c389f8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="GetArrBoardWithDetails" attributeName="operation" />
+					<munit-tools:with-attribute whereValue="Web_Service_Consumer_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="WSC:BAD_RESPONSE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="setQueryParams" doc:id="7e6ee500-375f-41ad-aefe-76d26fb26add" name="setQueryParams"/>
+			<try doc:name="Try" doc:id="3f16c084-6e3a-4afd-ab39-c627f92352b9" >
+				<flow-ref doc:name="Flow-ref to trainStatus" doc:id="8e7acb13-0267-44ce-92c6-a62074de6145" name="trainStatus" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="82f2c1f7-3188-4537-b9e9-1f95525d9e9a" >
+						<json-logger:logger doc:name="Logger" doc:id="51b19a61-5c4e-41ae-aca2-8d282136914d" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="c8441e0c-ee14-4df0-b90e-5c1ae4d3b4a0" actual="#[vars.httpStatus]" expected="#[404]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Implementation-test-suite-trainStatusTest-RETRY_EXHAUSTED" doc:id="16177e39-e6e4-4a9b-b49a-3108465078dc" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="485b5c78-3d32-4060-89d2-a60a003b5bef" processor="wsc:consume">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Consume" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="71f03969-ac54-4302-8956-9a7367c389f8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="GetArrBoardWithDetails" attributeName="operation" />
+					<munit-tools:with-attribute whereValue="Web_Service_Consumer_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="WSC:RETRY_EXHAUSTED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="setQueryParams" doc:id="bfd2119a-c401-4948-a7b5-cfce0f7ae36c" name="setQueryParams"/>
+			<try doc:name="Try" doc:id="ed9be659-69aa-4aff-94ee-fa8d87783ccc" >
+				<flow-ref doc:name="Flow-ref to trainStatus" doc:id="25f2d71a-472d-40f3-8d25-51a8df6c56c0" name="trainStatus" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="34b891c4-5090-4dc5-a2a1-2d6072f8c133" >
+						<json-logger:logger doc:name="Logger" doc:id="c4fdc26a-0e78-45c0-af62-c49674c99f44" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="c1c5ddbd-2c96-49a8-98d7-ae16264cd637" actual="#[vars.httpStatus]" expected="#[429]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Implementation-test-suite-trainStatusTest-INVALID_WSDL" doc:id="057f1475-9c8a-43da-99f3-1ef45004af9d" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="445a5881-3dc2-4903-9ae6-e7662a9926f7" processor="wsc:consume">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Consume" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="71f03969-ac54-4302-8956-9a7367c389f8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="GetArrBoardWithDetails" attributeName="operation" />
+					<munit-tools:with-attribute whereValue="Web_Service_Consumer_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="WSC:INVALID_WSDL" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="setQueryParams" doc:id="d0375cd3-edda-4ff6-b763-0a7c57627f08" name="setQueryParams"/>
+			<try doc:name="Try" doc:id="b58f9b07-dc7f-4c62-bcda-ed6b42dcce56" >
+				<flow-ref doc:name="Flow-ref to trainStatus" doc:id="099f5589-b553-4045-91e2-9abcd293da0e" name="trainStatus" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7e110507-66bf-4945-8068-6ed3c085727c" >
+						<json-logger:logger doc:name="Logger" doc:id="cc0a7ad6-b435-4691-843c-6321885b624c" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="5b67244c-b5d8-4871-836d-4235019fe3d3" actual="#[vars.httpStatus]" expected="#[404]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Implementation-test-suite-trainStatusTest-TIMEOUT" doc:id="2a07f02e-02a2-4fac-8da5-b41338220f33" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="2d0049ac-b22d-44a6-a133-c24489144c2f" processor="wsc:consume">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Consume" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="71f03969-ac54-4302-8956-9a7367c389f8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="GetArrBoardWithDetails" attributeName="operation" />
+					<munit-tools:with-attribute whereValue="Web_Service_Consumer_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="WSC:TIMEOUT" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="setQueryParams" doc:id="bb03404b-b810-47f2-bd6d-378509949f45" name="setQueryParams"/>
+			<try doc:name="Try" doc:id="0a92ecc6-159e-4c00-8a55-2bf03fd4b7e5" >
+				<flow-ref doc:name="Flow-ref to trainStatus" doc:id="29453d0f-882f-478a-bd0e-97e48f46969e" name="trainStatus" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0ef3fe68-b9b6-4128-a77e-c3d4ac9e08c2" >
+						<json-logger:logger doc:name="Logger" doc:id="6ef3b24a-79e1-4a04-8cc9-3b43bb31a3da" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="85d2c56f-d6a0-4a15-916a-fa65e47bcdcd" actual="#[vars.httpStatus]" expected="#[408]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Implementation-test-suite-trainStatusTest-CONNECTIVITY" doc:id="e911be9d-021a-4f63-90b5-b245df1e179f" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="01e41565-af7f-4d88-b1bf-f2303f5a5fc7" processor="wsc:consume">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Consume" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="71f03969-ac54-4302-8956-9a7367c389f8" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="GetArrBoardWithDetails" attributeName="operation" />
+					<munit-tools:with-attribute whereValue="Web_Service_Consumer_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="WSC:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="setQueryParams" doc:id="5ed7c431-194f-46f0-929d-146ff12ae479" name="setQueryParams"/>
+			<try doc:name="Try" doc:id="d1b1617c-75c1-4330-a3b6-28e96938bee6" >
+				<flow-ref doc:name="Flow-ref to trainStatus" doc:id="bebcfc2b-5897-4e64-93fa-e574530873e8" name="trainStatus" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="35f52fb1-58c8-41c0-87fb-8cdc22ab508b" >
+						<json-logger:logger doc:name="Logger" doc:id="724e4669-d927-4b85-bd30-2c91ffee9886" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="15ea6bd7-b5b0-4da3-95ec-8d50646a87df" actual="#[vars.httpStatus]" expected="#[503]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

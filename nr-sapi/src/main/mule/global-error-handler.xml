@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/servicenow http://www.mulesoft.org/schema/mule/servicenow/current/mule-servicenow.xsd">
+	<sub-flow name="service-now-incident" doc:id="429351ad-e529-4995-87c3-b3dd3eb6d9b8" >
+		<ee:transform doc:name="Transform Message" doc:id="5f98fd1e-613c-43cc-90b5-93eebdf94894">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+ns ns0 https://dev117124.service-now.com/incident
+---
+{
+	ns0#insert:{
+		active: true,
+		description: error.description,
+		short_description: "MyTrains-" ++ error.errorType.namespace ++"::"++ error.errorType.identifier default null ,
+		comments:"NR-SAPI",
+		caller_id:"MyTrains-Project",
+		caller:"MyTrains-Project"
+		
+	}
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		<servicenow:invoke doc:name="Invoke" doc:id="a7170a13-d5d6-4e1f-89e9-2f472a2b8b2b" config-ref="ServiceNow_Config" service="incident" operation="insert" showReferenceValues="ALL" />
+	</sub-flow>
+	<sub-flow name="nr-sapi-error-response" doc:id="7446225d-ca38-426b-8a57-e41d296ca213" >
+		<ee:transform doc:name="nr-sapi-error-response" doc:id="38ae0ead-4b2d-46ac-bd9e-36f40dccf163">
+				<ee:message>
+					<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+	statusCode: vars.httpStatus,
+	message: error.errorType.identifier,
+	description: error.description,
+	dateTime: now() as String
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+	</sub-flow>
+	<error-handler name="global-error-handler" doc:id="dc1f8bf0-e1d8-4949-963a-84b3ed3ee485" >
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="6c6ddc26-12cb-4b02-876c-5c5dd8e6043d" type="WSC:BAD_REQUEST">
+			<json-logger:logger doc:name="Logger" doc:id="5ab07c17-8fd5-4ad6-9f92-904190e00851" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -400" doc:id="a698afcc-b768-4436-ad39-71f6176bf903" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="45c55eee-7fc1-4762-a193-e6db1f0ca741" name="service-now-incident" />
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="890d10b5-235a-4e28-a9b6-ecf02464b431" name="nr-sapi-error-response" />
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="c8a12fa4-a386-4eec-86b5-2b664e811f48" type="WSC:BAD_RESPONSE">
+			<json-logger:logger doc:name="Logger" doc:id="fb8f643d-0fec-4d65-ba32-a8ba55200210" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -404" doc:id="d8403eec-84df-43f0-b494-55e151b1f2b0" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="925ef441-2809-453b-abb5-f99cf4a5b087" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="6ddd5de9-030c-4551-af3c-1682ad667b05" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="073b3317-761e-484d-8c33-15f61a053b55" type="WSC:CANNOT_DISPATCH">
+			<json-logger:logger doc:name="Logger" doc:id="d5c590fa-83bb-47f3-8cb5-018cc6e5226b" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="96aa6b22-6005-4093-8af9-8dc7a42b9d28" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="4c0179a2-c6a0-4770-b672-f1695f8d46e5" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="e4183fd9-c535-466d-86c7-125bb6a19faf" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="8dc5c264-c7d5-4a06-a7fb-7e50e5f69629" type="WSC:CONNECTIVITY">
+			<json-logger:logger doc:name="Logger" doc:id="2c01489f-67ce-48d4-8561-a29ded44b214" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -503" doc:id="e6ad6a23-ccea-4219-a7ec-97b1ac63908a" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[503]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="5753d8c2-444b-415b-b759-bb34c519111c" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="94715963-a060-4f40-a7df-3c6476186825" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="dd1e57e6-72c4-4635-91b6-319cb22806e0" type="WSC:ENCODING">
+			<json-logger:logger doc:name="Logger" doc:id="865c3482-1b1a-426f-91c4-0e7ad86d8f15" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="190b567a-2de1-4f63-9c60-c45e926730ac" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="81d5555b-5119-4c47-ba49-f1ebe11a89fe" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="928c8549-798f-4e06-8162-2b3b302f1772" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9a39e6f0-6db0-44d7-b1ad-1c3072b508e3" type="WSC:INVALID_WSDL">
+			<json-logger:logger doc:name="Logger" doc:id="dd843513-f02a-4c08-8f4a-a6ca19850e82" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -404" doc:id="5957e237-d5c0-4c15-8f2b-6cd7fef9b8d5" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="19175690-e5e9-4a7b-a345-38a6b6248894" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="17f9ebfb-49ed-454a-aecb-586721a72848" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="eba9f249-1729-4c83-917f-036902f5767a" type="WSC:RETRY_EXHAUSTED">
+			<json-logger:logger doc:name="Logger" doc:id="44d38f22-5858-422f-9481-edf41d797510" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -429" doc:id="da5a9467-599a-4db7-bac5-dc84198e682e" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[429]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="39145ebe-58c6-426b-8d0c-aaaf556993a4" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="f76c27a0-1783-4059-893d-b11e1a3b588f" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="64e95609-81e1-4512-a244-7626dbdaa110" type="WSC:SOAP_FAULT">
+			<json-logger:logger doc:name="Logger" doc:id="9a463b4c-4689-4d80-aeef-11163937bd27" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="ff9696bb-d554-4134-b9a2-72bf4d392fa6" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="19343e01-04f7-41a5-a832-617e7571241b" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="ac5b5e31-419e-4b89-891c-cb77d3e5586f" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="9ee3e8a2-e0d8-4b9b-ac7e-70cbd466bd68" type="WSC:TIMEOUT">
+			<json-logger:logger doc:name="Logger" doc:id="752fbf77-8719-4484-a3c2-dacb7c78f158" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -408" doc:id="2435efc3-7905-4588-8df6-8f3b1bf876a3" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[408]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="cb05529c-647a-45ab-a5cf-e15bb4bb5b14" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="33079aa3-1379-4928-bceb-2f50ec232f6d" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="Copy_of_On Error Propagate" doc:id="705940d9-3a0c-4a3a-84f8-b5a32c0ebd06" type="APIKIT:BAD_REQUEST" >
+			<json-logger:logger doc:name="Logger" doc:id="095b39d6-49e3-4dd9-b868-5578e26d532e" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -400" doc:id="5fece167-5ec9-4aa6-9080-25a95fe4e399" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[400]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="fc61d2fc-7c1a-40bc-b470-3b8af2f02b07" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="69fbc644-8fcf-43b4-9a7a-f75fb6a9c59b" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="0d75789e-cce9-482e-9e2c-71f6d4f08199" type="APIKIT:NOT_FOUND" >
+			<json-logger:logger doc:name="Logger" doc:id="a39e8f63-7b1d-442b-aca9-9360c36e6407" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -404" doc:id="3db4bd20-9dff-4f55-95dd-add5c912da42" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[404]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="9f301143-92e6-4b6d-a5e2-ca95a67f5274" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="f7a33828-dbee-42a7-9ff9-bc5d13809801" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="581569d6-177e-48ef-8456-1fddc6da4017" type="APIKIT:METHOD_NOT_ALLOWED" >
+			<json-logger:logger doc:name="Logger" doc:id="57a5ff4a-c199-46bb-a385-c3647c9152ba" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -405" doc:id="f404fda3-c630-4cbe-bd47-f6f17a983a43" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[405]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="b97bed29-a8bd-457b-abb1-cd11da5a41e0" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="4c28827c-6ba7-4d3b-94e4-53849dfbd5b0" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="7570da4b-2141-43a6-a469-6f52197e401d" type="APIKIT:NOT_ACCEPTABLE" >
+			<json-logger:logger doc:name="Logger" doc:id="5d2a349d-6565-4091-876c-5672d5b970b4" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -406" doc:id="159ae6c4-8158-4912-9990-feda524a9527" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[406]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="f2a5ae0e-7b35-4897-9352-0388dffee80f" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="44d1e5ca-7111-4aae-9953-c85c3e012c3b" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="b34fc8c7-67ea-4e8a-8ab6-1b76d6a5a890" type="APIKIT:UNSUPPORTED_MEDIA_TYPE" >
+			<json-logger:logger doc:name="Logger" doc:id="7f24229b-e141-48be-b9e8-34745ea797ac" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -415" doc:id="86b249ed-666d-4fb5-9016-b8f75a952f85" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[415]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="5732b060-08dc-43d6-919f-ff3b76b135bb" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="0b959a5a-be4e-44f4-9678-6a740786d3cf" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="15973687-c10b-4876-895f-6d53ccefe1d4" type="APIKIT:NOT_IMPLEMENTED" >
+			<json-logger:logger doc:name="Logger" doc:id="7c04b4d5-550a-4eee-b7f7-a299ff4414a4" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -501" doc:id="970c1b2b-4e36-46c5-9de6-1bc6474a47c9" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[501]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="40ab60c1-3601-4cfd-89cd-9ace947553c6" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="881c663e-64ef-4a80-b339-b7d69ba8fbdb" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="ed9f2a28-3c71-462f-9961-ad9254dc2d89" type="ANY">
+			<json-logger:logger doc:name="Logger" doc:id="c725c203-ec58-4f95-9754-29057426334a" config-ref="JSON_Logger_Config" message="Start Logging"/>
+			<ee:transform doc:name="Set httpStatus -500" doc:id="c1b0be2d-414f-4c97-a2d0-c02aa5cb66ea" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="httpStatus" ><![CDATA[500]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+			<flow-ref doc:name="service-now-incident" doc:id="dd2cd787-615e-429d-99fa-fc2f5d4b5a46" name="service-now-incident"/>
+			<flow-ref doc:name="nr-sapi-error-response" doc:id="f81f469a-9cfa-4e8e-a8ae-4f3282414c95" name="nr-sapi-error-response"/>
+		</on-error-propagate>
+	</error-handler>
+</mule>

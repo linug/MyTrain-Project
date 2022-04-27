@@ -1,0 +1,22 @@
+json.logger:
+ application.name : "okta-sapi"
+ application.version : "1.0"
+ mule.env : "dev"
+ 
+okta:
+ apikey : "![ikj3uRwV/3bbIvEYKiWW3qzQsZPXJw1wiLHelEUbGhyxsf3PBGXxQWYe6uDhx5ON]"
+ host : "![gKGP40e7GEBGO2IGJyuhmvbjOH9oGEFM]"
+ port : "443"
+ base.path: "api/v1/"
+ usercreation.path : "users"
+ changepswd.path : "users/{userId}/credentials/change_password"
+ userlogin.path : "authn"
+ getuser.path : "users/{userId}"
+ pswdrecovery.path : "authn/recovery/password"
+ getallusers.path : "users"
+ updateuser.path : "users/{userId}"
+ 
+service.now:
+ username : "admin"
+ password : "doPU3EM7^/hx"
+ address : "https://dev117124.service-now.com"

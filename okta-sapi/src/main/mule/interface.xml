@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <http:listener-config name="oktasapi-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8087" />
+    </http:listener-config>
+    <apikit:config name="oktasapi-config" api="resource::fcbd0d32-162b-44dd-9ae1-4536a4b6fc14:oktasapi:1.0.7:raml:zip:oktasapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="oktasapi-main">
+        <http:listener config-ref="oktasapi-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="oktasapi-config" />
+    </flow>
+    <flow name="oktasapi-console">
+        <http:listener config-ref="oktasapi-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="oktasapi-config" />
+    </flow>
+    <flow name="put:\Users\(UserId)\Change_password:application\json:oktasapi-config">
+        <flow-ref doc:name="changePassword" doc:id="42fa0b70-529a-42fe-86c7-fa560003b9aa" name="changePassword" />
+    </flow>
+    <flow name="put:\Users\(UserId):application\json:oktasapi-config">
+        <flow-ref doc:name="updateUser" doc:id="13f9b35b-f755-4c7b-9a52-4698ce7e75cf" name="updateUser" />
+    </flow>
+    <flow name="get:\Users:oktasapi-config">
+        <flow-ref doc:name="getAllUsers" doc:id="3c64f78b-d6c8-404b-a5aa-bc1f4c4eafec" name="getAllUsers" />
+    </flow>
+    <flow name="get:\Users\(UserId):oktasapi-config">
+        <flow-ref doc:name="getUserByID" doc:id="dd8bd086-be91-4547-b164-3dbfbf3ddfc2" name="getUserByID" />
+    </flow>
+    <flow name="post:\Login:application\json:oktasapi-config" doc:id="98091231-c43b-4864-9876-2d8abf0a438b">
+        <flow-ref doc:name="userLogin" doc:id="d99f0470-bd7f-47fb-aa68-96459466ddaf" name="userLogin" />
+    </flow>
+    <flow name="post:\Users:application\json:oktasapi-config">
+        <flow-ref doc:name="userCreation" doc:id="53484091-2499-4f45-adfe-475d539c709f" name="userCreation" />
+    </flow>
+    <flow name="post:\Password_recovery:application\json:oktasapi-config">
+        <flow-ref doc:name="passwordRecovery" doc:id="eda64d26-c511-49cd-b0c0-f2e6d851c5f3" name="passwordRecovery" />
+    </flow>
+</mule>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<flow name="getAllUsers" doc:id="caaf07f5-b728-4edb-9072-d6a6fd773dc4" >
+		<json-logger:logger doc:name="Start Logger" doc:id="825a423f-8c60-42ac-a937-292dec8dfaa8" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<db:select doc:name="Select All Users" doc:id="2dd11e11-9f9c-4ded-8a30-93274f245495" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from USER]]></db:sql>
+		</db:select>
+		<ee:transform doc:name="Output To Json" doc:id="77b34896-9bbf-47ca-bb1e-6921d1b0ffa4" >
+			<ee:message >
+				
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	User_Id: payload01.USER_ID,
+	First_Name: payload01.FIRST_NAME,
+	Last_Name: payload01.LAST_NAME,
+	Email_ID: payload01.EMAIL_ID,
+	Phone_Number: payload01.PHONE_NUMBER,
+	Status_Type_ID: payload01.STATUS_TYPE_ID,
+	created_timestamp: payload01.CREATED_TIMESTAMP,
+	updated_timestamp: payload01.UPDATED_TIMESTAMP,
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="e91cf77b-cd36-4b40-a73b-1c23f08cb446" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+	<flow name="getUserById" doc:id="c2b377b7-50db-41e3-9af3-d14a27dcffc4" >
+		<json-logger:logger doc:name="Start Logger" doc:id="5b622d68-b35a-4c87-94fa-128cf568693a" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Set userId" doc:id="85d3a1f4-3d2e-4569-8ce8-a2f841c4d241" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="userId" ><![CDATA[attributes.uriParams.userId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<db:select doc:name="Select UserById" doc:id="863a47d0-ed02-4b52-b08f-f6f882117820" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from USER where USER_id = :userId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{'userId' : vars.userId}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Output To Json" doc:id="5052dd31-1d2d-4949-b209-f1b03bf79787" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	User_Id: payload.USER_ID,
+	First_Name: payload.FIRST_NAME,
+	Last_Name: payload.LAST_NAME,
+	Email_ID: payload.EMAIL_ID,
+	Phone_Number: payload.PHONE_NUMBER,
+	Status_Type_ID: payload.STATUS_TYPE_ID,
+	created_timestamp: payload.CREATED_TIMESTAMP,
+	updated_timestamp: payload.UPDATED_TIMESTAMP,
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="899d1829-154c-4fec-9958-365a0b7ea69c" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+	<flow name="createUser" doc:id="c316807c-0e45-44f1-8bb9-f164f73f2cc9" >
+		<json-logger:logger doc:name="Start Logger" doc:id="3549a441-4c16-4c12-87db-bb092321d975" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Input To Json" doc:id="a97dd8ba-dee6-4869-b1ca-47ae1e84b59f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<db:insert doc:name="Insert User" doc:id="84eb400f-5dd3-4cf3-a59c-67a0abc433bd" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into USER(First_Name,Last_Name,Email_ID,Phone_Number,Status_Type_ID,User_Id)
+values (:fname,:lname,:email,:phoneno,:statusid,:userid)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+  fname : payload.First_Name,
+  lname : payload.Last_Name,
+  email : payload.Email_ID,
+  phoneno : payload.Phone_Number,
+  statusid : payload.Status_Type_ID,
+  userid : payload.User_Id
+  }]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Output To Json" doc:id="d67a9d71-9782-474b-9e8e-ef2166586d0c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="ca2fe473-8fb6-4949-9bae-67aebc3a5731" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+	<flow name="updateUser" doc:id="e23ae7df-35c4-4076-8e96-1bd4e620df23" >
+		<json-logger:logger doc:name="Start Logger" doc:id="e5dacb9a-37a4-47e3-ad2c-ebd4b0522607" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Input To Json" doc:id="9a41542c-83c2-4225-bb58-3c17a441b0b8" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "Email_ID": payload.Email_ID,
+  "Status_Type_ID": payload.Status_Type_ID,
+  "First_Name": payload.First_Name,
+  "Last_Name": payload.Last_Name,
+  "Phone_Number" : payload.Phone_Number          
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="userId" ><![CDATA[attributes.uriParams.userId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<db:update doc:name="Update User" doc:id="61132d6d-f000-49c9-8791-0927fc3203d7" config-ref="Database_Config">
+			<db:sql ><![CDATA[UPDATE USER SET Email_ID = :email , Status_Type_ID = :status_type_id , First_Name = :fname , Last_Name = :lname ,Phone_Number = :pnumber
+where USER_ID = :userid]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+  email : payload.Email_ID ,
+  status_type_id : payload.Status_Type_ID,
+  fname : payload.First_Name,
+  lname : payload.Last_Name,
+  pnumber : payload.Phone_Number,
+  userid :  vars.userId         
+}]]]></db:input-parameters>
+		</db:update>
+		<ee:transform doc:name="Output To Json" doc:id="8ba18c33-d9cd-42be-9986-a296cbb48e44" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="448506df-0993-4603-8a52-6509607290b8" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+	<flow name="subscribedUserList" doc:id="5a15716f-2dbd-420c-9e4e-0e836dfeb60d" >
+		<json-logger:logger doc:name="Start Logger" doc:id="43aa8ead-7b87-486b-87fd-d73d4d66a20f" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Transform Message" doc:id="828635af-b5de-46a7-965a-786807de9d0f" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="createddate" ><![CDATA[attributes.queryParams.createdafter]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<db:select doc:name="Select Subscribed User List" doc:id="655edc9c-6136-41dc-9319-def4404fd858" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from USER where USER_ID in (select USER_ID from SUBSCRIPTION) and created_timestamp > :createtime]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+  createtime : vars.createddate
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Output To Json" doc:id="eca4fec0-8b5b-4706-9d78-32af4cbb2ec9" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="21587c29-e0ac-4527-8b92-61a9203b6dcd" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+</mule>

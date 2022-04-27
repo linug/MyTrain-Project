@@ -1,0 +1,8 @@
+%dw 2.0
+
+type auto_d6ec267d_523b_466a_b095_ce6169e003e6_Input_Payload = {
+  Email_ID: String, 
+  Password: String, 
+  _?: Any
+}
+

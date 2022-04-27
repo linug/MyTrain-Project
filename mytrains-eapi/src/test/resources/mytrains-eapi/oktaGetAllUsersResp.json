@@ -1,0 +1,922 @@
+[
+  {
+    "id": "00u3rxlsowIcTwpPY5d7",
+    "status": "STAGED",
+    "created": "2022-02-01T15:53:48.000Z",
+    "activated": null,
+    "statusChanged": null,
+    "lastLogin": null,
+    "lastUpdated": "2022-02-01T16:42:23.000Z",
+    "passwordChanged": "2022-02-01T16:42:23.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Nibu",
+      "lastName": "Mani",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "nibumani@gmail.com",
+      "email": "nibumani@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "nibumani@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u3rxlsowIcTwpPY5d7"
+      }
+    }
+  },
+  {
+    "id": "00u3u96x25K8fhkeo5d7",
+    "status": "PROVISIONED",
+    "created": "2022-02-09T06:18:29.000Z",
+    "activated": "2022-02-09T06:18:29.000Z",
+    "statusChanged": "2022-02-09T06:18:29.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-02-09T06:18:29.000Z",
+    "passwordChanged": null,
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "nibweb",
+      "lastName": "mankerb",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "isaac12@test.com",
+      "email": "isaac12@test.com"
+    },
+    "credentials": {
+      "emails": [
+        {
+          "value": "isaac12@test.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u3u96x25K8fhkeo5d7"
+      }
+    }
+  },
+  {
+    "id": "00u3s89hogmH799xU5d7",
+    "status": "ACTIVE",
+    "created": "2022-02-02T08:58:09.000Z",
+    "activated": "2022-02-02T08:58:09.000Z",
+    "statusChanged": "2022-02-02T08:58:09.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-02-02T08:58:09.000Z",
+    "passwordChanged": "2022-02-02T08:58:09.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Isaac",
+      "lastName": "Brock",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "isaac@test.com",
+      "email": "isaac@test.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "isaac@test.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u3s89hogmH799xU5d7"
+      }
+    }
+  },
+  {
+    "id": "00u3s93e4kpq7ryLr5d7",
+    "status": "ACTIVE",
+    "created": "2022-02-02T11:33:17.000Z",
+    "activated": "2022-02-02T11:33:18.000Z",
+    "statusChanged": "2022-02-02T11:33:18.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-02-02T11:33:18.000Z",
+    "passwordChanged": "2022-02-02T11:33:18.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Isaacj",
+      "lastName": "Brockj",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "isaacj@test.com",
+      "email": "isaacj@test.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "isaacj@test.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u3s93e4kpq7ryLr5d7"
+      }
+    }
+  },
+  {
+    "id": "00u3sin29lXZdBGdT5d7",
+    "status": "ACTIVE",
+    "created": "2022-02-03T03:35:39.000Z",
+    "activated": "2022-02-03T03:35:39.000Z",
+    "statusChanged": "2022-02-03T03:35:39.000Z",
+    "lastLogin": "2022-02-12T15:55:38.000Z",
+    "lastUpdated": "2022-02-03T03:35:39.000Z",
+    "passwordChanged": "2022-02-03T03:35:39.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Liju",
+      "lastName": "George",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "lijug@test.com",
+      "email": "lijug@test.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "lijug@test.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u3sin29lXZdBGdT5d7"
+      }
+    }
+  },
+  {
+    "id": "00u3vpvga6XVD0lry5d7",
+    "status": "ACTIVE",
+    "created": "2022-02-14T15:12:23.000Z",
+    "activated": "2022-02-14T15:12:23.000Z",
+    "statusChanged": "2022-02-14T15:12:23.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-02-14T15:12:23.000Z",
+    "passwordChanged": "2022-02-14T15:12:23.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Alan",
+      "lastName": "Brock",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "albrockisaac@gmail.com",
+      "email": "albrockisaac@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "albrockisaac@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u3vpvga6XVD0lry5d7"
+      }
+    }
+  },
+  {
+    "id": "00u3vr8foxQhcVaF75d7",
+    "status": "ACTIVE",
+    "created": "2022-02-14T16:55:34.000Z",
+    "activated": "2022-02-14T16:55:35.000Z",
+    "statusChanged": "2022-02-14T16:55:35.000Z",
+    "lastLogin": "2022-02-14T18:21:53.000Z",
+    "lastUpdated": "2022-02-15T01:11:06.000Z",
+    "passwordChanged": "2022-02-15T01:11:06.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Alvin",
+      "lastName": "Brock",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "avbrockisaac@gmail.com",
+      "email": "avbrockisaac@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "avbrockisaac@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u3vr8foxQhcVaF75d7"
+      }
+    }
+  },
+  {
+    "id": "00u3w3o7dwwn8y4sC5d7",
+    "status": "ACTIVE",
+    "created": "2022-02-15T15:37:06.000Z",
+    "activated": "2022-02-15T15:37:06.000Z",
+    "statusChanged": "2022-02-15T15:37:06.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-02-21T11:52:25.000Z",
+    "passwordChanged": "2022-02-15T15:37:06.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Nikki",
+      "lastName": "Mathews",
+      "mobilePhone": "555-415-133767",
+      "secondEmail": null,
+      "login": "Mat0077@gmail.com",
+      "email": "Mat0077@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "Mat0077@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u3w3o7dwwn8y4sC5d7"
+      }
+    }
+  },
+  {
+    "id": "00u3w3uczax5muDNY5d7",
+    "status": "ACTIVE",
+    "created": "2022-02-15T15:49:53.000Z",
+    "activated": "2022-02-15T15:49:54.000Z",
+    "statusChanged": "2022-02-15T15:49:54.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-02-15T15:49:54.000Z",
+    "passwordChanged": "2022-02-15T15:49:54.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Aikki",
+      "lastName": "Mathew",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "Mat123@gmail.com",
+      "email": "Mat123@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "Mat123@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u3w3uczax5muDNY5d7"
+      }
+    }
+  },
+  {
+    "id": "00u3w3zjjiumSjqqU5d7",
+    "status": "ACTIVE",
+    "created": "2022-02-15T16:02:03.000Z",
+    "activated": "2022-02-15T16:02:04.000Z",
+    "statusChanged": "2022-02-15T16:02:04.000Z",
+    "lastLogin": "2022-02-15T17:06:36.000Z",
+    "lastUpdated": "2022-02-15T17:31:26.000Z",
+    "passwordChanged": "2022-02-15T17:31:26.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Jakki",
+      "lastName": "Mathew",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "Mat345@gmail.com",
+      "email": "Mat345@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "Mat345@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u3w3zjjiumSjqqU5d7"
+      }
+    }
+  },
+  {
+    "id": "00u3whf75cFgc0QX95d7",
+    "status": "ACTIVE",
+    "created": "2022-02-16T16:23:54.000Z",
+    "activated": "2022-02-16T16:23:54.000Z",
+    "statusChanged": "2022-02-16T16:23:54.000Z",
+    "lastLogin": "2022-02-16T16:36:07.000Z",
+    "lastUpdated": "2022-02-16T16:23:54.000Z",
+    "passwordChanged": "2022-02-16T16:23:54.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Akil",
+      "lastName": "Mathew",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "Aki345@gmail.com",
+      "email": "Aki345@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "Aki345@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u3whf75cFgc0QX95d7"
+      }
+    }
+  },
+  {
+    "id": "00u3xngw1rrIvQPKa5d7",
+    "status": "ACTIVE",
+    "created": "2022-02-20T17:24:04.000Z",
+    "activated": "2022-02-20T17:24:04.000Z",
+    "statusChanged": "2022-02-20T17:24:04.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-02-20T17:24:04.000Z",
+    "passwordChanged": "2022-02-20T17:24:04.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Marcus",
+      "lastName": "Mathew",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "Marc120@test.com",
+      "email": "Marc120@test.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "Marc120@test.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u3xngw1rrIvQPKa5d7"
+      }
+    }
+  },
+  {
+    "id": "00u48zhazyrS2NHdD5d7",
+    "status": "ACTIVE",
+    "created": "2022-03-18T04:03:05.000Z",
+    "activated": "2022-03-18T04:03:05.000Z",
+    "statusChanged": "2022-03-18T04:03:05.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-03-18T04:03:05.000Z",
+    "passwordChanged": "2022-03-18T04:03:05.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "IsaacG",
+      "lastName": "BrockG",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "isaac@test123.com",
+      "email": "isaac@test123.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "isaac@test123.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u48zhazyrS2NHdD5d7"
+      }
+    }
+  },
+  {
+    "id": "00u4ahzvgyaV3BUSX5d7",
+    "status": "ACTIVE",
+    "created": "2022-03-20T07:59:04.000Z",
+    "activated": "2022-03-20T07:59:04.000Z",
+    "statusChanged": "2022-03-20T07:59:04.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-03-20T07:59:04.000Z",
+    "passwordChanged": "2022-03-20T07:59:04.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "IsaacGG",
+      "lastName": "BrockGG",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "isaac@test12345.com",
+      "email": "isaac@test12345.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "isaac@test12345.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u4ahzvgyaV3BUSX5d7"
+      }
+    }
+  },
+  {
+    "id": "00u4akgtoukkB9tjm5d7",
+    "status": "ACTIVE",
+    "created": "2022-03-20T10:13:19.000Z",
+    "activated": "2022-03-20T10:13:19.000Z",
+    "statusChanged": "2022-03-20T10:13:19.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-03-20T10:13:19.000Z",
+    "passwordChanged": "2022-03-20T10:13:19.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Ethan",
+      "lastName": "Mark",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "athanm123@gmail.com",
+      "email": "athanm123@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "athanm123@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u4akgtoukkB9tjm5d7"
+      }
+    }
+  },
+  {
+    "id": "00u4al0f1ptAdOOze5d7",
+    "status": "ACTIVE",
+    "created": "2022-03-20T10:42:39.000Z",
+    "activated": "2022-03-20T10:42:39.000Z",
+    "statusChanged": "2022-03-20T10:42:39.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-03-20T10:42:39.000Z",
+    "passwordChanged": "2022-03-20T10:42:39.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Ethan",
+      "lastName": "Mark",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "eathanm222@gmail.com",
+      "email": "eathanm222@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "eathanm222@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u4al0f1ptAdOOze5d7"
+      }
+    }
+  },
+  {
+    "id": "00u4amoh2pFPZYu3b5d7",
+    "status": "ACTIVE",
+    "created": "2022-03-20T12:12:33.000Z",
+    "activated": "2022-03-20T12:12:34.000Z",
+    "statusChanged": "2022-03-20T12:12:34.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-03-20T12:12:34.000Z",
+    "passwordChanged": "2022-03-20T12:12:34.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Ethaniel",
+      "lastName": "Mark",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "maxwell420@gmail.com",
+      "email": "maxwell420@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "maxwell420@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u4amoh2pFPZYu3b5d7"
+      }
+    }
+  },
+  {
+    "id": "00u4and71iusLM0l85d7",
+    "status": "ACTIVE",
+    "created": "2022-03-20T12:47:51.000Z",
+    "activated": "2022-03-20T12:47:52.000Z",
+    "statusChanged": "2022-03-20T12:47:52.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-03-20T12:47:52.000Z",
+    "passwordChanged": "2022-03-20T12:47:52.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Rathaniel",
+      "lastName": "Mary",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "rachel420@gmail.com",
+      "email": "rachel420@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "rachel420@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u4and71iusLM0l85d7"
+      }
+    }
+  },
+  {
+    "id": "00u4anu0g4htuNYoz5d7",
+    "status": "ACTIVE",
+    "created": "2022-03-20T13:13:16.000Z",
+    "activated": "2022-03-20T13:13:17.000Z",
+    "statusChanged": "2022-03-20T13:13:17.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-03-20T13:13:17.000Z",
+    "passwordChanged": "2022-03-20T13:13:16.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Jathaniel",
+      "lastName": "Bary",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "Jay420@gmail.com",
+      "email": "Jay420@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "Jay420@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u4anu0g4htuNYoz5d7"
+      }
+    }
+  },
+  {
+    "id": "00u4anxk3kJuR43ER5d7",
+    "status": "ACTIVE",
+    "created": "2022-03-20T13:16:41.000Z",
+    "activated": "2022-03-20T13:16:42.000Z",
+    "statusChanged": "2022-03-20T13:16:42.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-03-20T13:16:42.000Z",
+    "passwordChanged": "2022-03-20T13:16:41.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Nathaniel",
+      "lastName": "Bary",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "Nay420@gmail.com",
+      "email": "Nay420@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "Nay420@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u4anxk3kJuR43ER5d7"
+      }
+    }
+  },
+  {
+    "id": "00u4anz04faT8Ffmh5d7",
+    "status": "ACTIVE",
+    "created": "2022-03-20T13:20:39.000Z",
+    "activated": "2022-03-20T13:20:39.000Z",
+    "statusChanged": "2022-03-20T13:20:39.000Z",
+    "lastLogin": null,
+    "lastUpdated": "2022-03-20T13:20:39.000Z",
+    "passwordChanged": "2022-03-20T13:20:39.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Wathaniel",
+      "lastName": "Bary",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "Waay420@gmail.com",
+      "email": "Waay420@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "Waay420@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u4anz04faT8Ffmh5d7"
+      }
+    }
+  },
+  {
+    "id": "00u4ap732jRekaAp55d7",
+    "status": "ACTIVE",
+    "created": "2022-03-20T14:14:26.000Z",
+    "activated": "2022-03-20T14:14:26.000Z",
+    "statusChanged": "2022-03-20T14:14:26.000Z",
+    "lastLogin": "2022-03-20T14:59:35.000Z",
+    "lastUpdated": "2022-03-21T02:20:29.000Z",
+    "passwordChanged": "2022-03-21T02:20:29.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "Mathaniel",
+      "lastName": "Bary",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "Maay420@gmail.com",
+      "email": "Maay420@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "Maay420@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u4ap732jRekaAp55d7"
+      }
+    }
+  },
+  {
+    "id": "00u3rstolvohwnU1o5d7",
+    "status": "RECOVERY",
+    "created": "2022-02-01T08:51:50.000Z",
+    "activated": null,
+    "statusChanged": "2022-02-01T10:35:10.000Z",
+    "lastLogin": "2022-02-02T05:44:11.000Z",
+    "lastUpdated": "2022-02-01T10:35:13.000Z",
+    "passwordChanged": "2022-02-01T10:35:13.000Z",
+    "type": {
+      "id": "oty3rstoh89MAi3RN5d7"
+    },
+    "profile": {
+      "firstName": "linu",
+      "lastName": "george",
+      "mobilePhone": null,
+      "secondEmail": null,
+      "login": "linu83@gmail.com",
+      "email": "linu83@gmail.com"
+    },
+    "credentials": {
+      "password": {},
+      "emails": [
+        {
+          "value": "linu83@gmail.com",
+          "status": "VERIFIED",
+          "type": "PRIMARY"
+        }
+      ],
+      "provider": {
+        "type": "OKTA",
+        "name": "OKTA"
+      }
+    },
+    "_links": {
+      "self": {
+        "href": "https://dev-11473016.okta.com/api/v1/users/00u3rstolvohwnU1o5d7"
+      }
+    }
+  }
+]
+    

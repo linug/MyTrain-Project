@@ -1,0 +1,7 @@
+{
+  "Source_Location" : "ABW",
+  "Destination_Location": "LBG",
+  "from_time": "17:00:10",
+  "to_time": "17:35:25",
+  "advance_notify_time_min": 30
+}

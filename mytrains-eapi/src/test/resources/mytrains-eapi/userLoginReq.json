@@ -1,0 +1,6 @@
+{
+  "username": "risaan@test12345.com",
+  "password": "rabinc1234578",
+  "warnBeforePasswordExpired": true,
+  "multiOptionalFactorEnroll": true
+}

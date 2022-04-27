@@ -1,0 +1,8 @@
+%dw 2.0
+
+type auto_1fa423ac_a35d_4032_8c6e_baa64dafd40d_Output_Payload = {|
+  statusCode: Number, 
+  message: String | Null, 
+  description: String | Null
+|}
+

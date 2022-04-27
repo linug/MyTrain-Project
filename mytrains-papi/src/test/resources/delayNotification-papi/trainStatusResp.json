@@ -1,0 +1,82 @@
+[
+  {
+    "SourceLoc": "ABW",
+    "DestinationLoc": "LBG",
+    "StandardTimeOfArrival": "16:33",
+    "ExpectedTimeOfArrival": "On time",
+    "DelayReason": " ",
+    "PlatformAvailable": 1
+  },
+  {
+    "SourceLoc": "ABW",
+    "DestinationLoc": "LBG",
+    "StandardTimeOfArrival": "16:43",
+    "ExpectedTimeOfArrival": "On time",
+    "DelayReason": " ",
+    "PlatformAvailable": 1
+  },
+  {
+    "SourceLoc": "ABW",
+    "DestinationLoc": "LBG",
+    "StandardTimeOfArrival": "17:00",
+    "ExpectedTimeOfArrival": "On time",
+    "DelayReason": " ",
+    "PlatformAvailable": 2
+  },
+  {
+    "SourceLoc": "ABW",
+    "DestinationLoc": "LBG",
+    "StandardTimeOfArrival": "17:03",
+    "ExpectedTimeOfArrival": "On time",
+    "DelayReason": " ",
+    "PlatformAvailable": 1
+  },
+  {
+    "SourceLoc": "ABW",
+    "DestinationLoc": "LBG",
+    "StandardTimeOfArrival": "17:13",
+    "ExpectedTimeOfArrival": "On time",
+    "DelayReason": " ",
+    "PlatformAvailable": 1
+  },
+  {
+    "SourceLoc": "ABW",
+    "DestinationLoc": "LBG",
+    "StandardTimeOfArrival": "17:27",
+    "ExpectedTimeOfArrival": "On time",
+    "DelayReason": " ",
+    "PlatformAvailable": 0
+  },
+  {
+    "SourceLoc": "ABW",
+    "DestinationLoc": "LBG",
+    "StandardTimeOfArrival": "17:30",
+    "ExpectedTimeOfArrival": "On time",
+    "DelayReason": " ",
+    "PlatformAvailable": 0
+  },
+  {
+    "SourceLoc": "ABW",
+    "DestinationLoc": "LBG",
+    "StandardTimeOfArrival": "17:33",
+    "ExpectedTimeOfArrival": "On time",
+    "DelayReason": " ",
+    "PlatformAvailable": 0
+  },
+  {
+    "SourceLoc": "ABW",
+    "DestinationLoc": "LBG",
+    "StandardTimeOfArrival": "17:43",
+    "ExpectedTimeOfArrival": "On time",
+    "DelayReason": " ",
+    "PlatformAvailable": 0
+  },
+  {
+    "SourceLoc": "ABW",
+    "DestinationLoc": "LBG",
+    "StandardTimeOfArrival": "18:00",
+    "ExpectedTimeOfArrival": "On time",
+    "DelayReason": " ",
+    "PlatformAvailable": 0
+  }
+]

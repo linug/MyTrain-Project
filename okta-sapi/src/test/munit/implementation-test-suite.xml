@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<munit:config name="implementation-test-suite.xml" />
+	<munit:test name="implementation-test-suite-userCreationTest" doc:id="2660d0da-c495-44cf-b214-465a96c20286" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="6db25bf5-f39d-4e94-8a6c-8125fef68b76" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="POST" attributeName="method" />
+					<munit-tools:with-attribute whereValue="User Creation Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="19301452-ed31-43e9-ab25-0d8e1b4b5ecf" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${okta.usercreation.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="500000" attributeName="responseTimeout" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json --- readUrl("classpath://okta-sapi-implementation/user-creation-response.json")]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="01c0e801-9326-4a23-a810-30c1dbfc5502" >
+				<munit:payload value='#[output application/json --- readUrl("classpath://okta-sapi-implementation/user-creation-request.json")]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to userCreation" doc:id="b5d40f53-1545-4de3-baec-8bf1966152a8" name="userCreation"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="068a4353-3dd6-496a-9444-b8d277d6a8b0" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-updateUserTest" doc:id="48c2a3c1-1f71-4d7d-840f-dd84368ace80" description="Test">
+		<munit:behavior >
+			<set-variable value="#['00u3w3o7dwwn8y4sC5d7']" doc:name="Set Variable" doc:id="e1ce0e49-1247-4ea4-a51b-ee742caddfb6" variableName="UserId"/>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="8406f2bf-a730-4dc0-b9c3-6331a30ec171" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="POST" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Update User Request " attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="ef333ee9-64db-4dbd-91dc-d96cc3f8e01e" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${okta.updateuser.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="500000" attributeName="responseTimeout" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:attributes value="#[MunitTools::getResourceAsString('okta-sapi-implementation/statusCode.json')]" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="1556cd53-1183-4892-b41e-3c463bb03a9e" >
+				<munit:payload value='#[output application/json --- readUrl ("classpath://okta-sapi-implementation/user-updation-request.json")]' />
+				<munit:attributes value="#[{uriParams:{UserId : '00u3w3o7dwwn8y4sC5d7'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to updateUser" doc:id="38aa996f-6c02-4d7d-9c83-24b45567b9c5" name="updateUser"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="e93a96fd-3d86-49d1-950a-47614fea0abd" expression="#[attributes.statusCode]" is="#[MunitTools::equalTo(200)]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-changePasswordTest" doc:id="326a9a50-c3d9-45f0-88e6-c8c89615c302" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="944717ea-c008-4722-92a8-06e31e64ed83" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="POST" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Change Password Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="6ebe72d0-f39b-4be1-a7f8-25d3215bddce" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${okta.changepswd.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="500000" attributeName="responseTimeout" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:attributes value="#[MunitTools::getResourceAsString('okta-sapi-implementation/statusCode.json')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="27140880-8b68-45f5-91fe-fe71f3e23a7c" >
+				<munit:payload value='#[output application/json --- readUrl("classpath://okta-sapi-implementation/user-changepswd-request.json")]' />
+				<munit:attributes value="#[{uriParams:{UserId : '00u4ap732jRekaAp55d7'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to changePassword" doc:id="8509005d-2f24-4727-8b85-d7a9f72efedf" name="changePassword"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="a3f8fb1d-e0e1-4fb1-9b10-7dc6de045162" actual="#[attributes.statusCode]" expected="#[200]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getAllUsersTest" doc:id="edfb93c5-96b6-4992-bf9f-4f7aa3a3286d" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="7a670a02-5dd6-4471-a151-6462d49bacc3" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Get All Users Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="25987667-a19c-421b-b4d4-ce23c07bc156" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${okta.getallusers.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="500000" attributeName="responseTimeout" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:attributes value="#[MunitTools::getResourceAsString('okta-sapi-implementation/statusCode.json')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getAllUsers" doc:id="a0f9dc07-936b-41b1-8926-009e1902b120" name="getAllUsers"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="4e849fd0-b52b-4a41-a9f3-f0f342c308ae" actual="#[attributes.statusCode]" expected="#[200]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-userLoginTest" doc:id="006204f7-a041-40d2-a986-c809859365d8" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="c82975ae-8236-4aaa-b2f8-20697fa95ec5" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="POST" attributeName="method" />
+					<munit-tools:with-attribute whereValue="User Login Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="94586d70-b9a3-4efa-aac7-df3020959aef" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${okta.userlogin.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="500000" attributeName="responseTimeout" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:attributes value="#[MunitTools::getResourceAsString('okta-sapi-implementation/statusCode.json')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="040c7735-efaa-4b89-befd-6fa4e380e65e" >
+				<munit:payload value='#[output application/json --- readUrl("classpath://okta-sapi-implementation/user-login-request.json")]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to userLogin" doc:id="2c1983c7-768c-48e0-8ae4-80e0bd00933e" name="userLogin"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="d94bfdca-318c-467c-99e6-1a845977bbdb" actual="#[attributes.statusCode]" expected="#[200]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getUserByIDTest" doc:id="39feacc1-360b-40b0-b2a1-b5f78ec270ec" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="6deff253-fcc4-4985-aa2d-23cad0367b04" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Get User By Id Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="5510e687-d46b-4876-9377-a6ac929bae24" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${okta.getuser.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="500000" attributeName="responseTimeout" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:attributes value="#[MunitTools::getResourceAsString('okta-sapi-implementation/statusCode.json')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="29898284-9547-4868-b9b4-c7855b39fcc0" >
+				<munit:attributes value="#[{uriParams:{UserId : '00u4i0pkxoyRBWmdF5d7'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getUserByID" doc:id="e1ecc43f-6fd0-4d4b-9827-94967746620b" name="getUserByID"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="0031350b-08ee-40ef-9f6f-f70e0a351a9f" actual="#[attributes.statusCode]" expected="#[200]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-passwordRecoveryTest" doc:id="a51c7658-980e-46c3-81df-d4881cc9b2bb" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="263881c0-82af-4075-9ffe-163bf23b621c" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="POST" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Password Recovery Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="025d9be9-d9e2-4c22-888b-b527b6963298" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${okta.pswdrecovery.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="500000" attributeName="responseTimeout" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:attributes value="#[MunitTools::getResourceAsString('okta-sapi-implementation/statusCode.json')]" mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="36420fb8-3e18-4e5b-a40a-63a6f12ffb6b" >
+				<munit:payload value='#[output application/json --- readUrl("classpath://okta-sapi-implementation/user-recoverypswd-request.json")]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to passwordRecovery" doc:id="cfe9de48-3cda-4ef7-9cbe-bc8be1ec315d" name="passwordRecovery"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="5aaf39d1-0f98-47f2-b24f-901a20e95df6" actual="#[attributes.statusCode]" expected="#[200]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-userCreationTest1-HTTP:BAD_REQUEST" doc:id="04a1fb17-2e78-488d-aa9f-4d6f1258affb" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="67453f7c-ef78-4da8-8f10-be76a7baac2e" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="POST" attributeName="method" />
+					<munit-tools:with-attribute whereValue="User Creation Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="19301452-ed31-43e9-ab25-0d8e1b4b5ecf" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${okta.usercreation.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="500000" attributeName="responseTimeout" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="db23271d-dffb-47ca-9ea7-e334a6ce5218">
+				<munit:payload value='#[output application/json --- readUrl("classpath://okta-sapi-implementation/user-creation-request.json")]' />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="b242b2de-9129-4595-8a5c-dc36fc7db890" >
+				<flow-ref doc:name="Flow-ref to userCreation" doc:id="0487a361-1106-477a-82a5-a370e5d0dd0d" name="userCreation" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="a434198c-77ea-4f19-b22f-baac21a75c94" >
+						<json-logger:logger doc:name="Logger" doc:id="019bfe9f-abaa-4468-b51c-616174d573d0" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="fba3936e-6058-4dc3-b986-12db73752f48" actual="#[vars.httpStatus]" expected="#[400]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getAllUsersTest-HTTP:CONNECTIVITY" doc:id="29662d29-2687-4540-81ca-3919125a705f" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="f46d8c3f-734b-4a3d-9a9d-642e5faf5884" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Get All Users Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="25987667-a19c-421b-b4d4-ce23c07bc156" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${okta.getallusers.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="500000" attributeName="responseTimeout" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="1f4f98eb-4825-4a19-8565-ce43d667745e" >
+				<flow-ref doc:name="Flow-ref to getAllUsers" doc:id="10851ef6-39fb-4915-96c9-2e2fbb1d25c8" name="getAllUsers" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="5b9a5070-6ac9-4f1a-b96b-5b8054ab37f9" >
+						<json-logger:logger doc:name="Logger" doc:id="e550844c-5be2-4cc2-aed1-5b6c5066b2a0" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="2aeb3b3a-0901-4163-ab9e-ff3fbace9f34" actual="#[vars.httpStatus]" expected="#[503]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getAllUsersTest-HTTP:FORBIDDEN" doc:id="71a46b3b-f104-4497-ae23-78e169e9b400" description="Test" expectedErrorType="HTTP:FORBIDDEN">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="2aef6408-74fd-46a4-8c1a-2e0322e1806b" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Get All Users Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="25987667-a19c-421b-b4d4-ce23c07bc156" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${okta.getallusers.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="500000" attributeName="responseTimeout" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:FORBIDDEN" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getAllUsers" doc:id="5b266836-9f34-46a1-8306-6f287b9b575d" name="getAllUsers"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="d1e5d0cc-64e9-48dc-a0d9-4536ec5ca504" actual="#[vars.httpStatus]" expected="#[403]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getAllUsersTest-HTTP:TIMEOUT" doc:id="6405db19-2414-4c61-8541-59945a272736" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="5027eee0-00f9-4394-8d7b-875d60eca830" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Get All Users Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="25987667-a19c-421b-b4d4-ce23c07bc156" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${okta.getallusers.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="500000" attributeName="responseTimeout" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:TIMEOUT" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="523c4d49-7421-42c3-96cc-9361c75c08b5" >
+				<flow-ref doc:name="Flow-ref to getAllUsers" doc:id="0c741752-27af-4f45-8249-5c761096f970" name="getAllUsers" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3f015327-5762-474d-a199-bf6c1f6e0b10" >
+						<json-logger:logger doc:name="Logger" doc:id="456619ec-2aaa-4698-98f9-257e8097ff09" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="18233959-e969-4e96-8c73-8712782b3aec" actual="#[vars.httpStatus]" expected="#[408]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getAllUsersTest-HTTP:BAD_GATEWAY" doc:id="4ea03aaa-1177-472b-8e38-2bef2934d650" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="689c6ae7-e385-4ae9-87da-ef5e56698a38" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Get All Users Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="25987667-a19c-421b-b4d4-ce23c07bc156" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${okta.getallusers.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="500000" attributeName="responseTimeout" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:BAD_GATEWAY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<try doc:name="Try" doc:id="b8022ebf-5c46-41a7-aa8b-987c20ddae09" >
+				<flow-ref doc:name="Flow-ref to getAllUsers" doc:id="10b6888a-2630-4030-a0ef-415cd3527d90" name="getAllUsers" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="6f63c9c7-4ad9-4328-a613-3134cbee6b22" >
+						<json-logger:logger doc:name="Logger" doc:id="07fe84e4-53de-410d-83ee-b910bbc91fcd" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="4ad2d75d-11b8-421d-aae2-1f30b24bbf08" actual="#[vars.httpStatus]" expected="#[502]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-userLoginTest-HTTP:METHOD_NOT_ALLOWED" doc:id="617b14ec-282e-436b-9127-f4f324f64476" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="f6574442-df95-4752-a624-24511c952507" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="POST" attributeName="method" />
+					<munit-tools:with-attribute whereValue="User Login Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="94586d70-b9a3-4efa-aac7-df3020959aef" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${okta.userlogin.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="500000" attributeName="responseTimeout" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="65675296-ece5-4e80-873c-02d066fcab63">
+				<munit:payload value='#[output application/json --- readUrl("classpath://okta-sapi-implementation/user-login-request.json")]' />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="ed07bddf-abe3-404c-8d41-611c139ea969" >
+				<flow-ref doc:name="Flow-ref to userLogin" doc:id="e8d87bfe-7139-436d-a1ec-89a87d9bf410" name="userLogin" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="d20c8fda-a63b-4c47-8372-d69ef24f8ea6" >
+						<json-logger:logger doc:name="Logger" doc:id="4d670d5f-689b-49c5-99a5-5c20d8608847" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="73958075-ade0-4f0d-93cb-4734f40a97f4" actual="#[vars.httpStatus]" expected="#[405]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="implementation-test-suite-getUserByIDTest-HTTP:UNAUTHORIZED" doc:id="a9e8b4a2-8422-4ed0-a530-cfaf64a6cbed" description="Test" expectedErrorType="HTTP:UNAUTHORIZED">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="361ccf5e-8119-41a2-a36b-f10a068da9cd" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="GET" attributeName="method" />
+					<munit-tools:with-attribute whereValue="Get User By Id Request" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="5510e687-d46b-4876-9377-a6ac929bae24" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="HTTP_Request_configuration" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="${okta.getuser.path}" attributeName="path" />
+					<munit-tools:with-attribute whereValue="500000" attributeName="responseTimeout" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="HTTP:UNAUTHORIZED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="f60472e0-2ed4-45b6-a16f-82e9c75ac14e">
+				<munit:attributes value="#[{uriParams:{UserId : '00u4i0pkxoyRBWmdF5d7'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getUserByID" doc:id="aced8921-c453-4897-bf65-d225ea948d3f" name="getUserByID"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="4726fd00-40e2-425b-9258-2f75192b3e1e" actual="#[vars.httpStatus]" expected="#[401]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

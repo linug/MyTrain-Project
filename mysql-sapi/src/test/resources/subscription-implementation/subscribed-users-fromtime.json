@@ -1,0 +1,13 @@
+[{
+ "USER_ID" : "101" ,
+ "FIRST_NAME" : "Matt",
+ "LAST_NAME" : "Perry",
+ "EMAIL_ID" : "mattperry@gmail.com",
+ "SUBSCRIPTION_ID" : 204,
+ "SOURCE_LOCATION" : "ABW",
+ "DESTINATION_LOCATION" :"LBG",
+ "FROM_TIME" : "02:40:00",
+ "TO_TIME" : "03:30:00",
+ "ADVANCE_NOTIFY_TIME_MIN" : 30
+ }]
+  

@@ -1,0 +1,9 @@
+%dw 2.0
+
+type auto_ea3bcd0f_85e1_4c11_9ec5_3291832d5c50_Input_Payload = {
+  relayState: String, 
+  factorType: String, 
+  username: String, 
+  _?: Any
+}
+

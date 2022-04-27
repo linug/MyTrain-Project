@@ -1,0 +1,10 @@
+{
+ "SourceLoc" : "BSK",
+ "DestinationLoc" : "WAT",
+ "StandardTimeOfArrival" : "11:30:00",
+ "ExpectedTimeOfArrival" : "11:55:00",
+ "DelayReason" : "Delayed",
+ "PlatformAvailable": 2
+ }
+	   
+            

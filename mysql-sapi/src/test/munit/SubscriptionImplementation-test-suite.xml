@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="SubscriptionImplementation-test-suite.xml" />
+	<munit:test name="SubscriptionImplementation-test-suite-getUserSubscriptionsTest" doc:id="6d15e481-cebb-4608-81a7-bffb7edf5821" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="1d9ed55a-35d6-494d-a3f8-7bbae6b2e572" >
+				<munit:attributes value="#[{uriPrams:{userId:'101'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getUserSubscriptions" doc:id="73f1d720-3551-446b-96f0-4892b38ebd5b" name="getUserSubscriptions"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="333eb1cf-aea2-4413-8de6-f6ce13be336e" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="SubscriptionImplementation-test-suite-getSubscriptionByIdTest" doc:id="6cf1b719-934f-4efb-b53a-ac98f87df3b8" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="bacc496a-794d-4739-bead-36fc2d83d750" >
+				<munit:attributes value="#[{uriParams:{subscriptionId:30}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getSubscriptionById" doc:id="0a7601c4-0fa7-4f83-a932-f5cdba998603" name="getSubscriptionById"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="01e74bf7-290b-4bc9-8751-e994cd949eed" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="SubscriptionImplementation-test-suite-createUserSubscriptionsTest" doc:id="ce9d47c4-4145-43c0-a539-8d23ce51e7fa" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="8a075996-03da-46af-bad6-8c8eb69c0b93" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="createUserSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="bd8dc6b1-ff62-4058-a1a9-db6a3edc277b" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Database_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json --- "Subscription created"]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="49e0c4fd-5ac6-40dd-b398-df670c910164" >
+				<munit:payload value='#[{&#10;status_type_id : 1, &#10;Source_Location : "BSK" , &#10;Destination_Location : "LGB", &#10;from_time : "10:20", &#10;to_time : "10:30", &#10;advance_notify_time_min: 30&#10;}]' />
+				<munit:attributes value='#[{uriParams:{userId:"100"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to createUserSubscriptions" doc:id="7c7617fe-f070-4fe6-8926-5836395e5cea" name="createUserSubscriptions"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="8ae7e942-8006-4f21-b700-4aeb4621bab1" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="SubscriptionImplementation-test-suite-updateUserSubscriptionTest-DB:BAD_SQL_SYNTAX" doc:id="5bf531a0-0bc2-4a68-835b-460ebcb9f9a7" description="Test" expectedErrorType="DB:BAD_SQL_SYNTAX">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="5714b8bf-93fc-4fdb-b077-0f68f3bd24d6" processor="db:update">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Update User Subscription" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="adf59049-34d7-44bf-a18d-1c5da8bb633d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Database_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="DB:BAD_SQL_SYNTAX" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="b12bf02b-9c84-4d7b-a362-3283e319c494" >
+				<munit:payload value='#[output application/json --- readUrl("classpath://subscription-implementation/update-user-subscription.json")]' />
+				<munit:attributes value='#[{uriParams:{SubscriptionId:"13"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to updateUserSubscription" doc:id="87c59706-65fa-4ca2-adc8-723796c505d9" name="updateUserSubscription"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="43c85eb3-98d2-4ff1-987f-820608a28ed3" actual="#[vars.httpStatus]" expected="#[422]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="SubscriptionImplementation-test-suite-getSubscUsersForFromTimeTest" doc:id="7a2dd95c-e101-4471-b04a-84c7d8201a6f" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="f3e93e44-4afc-477b-baec-5c71c73b9e41" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Select User Subscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="c8b8ee6c-815a-4992-868c-2ab215203460" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Database_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json --- readUrl("classpath://subscription-implementation/subscribed-users-fromtime.json")]' mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value='#[output application/json --- readUrl("classpath://subscription-implementation/statusCode.json")]' mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="aa1217c4-7e53-4839-8da7-539bdaa90d49" >
+				<munit:attributes value='#[{queryParams:{srcloc:"ABW",destloc:"LBG",fromtime:"02:40:00"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getSubscUsersForFromTime" doc:id="c282101c-7448-48d5-afef-396ff76e6a1d" name="getSubscUsersForFromTime"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="2ecc32b8-cbd3-413e-80ba-e696201dc790" actual="#[attributes.statusCode]" expected="#[200]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="SubscriptionImplementation-test-suite-getSubscUsersForTimeWindowTest" doc:id="7594277f-cd70-4efe-8d11-8fd025f3eda4" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="5d70ee26-8a6d-47f0-9feb-2afb754ede9d">
+				<munit:attributes value='#[{queryParams:{srcloc:"ABW",destloc:"LBG"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getSubscUsersForTimeWindow" doc:id="f5b97c66-0a33-4fd5-9a92-880b41dfdb0b" name="getSubscUsersForTimeWindow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="96f2cb05-cfb0-4581-ab30-f5a0974c2b1c" is="#[MunitTools::notNullValue()]" expression="#[payload]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

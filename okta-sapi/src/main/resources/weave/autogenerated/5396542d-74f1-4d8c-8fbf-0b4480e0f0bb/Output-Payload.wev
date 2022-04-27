@@ -1,0 +1,9 @@
+%dw 2.0
+
+type auto_5396542d_74f1_4d8c_8fbf_0b4480e0f0bb_Output_Payload = {|
+  attachments?: { _?: Binary }, 
+  body?: Binary, 
+  headers?: { _?: String }
+|} {"typeAlias": "SoapOutputEnvelope",
+"typeId": "com.mulesoft.connectors.servicenow.api.SoapOutputEnvelope"}
+

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="UserImplementation-test-suite.xml" />
+	<munit:test name="UserImplementation-test-suite-getAllUsersTest" doc:id="bae0d713-20aa-40f4-9caf-526830e9889b" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getAllUsers" doc:id="3ed0964c-5657-41ed-b118-76d1252c8f17" name="getAllUsers"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="6a317f4f-a0f2-4fef-a8da-8badea123649" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="UserImplementation-test-suite-getUserByIdTest" doc:id="c66b05ba-9955-46d0-a8e4-d77bf61c33c4" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="c3482d5e-a802-47ad-8b55-481151459294" >
+				<munit:attributes value="#[{uriParams: {userId:'100'}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to getUserById" doc:id="2c4a8d80-41b4-41e5-866c-cb73553ba754" name="getUserById"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="06efd4d1-c45d-4ace-886c-791f4f2539d7" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="UserImplementation-test-suite-createUserTest" doc:id="736bea52-934d-4a0b-b76e-d5180a172ef0" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="d9edc00b-9844-4805-b5a3-2667d7891b4a" processor="db:insert">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Insert User" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="84eb400f-5dd3-4cf3-a59c-67a0abc433bd" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="Database_Config" attributeName="config-ref" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json --- "User created"]' />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="46479499-920f-40ad-ae97-4398cd7bd312" >
+				<munit:payload value='#[{&#10;	First_Name : "Mathaniel" ,&#10;	 password : "Maat123&amp;",&#10;	 Last_Name : "Bary" ,&#10;	 Email_ID : "Maay420@gmail.com"&#10;}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to createUser" doc:id="c5c96b4b-a195-4d04-b951-ae4847eb7178" name="createUser"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="59017266-cd69-4245-bb3d-ac0f52e12cf2" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="UserImplementation-test-suite-subscribedUserListTest" doc:id="cde4e6e7-981e-4f8e-86cb-2682596140a1" description="Test">
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="e5429c0e-f6d6-4371-af34-17c0bfdd3e51" >
+				<munit:attributes value='#[{queryParams:{createdafter: "2022-03-13 10:32:05"}}]' />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to subscribedUserList" doc:id="f5f42485-5041-4296-bc06-8501b2b6b8a2" name="subscribedUserList"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="600324f4-3b6a-430f-94f1-1f0bc1354571" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

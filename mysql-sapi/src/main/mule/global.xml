@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:servicenow="http://www.mulesoft.org/schema/mule/servicenow"
+	xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/servicenow http://www.mulesoft.org/schema/mule/servicenow/current/mule-servicenow.xsd">
+	<configuration-properties doc:name="Configuration properties" doc:id="e9a9862c-080c-4be9-8438-74df93b4b63b" file="config.yaml" />
+	<json-logger:config name="JSON_Logger_Config" doc:name="JSON Logger Config" doc:id="518ca823-dedb-47e4-a9e8-513ca229384e" environment="${json.logger.mule.env}" />
+	<configuration doc:name="Configuration" doc:id="ed42cf10-f584-4cec-8564-2c99d0192652" defaultErrorHandler-ref="global-error-handlerError_Handler" />
+	<servicenow:config name="ServiceNow_Config" doc:name="ServiceNow Config" doc:id="62fe5b4d-f8ce-407d-bb86-bc2fb0eb4837" >
+		<servicenow:basic-connection username="${service.now.username}" password="${service.now.password}" serviceAddress="${service.now.address}" serviceNowVersion="QUEBEC"/>
+	</servicenow:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="dd5e1f07-c82e-4711-8e79-32908eae5c83" >
+		<db:my-sql-connection host="64.227.37.97" port="3306" user="njclabs" password="training" database="nrs" />
+	</db:config>
+</mule>
+
+

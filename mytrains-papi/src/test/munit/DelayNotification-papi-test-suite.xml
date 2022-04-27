@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:munit="http://www.mulesoft.org/schema/mule/munit"
+	xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	<munit:config name="DelayNotification-papi-test-suite.xml" />
+	<munit:test name="DelayNotification-papi-test-suite-delayNotificationTest-MY-SQLSAPI:CONNECTIVITY" doc:id="e7697302-ba8f-4869-a6f0-b9b8cb46e731" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="6601ac52-884f-412b-8a79-bc5fe3f9848f" processor="my-sqlsapi:get-qualified-subscriptions">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="Get qualified subscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="MySQLSAPI_Config" attributeName="config-ref" />
+					<munit-tools:with-attribute whereValue="2" attributeName="start-time-within" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:CONNECTIVITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="48af0764-2820-4f51-82ca-aa2ec84a4858">
+				<munit:attributes value="#[{queryParams:{StartTimeWithin:20}}]" />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="de20c35a-f6bb-406e-8fb8-7e191e5cea8b" >
+				<flow-ref doc:name="Flow-ref to delayNotification" doc:id="8b197981-5586-4ccc-bd1e-534aca1601c0" name="delayNotification" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="1c6863f3-0f27-403b-8d5d-ed381328b85c" >
+						<json-logger:logger doc:name="Logger" doc:id="d47e9fdb-9b11-44fd-9394-9a00ccbd33e4" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="0fe0951a-a0d9-4e7d-85b0-f4bf89a2e1f5" actual="#[vars.httpStatus]" expected="#[503]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="DelayNotification-papi-test-suite-delayNotificationTest-MY-SQLSAPI:INTERNAL_SERVER_ERROR" doc:id="f8707461-4eec-4166-9c5f-6403aafc7de5" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="142a72e0-6f22-4676-8c5d-dea7d4caf62e" processor="my-sqlsapi:get-qualified-subscriptions">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:INTERNAL_SERVER_ERROR" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="ab931050-c32b-412f-9f15-98a48a058049">
+				<munit:attributes value="#[{queryParams:{StartTimeWithin:20}}]" />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="832bb5c2-5cd0-4798-afb7-b81e57e782a3" >
+				<flow-ref doc:name="Flow-ref to delayNotification" doc:id="78d15db4-f38c-4fd5-841f-66163a2775ec" name="delayNotification" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="c76a2d8d-5bb1-478e-b9e0-bec79b089dc8" >
+						<json-logger:logger doc:name="Logger" doc:id="9247d46e-8477-43fc-a57d-991deac0dc66" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="9daf812b-5e5a-4b0d-9e49-645430490faf" actual="#[vars.httpStatus]" expected="#[500]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="DelayNotification-papi-test-suite-delayNotificationTest-MY-SQLSAPI:METHOD_NOT_ALLOWED" doc:id="121ce306-916f-409a-abc3-385fd4b9533d" description="Test">
+		<munit:behavior>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="a9cbdcc9-64b9-4f01-9579-737a276a2e63" processor="my-sqlsapi:get-qualified-subscriptions">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:METHOD_NOT_ALLOWED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3e30f384-e494-4332-bd71-6664b8ebcb10">
+				<munit:attributes value="#[{queryParams:{StartTimeWithin:20}}]" />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="eccca594-a9a4-4619-896a-c5306e37e421" >
+				<flow-ref doc:name="Flow-ref to delayNotification" doc:id="85423f3b-4f16-49cc-81e6-78b02cd2b70d" name="delayNotification" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="ccd8cb71-5bef-4650-aa98-4157775e60b3" >
+						<json-logger:logger doc:name="Logger" doc:id="1cca0a23-5841-4ce1-8835-53ee9c5ac8f6" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="955e43d6-0af0-4870-ac83-843764e97c06" actual="#[vars.httpStatus]" expected="#[405]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="DelayNotification-papi-test-suite-delayNotification-NonDelay-Test" doc:id="8b8f85b3-c344-4d7b-8b6a-77195d95f5c2" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="41d6a236-0f8b-4660-ad04-6afe3bed1789" processor="my-sqlsapi:get-qualified-subscriptions">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json ---  readUrl("classpath://delayNotification-papi/qualifiedSubscriptionsResp.json")]' mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0a0a011a-995a-4d93-8e9c-a891d4893ffa" processor="nrsapi:get-trainstatuses">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getTrainStatuses" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="34e713dd-2c0a-4b45-84e9-1d0b9dd3ded4" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json ---  readUrl("classpath://delayNotification-papi/trainStatusResp.json")]' mediaType="application/json" />
+					<munit-tools:attributes value='#[output application/json ---  readUrl("classpath://salesForceSync-papi/statusCode.json")]' mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="b5b90804-08cc-4e90-bda3-ed3faa500e77" >
+				<munit:attributes value="#[{queryParams:{StartTimeWithin:20}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to delayNotification" doc:id="6ef80b82-e0dd-448d-b4dd-f017645c586b" name="delayNotification"/>
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that doc:name="Assert that" doc:id="46e660ab-aee1-4888-be86-5b29c584b646" expression="#[payload]" is="#[MunitTools::notNullValue()]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="Copy_of_DelayNotification-papi-test-suite-delayNotification-Delay-Test" doc:id="4f5f3b84-33b0-4b97-b68f-0bb6efbed58f" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="607feaac-eab0-4d99-93bd-ef44632aaa51" processor="my-sqlsapi:get-qualified-subscriptions" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json ---  readUrl("classpath://delayNotification-papi/qualifiedSubscriptionsResp.json")]' mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="fa8e77c5-4238-4a4d-bd01-311f0cb5190a" processor="nrsapi:get-trainstatuses" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getTrainStatuses" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="34e713dd-2c0a-4b45-84e9-1d0b9dd3ded4" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json ---  readUrl("classpath://delayNotification-papi/trainStatusDelayResp.json")]' mediaType="application/json" />
+					<munit-tools:attributes value='#[output application/json ---  readUrl("classpath://salesForceSync-papi/statusCode.json")]' mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="7f0e6adf-832b-469b-b8a8-d84a6f605e73" processor="my-sqlsapi:get-subsbed-users-for-from-times">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getSubscribedUsersForFromTime" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="ffc5a1ee-eb36-4788-8f01-eb055e5ead59" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json ---  readUrl("classpath://delayNotification-papi/subscribedUsersFromTimeResp.json")]' mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0d42810d-3be3-4da5-87c7-f053c67513c7" processor="my-sqlsapi:create-alert-by-user-id-subscription-id">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="createAlertByUserIdSubscriptionId" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="3aa471b4-216e-4094-8611-721ada5f445a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:attributes value='#[output application/json ---  readUrl("classpath://delayNotification-papi/statusCode.json")]' mediaType="application/json" encoding="UTF-8" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="1a8e7604-cbc6-4880-bdb4-b34230f6f070" >
+				<munit:attributes value="#[{queryParams:{StartTimeWithin:20}}]" />
+			</munit:set-event>
+			<flow-ref doc:name="Flow-ref to delayNotification" doc:id="bd629c59-c8b1-46d2-be5b-5e846c803651" name="delayNotification" />
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-that doc:name="Assert that" doc:id="f3f01b70-dfdc-4dd5-97a7-8e55404474fa" expression="#[payload]" is="#[MunitTools::notNullValue()]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="DelayNotification-papi-test-suite-delayNotificationTest-NRSAPI:BAD_REQUEST" doc:id="e2bba8e1-b67f-46a2-aa27-2f8dd06b52c9" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="b7e1fb1d-4a9b-4494-8ade-36aa1beff25d" processor="my-sqlsapi:get-qualified-subscriptions">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return>
+					<munit-tools:payload value='#[output application/json ---  readUrl("classpath://delayNotification-papi/qualifiedSubscriptionsResp.json")]' mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="7f38a749-f2ae-4aa4-9370-fa98f2ad8699" processor="nrsapi:get-trainstatuses">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getTrainStatuses" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="34e713dd-2c0a-4b45-84e9-1d0b9dd3ded4" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="NRSAPI:BAD_REQUEST" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="86024d4b-13cd-46bd-95ae-0d1d4517a390">
+				<munit:attributes value="#[{queryParams:{StartTimeWithin:20}}]" />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="fdca50e8-2329-4873-b305-ce8c7ff09d02" >
+				<flow-ref doc:name="Flow-ref to delayNotification" doc:id="b4b7916e-0683-4652-b200-fe415cc41aa5" name="delayNotification" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="3000b5fd-bfb8-4486-86a5-38d24922ff07" >
+						<json-logger:logger doc:name="Logger" doc:id="346c0569-3221-414d-8a5d-7d89d20e31ba" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="cb07ebb2-df8a-4133-8ac2-38578b0b2693" actual="#[vars.httpStatus]" expected="#[400]"/>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="DelayNotification-papi-test-suite-delayNotificationTest-NRSAPI:SECURITY" doc:id="e8c0f841-f50c-472e-b235-84e66e36f691" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0f337974-69f8-4b08-81d1-88372cb82400" processor="my-sqlsapi:get-qualified-subscriptions" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json ---  readUrl("classpath://delayNotification-papi/qualifiedSubscriptionsResp.json")]' mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="de7e34a9-229b-4af0-8b5b-a5d949be3444" processor="nrsapi:get-trainstatuses" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getTrainStatuses" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="34e713dd-2c0a-4b45-84e9-1d0b9dd3ded4" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="NRSAPI:SECURITY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="985cc679-5cba-49e7-8a6c-22cf9882f4fa" >
+				<munit:attributes value="#[{queryParams:{StartTimeWithin:20}}]" />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="9ae54605-3e8b-4f4e-be38-7586c9867b84" >
+				<flow-ref doc:name="Flow-ref to delayNotification" doc:id="b3c0b0bf-2597-406d-965f-d5550eff0ad6" name="delayNotification" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="61c83f8a-2adb-428b-9da0-06be6d84f566" >
+						<json-logger:logger doc:name="Logger" doc:id="d3202146-846c-4e72-8e23-e8e6d6b84ad0" config-ref="JSON_Logger_Config" message="Start Logging" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="27624181-b98d-43bb-a9a2-927ab8d19302" actual="#[vars.httpStatus]" expected="#[500]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="DelayNotification-papi-test-suite-delayNotificationTest-NRSAPI:SERVICE_UNAVAILABLE" doc:id="98a7f26c-c866-4c6c-8920-69dee390bbcd" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="0f42af85-1204-4604-b455-8586c044dafe" processor="my-sqlsapi:get-qualified-subscriptions" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value='#[output application/json ---  readUrl("classpath://delayNotification-papi/qualifiedSubscriptionsResp.json")]' mediaType="application/json" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:mock-when doc:name="Mock when" doc:id="8a3aa3f1-c71c-4643-9504-2a580fc3640a" processor="nrsapi:get-trainstatuses" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getTrainStatuses" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="34e713dd-2c0a-4b45-84e9-1d0b9dd3ded4" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="NRSAPI:SERVICE_UNAVAILABLE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="3d17d5f8-5c58-4766-8b1f-f5639e7c71a7" >
+				<munit:attributes value="#[{queryParams:{StartTimeWithin:20}}]" />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="3292f787-f09a-4bb0-830c-5ccb17d1d71c" >
+				<flow-ref doc:name="Flow-ref to delayNotification" doc:id="011a8edf-fed0-40b7-999b-9699a740f994" name="delayNotification" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="0e91869e-e721-49b8-a6a1-9f7a65625eed" >
+						<json-logger:logger doc:name="Copy_of_Logger" doc:id="c77c9d33-5dca-4678-b2ab-04066e545d3e" config-ref="JSON_Logger_Config" message="Start Logging" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="97ac51fb-95a5-4c76-85b9-ecad57bc9ebb" actual="#[vars.httpStatus]" expected="#[503]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="DelayNotification-papi-test-suite-delayNotificationTest-MY-SQLSAPI:UNSUPPORTED_MEDIA_TYPE" doc:id="f9e4ea18-c85e-4530-98a4-1f83393a11a3" description="Test" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="52591e70-097f-4293-a280-7a4dc0e46075" processor="my-sqlsapi:get-qualified-subscriptions">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:UNSUPPORTED_MEDIA_TYPE" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="d4372f39-1965-4fdf-89e4-d34b1292a5c5" >
+				<munit:attributes value="#[{queryParams:{StartTimeWithin:20}}]" />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="48723782-f9e0-4235-8819-bbd65c2a327b" >
+				<flow-ref doc:name="Flow-ref to delayNotification" doc:id="2b0cd540-34a4-483d-9078-4cbdcd07980c" name="delayNotification" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="5efb2f73-64bf-4b9b-9969-485477b1e84c" >
+						<json-logger:logger doc:name="Logger" doc:id="1aac7e24-3f15-479d-b7f4-283e7d9a206e" config-ref="JSON_Logger_Config" message="Start Logging" />
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="c0ab3dd4-23dc-4ca9-8ac3-f7cbca54b879" actual="#[vars.httpStatus]" expected="#[415]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="DelayNotification-papi-test-suite-delayNotificationTest-MY-SQLSAPI:UNAUTHORIZED" doc:id="9e05709e-acaf-4310-a8fe-d8ea373ea7ef" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="1bc4e0fd-fb6a-4ba4-9c37-3d0b5d2134e0" processor="my-sqlsapi:get-qualified-subscriptions" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:UNAUTHORIZED" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="37f21079-b060-47e7-adae-7fb439c957cd">
+				<munit:attributes value="#[{queryParams:{StartTimeWithin:20}}]" />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="b343baa3-3ba8-423d-be76-f109dd220747" >
+				<flow-ref doc:name="Flow-ref to delayNotification" doc:id="43c73ee6-511a-4cbc-993a-03df8a0454ba" name="delayNotification" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="1f09f4d0-364c-44cd-b7e9-3f42ede14261" >
+						<json-logger:logger doc:name="Logger" doc:id="e70ae8d6-e406-47a3-be0d-cdee352c02f2" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="82f23ebb-64d3-422e-be5f-25c8051b374b" actual="#[vars.httpStatus]" expected="#[401]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="DelayNotification-papi-test-suite-delayNotificationTest1-ANY" doc:id="31c43a70-1a5c-49d1-a964-ca9d13d42938" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="666782a3-5d7e-42a5-b822-624a8f1f93ed" processor="my-sqlsapi:get-qualified-subscriptions" >
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="ANY" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="cad726c2-f5a8-41b3-b955-291240c72bca">
+				<munit:attributes value="#[{queryParams:{StartTimeWithin:20}}]" />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="7f074eb1-0557-41fd-828c-2e6c5637d5ce" >
+				<flow-ref doc:name="Flow-ref to delayNotification" doc:id="b2b47d23-778d-48b5-9db5-53481a4a0561" name="delayNotification" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="065d12c7-dc18-49cb-a502-965ff6bdacaa" >
+						<json-logger:logger doc:name="Logger" doc:id="2c012f1a-ef7a-4004-85da-679c204a3ae1" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="105a7036-4634-4940-b5f6-ce97be07ce38" actual="#[vars.httpStatus]" expected="#[500]" />
+		</munit:validation>
+	</munit:test>
+	<munit:test name="DelayNotification-papi-test-suite-delayNotificationTest-MY-SQLSAPI:FORBIDDEN" doc:id="59b454fe-688f-4cce-a449-05376b80a50c" description="Test">
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock when" doc:id="bac66a93-a8aa-4334-ad4a-4d6b49999d99" processor="my-sqlsapi:get-qualified-subscriptions">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="getQualifiedSubscriptions" attributeName="doc:name" />
+					<munit-tools:with-attribute whereValue="326ed2a1-5002-4a1a-9fdc-251cf26eda7d" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:error typeId="MY-SQLSAPI:FORBIDDEN" />
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+		</munit:behavior>
+		<munit:execution >
+			<munit:set-event doc:name="Set Event" doc:id="bb2cc9f1-9523-42de-95a1-25e8716e8c80">
+				<munit:attributes value="#[{queryParams:{StartTimeWithin:20}}]" />
+			</munit:set-event>
+			<try doc:name="Try" doc:id="f69504b2-ba00-4cc7-be80-f7c88c0c4e17" >
+				<flow-ref doc:name="Flow-ref to delayNotification" doc:id="8e1c81fa-9823-4fe9-8191-d97b50a7035c" name="delayNotification" />
+				<error-handler >
+					<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="dbd21e09-bdb8-442e-9d22-4291a6595a08" >
+						<json-logger:logger doc:name="Logger" doc:id="cb118ec0-beae-4da7-ada2-c89b20d92351" config-ref="JSON_Logger_Config" message="Start Logging"/>
+					</on-error-continue>
+				</error-handler>
+			</try>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="c63dda8b-ce42-44c8-a787-70ba443d8f26" actual="#[vars.httpStatus]" expected="#[403]"/>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>

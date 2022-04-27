@@ -1,0 +1,12 @@
+%dw 2.0
+
+type auto_90d7183e_3076_4c8f_856a_d82876e786dd_Input_Payload = {
+  advance_notify_time_min: Number, 
+  user_id: String, 
+  Destination_Location: String, 
+  Source_Location: String, 
+  to_time: String, 
+  from_time: String, 
+  _?: Any
+}
+

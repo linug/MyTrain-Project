@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+    <apikit:config name="customereapi-config" api="resource::b5713f5b-8090-488f-969a-3c6f89da081d:customer-eapi:1.0.0:raml:zip:customereapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="customereapi-main">
+        <http:listener config-ref="HTTP_Listener_config" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="customereapi-config" />
+    </flow>
+    <flow name="customereapi-console">
+        <http:listener config-ref="HTTP_Listener_config" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="customereapi-config" />
+    </flow>
+    <flow name="put:\Users\(userId)\UpdatePassword:application\json:customereapi-config">
+		<flow-ref doc:name="userChangePassword" doc:id="522b1af0-25bb-4630-a0f1-fae85c890bac" name="userChangePassword"/>
+    </flow>
+    <flow name="put:\Users\(userId)\subscription\(SubscriptionId):application\json:customereapi-config">
+		<flow-ref doc:name="updateSubscriptionId" doc:id="ebdb6e91-45ea-4265-b498-986c669772e5" name="updateSubscriptionId"/>
+    </flow>
+    <flow name="put:\Users\(userId):application\json:customereapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="userId">attributes.uriParams.'userId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  message: "User details updated successfully"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\Users\(userId)\subscription\(SubscriptionId)\Alerts:customereapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="userId">attributes.uriParams.'userId'</ee:set-variable>
+                <ee:set-variable variableName="SubscriptionId">attributes.uriParams.'SubscriptionId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    Alert_Transaction_ID: 122,
+    Subscription_ID: 12,
+    Delay_type_flag: "Yes",
+    Notification_Status: "Delayed",
+    Notification_Failure_Detail: "Engine Fault",
+    Delay_Time: 30,
+    creation_timestamp: "2022-02-09T06:18:29.000Z",
+    "updated_timestamp:": "2022-02-09T06:18:29.000Z"
+  }, 
+  {
+    Alert_Transaction_ID: 123,
+    Subscription_ID: 12,
+    Delay_type_flag: "Delayed",
+    Notification_Status: "Delayed",
+    Notification_Failure_Detail: "Engine Fault",
+    Delay_Time: 30,
+    creation_timestamp: "2022-02-09T06:18:29.000Z",
+    "updated_timestamp:": "2022-02-09T06:18:29.000Z"
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\Users:customereapi-config">
+		<flow-ref doc:name="getRegisteredUsers" doc:id="c7c2cff1-b2f0-463d-9bbc-4bb9476f796b" name="getRegisteredUsers"/>
+    </flow>
+    <flow name="get:\Users\(userId)\subscription:customereapi-config">
+		<flow-ref doc:name="getUserSubscriptions" doc:id="9f254351-66a0-4217-b14b-a9975524687c" name="getUserSubscriptions"/>
+    </flow>
+    <flow name="get:\Users\(userId)\subscription\(SubscriptionId)\Alerts\(AlertID):customereapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="userId">attributes.uriParams.'userId'</ee:set-variable>
+                <ee:set-variable variableName="SubscriptionId">attributes.uriParams.'SubscriptionId'</ee:set-variable>
+                <ee:set-variable variableName="AlertID">attributes.uriParams.'AlertID'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  Alert_Transaction_ID: 122,
+  Subscription_ID: 12,
+  Delay_type_flag: "Yes",
+  Notification_Status: "Delayed",
+  Notification_Failure_Detail: "Engine Fault",
+  Delay_Time: 30,
+  creation_timestamp: "2022-02-09T06:18:29.000Z",
+  "updated_timestamp:": "2022-02-09T06:18:29.000Z"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="get:\Users\(userId)\subscription\(SubscriptionId):customereapi-config">
+		<flow-ref doc:name="getSubscriptionById" doc:id="51328a88-d087-49e9-869f-a73b373213e1" name="getSubscriptionById"/>
+    </flow>
+    <flow name="get:\Users\(userId):customereapi-config">
+        <ee:transform>
+            <ee:variables>
+                <ee:set-variable variableName="userId">attributes.uriParams.'userId'</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  User_Id: "00u3u96x25K8fhkeo5d7",
+  Email_ID: "isaac@test.com",
+  Status_Type_ID: 1,
+  First_Name: "Isaac",
+  Last_Name: "Brock",
+  Phone_Number: "+44 783456234235",
+  created_timestamp: "2022-02-09T06:18:29.000Z",
+  updated_timestamp: "2022-02-09T06:18:29.000Z"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\Login:application\json:customereapi-config">
+		<flow-ref doc:name="userLogin" doc:id="45ce5dbb-60b2-4434-957d-1121d1997948" name="userLogin"/>
+    </flow>
+    <flow name="post:\Resetpassword:application\json:customereapi-config">
+        <ee:transform>
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  ErrorMessage: "Bad Request Error",
+  statuscode: "400-Bad Request"
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+    </flow>
+    <flow name="post:\Users:application\json:customereapi-config">
+		<flow-ref doc:name="userRegistration" doc:id="775ccd04-46a4-4c4b-97d4-0d919fc29d2d" name="userRegistration"/>
+    </flow>
+    <flow name="post:\Users\(userId)\subscription:application\json:customereapi-config">
+		<flow-ref doc:name="createUserSubscription" doc:id="99e7c509-3ca4-4574-9977-b529aa6a4be3" name="createUserSubscription"/>
+    </flow>
+</mule>

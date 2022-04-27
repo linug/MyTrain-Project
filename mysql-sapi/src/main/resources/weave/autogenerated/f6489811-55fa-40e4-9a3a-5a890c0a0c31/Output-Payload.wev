@@ -1,0 +1,4 @@
+%dw 2.0
+
+type auto_f6489811_55fa_40e4_9a3a_5a890c0a0c31_Output_Payload = Array<{  subscription_id?: Number,   advance_notify_time_min?: Number,   user_id: String,   status_type_id: Number,   updated_timestamp?: String,   creation_timestamp?: String,   Destination_Location: String,   Source_Location: String,   to_time?: String,   from_time?: String,   _?: Any}>
+

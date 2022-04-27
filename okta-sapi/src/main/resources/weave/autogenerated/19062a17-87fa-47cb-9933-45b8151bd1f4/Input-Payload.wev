@@ -1,0 +1,33 @@
+%dw 2.0
+
+type auto_19062a17_87fa_47cb_9933_45b8151bd1f4_Input_Payload = {|
+  stateToken: String, 
+  expiresAt: String, 
+  status: String, 
+  "_embedded": {|
+    user: {|
+      id: String, 
+      passwordChanged: String, 
+      profile: {|
+        login: String, 
+        firstName: String, 
+        lastName: String, 
+        locale: String, 
+        timeZone: String
+      |}
+    |}, 
+    factors: Array<{|      factorType: String,       provider: String,       vendorName: String,       "_links": {|        enroll: {|          href: String,           hints: {| allow: Array<String> |}
+        |}
+      |}, 
+      status: String, 
+      enrollment: String
+    |}>
+  |}, 
+  "_links": {|
+    cancel: {|
+      href: String, 
+      hints: {| allow: Array<String> |}
+    |}
+  |}
+|}
+

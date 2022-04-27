@@ -1,0 +1,26 @@
+[
+  {
+    "SourceLoc": "ABW",
+    "DestinationLoc": "LBG",
+    "StandardTimeOfArrival": "17:13",
+    "ExpectedTimeOfArrival": "17:20",
+    "DelayReason": "Track Repair",
+    "PlatformAvailable": 1
+  },
+  {
+    "SourceLoc": "ABW",
+    "DestinationLoc": "LBG",
+    "StandardTimeOfArrival": "17:27",
+    "ExpectedTimeOfArrival": "Cancelled",
+    "DelayReason": "Engine Repair ",
+    "PlatformAvailable": 1
+  },
+  {
+    "SourceLoc": "ABW",
+    "DestinationLoc": "LBG",
+    "StandardTimeOfArrival": "17:30",
+    "ExpectedTimeOfArrival": "17:35",
+    "DelayReason": " ",
+    "PlatformAvailable": 2
+  }
+]  

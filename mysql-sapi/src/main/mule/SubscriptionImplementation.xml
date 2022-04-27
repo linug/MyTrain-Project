@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd 
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd">
+	
+	<flow name="getUserSubscriptions" doc:id="b5a4a717-2962-4d21-bac8-7a760906aa37" >
+		<json-logger:logger doc:name="Start Logger" doc:id="6c12273b-859e-41fa-b8e3-e9b0d0753826" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Set User Id" doc:id="693049d1-355c-43f9-97f3-1164ea4686de" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="userId" ><![CDATA[attributes.uriParams.userId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<db:select doc:name="Select User Subscription" doc:id="15e99038-931e-4d3c-99da-474816c73dcb" config-ref="Database_Config">
+			<db:sql ><![CDATA[select USER_ID,SUBSCRIPTION_ID,STATUS_TYPE_ID,SOURCE_LOCATION,DESTINATION_LOCATION,FROM_TIME,TO_TIME from SUBSCRIPTION where USER_ID = :userId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{userId : vars.userId}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Output To Json" doc:id="2810a2cb-8ff6-4304-8102-725f6c4b7bac" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="6cb60858-8a0f-492f-9cac-f8438ac87c1f" config-ref="JSON_Logger_Config" message="End Logging"/>
+	
+</flow>
+	<flow name="getSubscriptionById" doc:id="140c19d9-0752-4ab7-bf82-2474d22ac750" >
+		<json-logger:logger doc:name="Start Logger" doc:id="7a49c0bc-127a-4f6e-9bd0-e62cbb3f792e" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Transform Message" doc:id="e35a2121-171d-4faa-b7e2-dd57599c04bb" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="subscriptionId" ><![CDATA[attributes.uriParams.SubscriptionId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<db:select doc:name="Select User Subscription By ID" doc:id="fc2f3968-15a3-4664-8ede-2fb00f694849" config-ref="Database_Config">
+			<db:sql ><![CDATA[select USER_ID,SUBSCRIPTION_ID,STATUS_TYPE_ID,SOURCE_LOCATION,DESTINATION_LOCATION,FROM_TIME,TO_TIME from SUBSCRIPTION where SUBSCRIPTION_ID = :subscriptionid]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	subscriptionid : vars.subscriptionId
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Output To Json" doc:id="28134196-4e17-48aa-afec-f74d988ed826" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="848af0c0-1993-4c26-b535-4c25c900ec51" config-ref="JSON_Logger_Config" message="End Logging"/>
+	
+</flow>
+	<flow name="createUserSubscriptions" doc:id="9ad93e19-508d-4bf0-a32d-54382c1b22f9" >
+		<json-logger:logger doc:name="Start Logger" doc:id="17e08bea-5d0a-49a7-ac9d-b8df53b34bd5" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Input To Json" doc:id="aebd81c7-e7f1-46d1-8e16-00000a5fa32f" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "user_id"	: attributes.uriParams.userId,
+  "status_type_id": payload.status_type_id,
+  "Source_Location": payload.Source_Location,
+  "Destination_Location": payload.Destination_Location,
+  "from_time": payload.from_time,
+  "to_time": payload.to_time,
+  "advance_notify_time_min": payload.advance_notify_time_min
+  }]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="userId" ><![CDATA[attributes.uriParams.userId]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<db:insert doc:name="createUserSubscriptions" doc:id="bd8dc6b1-ff62-4058-a1a9-db6a3edc277b" config-ref="Database_Config">
+			<db:sql ><![CDATA[insert into SUBSCRIPTION(USER_ID,STATUS_TYPE_ID,SOURCE_LOCATION,DESTINATION_LOCATION,FROM_TIME,TO_TIME,ADVANCE_NOTIFY_TIME_MIN) 
+values (:userid , :statusid , :src_loc , :dest_Loc , :from_time , :to_time , :adv_notice)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+userid : vars.userId,
+statusid : payload.status_type_id, 
+src_loc : payload.Source_Location, 
+dest_Loc : payload.Destination_Location, 
+from_time : payload.from_time , 
+to_time : payload.to_time, 
+adv_notice : payload.advance_notify_time_min
+}]]]></db:input-parameters>
+		</db:insert>
+		<ee:transform doc:name="Output To Json" doc:id="3d17e89e-868a-42c8-a733-19997de20e5e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="d5b7487d-e696-48fc-ab1f-2ef721101c17" config-ref="JSON_Logger_Config" message="End Logging"/>
+	
+</flow>
+	<flow name="updateUserSubscription" doc:id="a4eb24be-366c-4858-9ce9-8940fc14a238" >
+		<json-logger:logger doc:name="Start Logger" doc:id="cd7386f3-cb51-4397-96c5-97a070c1a2c4" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<ee:transform doc:name="Input To Json" doc:id="8638cc89-6bc1-45c9-ac4b-3237644c4964" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "Source_Location": payload.Source_Location,
+  "Destination_Location": payload.Destination_Location,
+  "from_time": payload.from_time as String {format :"HH:mm:ss"},
+  "to_time": payload.to_time as String {format :"HH:mm:ss"},
+  "advance_notify_time_min": payload.advance_notify_time_min
+}]]></ee:set-payload>
+
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="SubscriptionId" ><![CDATA[attributes.uriParams.SubscriptionId]]></ee:set-variable>
+				<ee:set-variable variableName="Adv_notify" ><![CDATA[payload.advance_notify_time_min]]></ee:set-variable>
+			</ee:variables>
+		
+</ee:transform>
+		<db:update doc:name="Update User Subscription" doc:id="adf59049-34d7-44bf-a18d-1c5da8bb633d" config-ref="Database_Config">
+			<db:sql ><![CDATA[UPDATE SUBSCRIPTION SET SOURCE_LOCATION = :src_loc , DESTINATION_LOCATION = :dest_loc , FROM_TIME = :from_time ,TO_TIME = :to_time , ADVANCE_NOTIFY_TIME_MIN = :delay_time WHERE SUBSCRIPTION_ID = :SubscriptionId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{   
+	src_loc : payload.Source_Location,
+	dest_loc : payload.Destination_Location,
+	from_time : payload.from_time,
+	to_time : payload.to_time,
+	delay_time : payload.advance_notify_time_min,
+	SubscriptionId : vars.SubscriptionId
+}]]]></db:input-parameters>
+		
+</db:update>
+		<db:select doc:name="Select Updated Subscription" doc:id="7c40c957-7122-405f-b5ea-8836c181a246" config-ref="Database_Config">
+			<db:sql ><![CDATA[select USER_ID,SUBSCRIPTION_ID,STATUS_TYPE_ID,SOURCE_LOCATION,DESTINATION_LOCATION,FROM_TIME,TO_TIME from SUBSCRIPTION where SUBSCRIPTION_ID = :subscriptionid]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	subscriptionid : vars.subscriptionId
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Output To Json" doc:id="44b63ab2-f144-40a7-b98d-ed24d3f7dfbc" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="16a7c861-b7d3-4539-a90b-7e658d6032e6" config-ref="JSON_Logger_Config" message="End Logging"/>
+	
+</flow>
+	<flow name="getQualifiedSubscriptions" doc:id="c07a529c-06ef-4b09-b061-b87cdf0147a5" >
+		<json-logger:logger doc:name="Start Logger" doc:id="f6728ba9-a237-450b-87f0-d2f820cae03a" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<db:select doc:name="Select Qualified Location" doc:id="67128835-d5f4-4640-9a54-b690dbc9bdcf" config-ref="Database_Config">
+			<db:sql ><![CDATA[SELECT distinct SOURCE_LOCATION, DESTINATION_LOCATION FROM nrs.SUBSCRIPTION where FROM_TIME BETWEEN now() and  ( now() + INTERVAL :delay HOUR)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+  delay : attributes.queryParams.StartTimeWithin
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Output To Json" doc:id="2958ce0f-3ec5-4983-8025-6f702d2a4d6e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="8fc5adf6-8ae6-40a1-a62f-a8d00075ac21" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+	<flow name="getSubscUsersForTimeWindow" doc:id="a7a65bdc-6eab-4573-ad62-2c97fb508330" >
+		<json-logger:logger doc:name="Start Logger" doc:id="acf67cd3-e892-4dbf-86c6-c6c4b579a389" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<db:select doc:name="Select User Subscriptions" doc:id="2ae96dff-f00c-420f-8c6e-295c016439da" config-ref="Database_Config">
+			<db:sql ><![CDATA[select a.USER_ID,a.FIRST_NAME,a.LAST_NAME,a.EMAIL_ID, b.SUBSCRIPTION_ID,b.SOURCE_LOCATION,b.DESTINATION_LOCATION,b.FROM_TIME,b.TO_TIME ,b.ADVANCE_NOTIFY_TIME_MIN from USER a , SUBSCRIPTION b where a.USER_ID = b.USER_ID and b.SOURCE_LOCATION = :srcloc and b.DESTINATION_LOCATION = :destloc and FROM_TIME BETWEEN now() and  ( now() + INTERVAL 2  HOUR)]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+  srcloc : attributes.queryParams.srcloc,
+  destloc : attributes.queryParams.destloc
+  }]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Output To Json" doc:id="e234d711-7893-4263-a7c8-6b2b814999ec" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	USER_ID: payload01.USER_ID,
+	SUBSCRIPTION_ID: payload01.SUBSCRIPTION_ID,
+	FIRST_NAME:payload01.FIRST_NAME,
+	LAST_NAME:payload01.LAST_NAME,
+	EMAIL_ID: payload01.EMAIL_ID,
+	SOURCE_LOCATION: payload01.SOURCE_LOCATION,
+	DESTINATION_LOCATION: payload01.DESTINATION_LOCATION,
+	FROM_TIME: payload01.FROM_TIME as String,
+	TO_TIME: payload01.TO_TIME as String,
+	advance_notify_time_min: payload01.ADVANCE_NOTIFY_TIME_MIN
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="d5d16a06-af40-44ad-aa0a-c5d6d652d907" config-ref="JSON_Logger_Config" message="End Logging"/>
+	</flow>
+	<flow name="getSubscUsersForFromTime" doc:id="be2cc1e2-f914-4728-b1bf-f43f3baa67a3" >
+		<json-logger:logger doc:name="Start Logger" doc:id="cefe8bcd-6339-467d-9a7c-c540593918bb" config-ref="JSON_Logger_Config" message="Start Logging"/>
+		<db:select doc:name="Select User Subscriptions" doc:id="c8b8ee6c-815a-4992-868c-2ab215203460" config-ref="Database_Config">
+			<db:sql ><![CDATA[select a.USER_ID,a.FIRST_NAME,a.LAST_NAME,a.EMAIL_ID, b.SUBSCRIPTION_ID,b.SOURCE_LOCATION,b.DESTINATION_LOCATION,b.FROM_TIME,b.TO_TIME ,b.ADVANCE_NOTIFY_TIME_MIN from USER a , SUBSCRIPTION b where a.USER_ID = b.USER_ID and b.SOURCE_LOCATION = :srcloc and b.DESTINATION_LOCATION = :destloc and b.FROM_TIME = :fromtime]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+  srcloc : attributes.queryParams.srcloc,
+  destloc : attributes.queryParams.destloc,
+  fromtime : attributes.queryParams.fromtime
+  }]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Output To Json" doc:id="0376422c-f678-481e-858a-c8d622eb538b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	USER_ID: payload01.USER_ID,
+	SUBSCRIPTION_ID: payload01.SUBSCRIPTION_ID,
+	FIRST_NAME:payload01.FIRST_NAME,
+	LAST_NAME:payload01.LAST_NAME,
+	EMAIL_ID: payload01.EMAIL_ID,
+	SOURCE_LOCATION: payload01.SOURCE_LOCATION,
+	DESTINATION_LOCATION: payload01.DESTINATION_LOCATION,
+	FROM_TIME: payload01.FROM_TIME as String,
+	TO_TIME: payload01.TO_TIME as String,
+	advance_notify_time_min: payload01.ADVANCE_NOTIFY_TIME_MIN
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<json-logger:logger doc:name="End Logger" doc:id="d407576c-3071-48c8-b9aa-33315f8f0680" config-ref="JSON_Logger_Config" message="End Logging"/>
+	
+</flow>	
+	
+	
+	
+	
+</mule>

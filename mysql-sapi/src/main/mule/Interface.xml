@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd ">
+    <http:listener-config name="mysqlsapi-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8083" />
+    </http:listener-config>
+    <apikit:config name="mysqlsapi-config" api="resource::fcbd0d32-162b-44dd-9ae1-4536a4b6fc14:mysqlsapi:1.0.14:raml:zip:mysqlsapi.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="mysqlsapi-main">
+        <http:listener config-ref="mysqlsapi-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="mysqlsapi-config" />
+    </flow>
+    <flow name="mysqlsapi-console">
+        <http:listener config-ref="mysqlsapi-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="mysqlsapi-config" />
+    </flow>
+    <flow name="put:\users\(userId)\subscription\(SubscriptionId):application\json:mysqlsapi-config">
+        <flow-ref doc:name="updateUserSubscription" doc:id="b654b4ee-7f56-4724-822f-105fc4f4492f" name="updateUserSubscription" />
+    </flow>
+    <flow name="put:\users\(userId):application\json:mysqlsapi-config">
+        <flow-ref doc:name="updateUser" doc:id="840c0943-4555-4171-8cc1-fb2ddd103b93" name="updateUser" />
+    </flow>
+    <flow name="get:\users\QualifiedSubscriptions:mysqlsapi-config">
+        <flow-ref doc:name="getQualifiedSubscriptions" doc:id="417747e6-3ec0-4553-9dcb-bfc8c3bf311a" name="getQualifiedSubscriptions" />
+    </flow>
+    <flow name="get:\users\(userId)\subscription\(SubscriptionId)\alert:mysqlsapi-config">
+        <flow-ref doc:name="getAlerts" doc:id="3a2384fe-78f8-46b3-824c-75bbeca12fcf" name="getSubscriptionAlerts" />
+    </flow>
+    <flow name="get:\users\(userId)\subscription:mysqlsapi-config">
+        <flow-ref doc:name="getUserSubscriptions" doc:id="6725bcc7-49ff-4e8b-90e8-96aa93928df6" name="getUserSubscriptions" />
+    </flow>
+    <flow name="get:\users:mysqlsapi-config">
+        <flow-ref doc:name="getAllUsers" doc:id="26c93112-506d-41ba-a5c6-c0a247e139da" name="getAllUsers" />
+    </flow>
+    <flow name="get:\users\(userId)\subscription\(SubscriptionId):mysqlsapi-config">
+        <flow-ref doc:name="getSubscriptionById" doc:id="f4ae02ba-f471-4946-9a22-d386283df14d" name="getSubscriptionById" />
+    </flow>
+    <flow name="get:\users\(userId)\subscription\(SubscriptionId)\alert\(alertId):mysqlsapi-config">
+        <flow-ref doc:name="getAlertById" doc:id="d7a78ec3-7761-4118-98e2-bb39def9dff6" name="getAlertById" />
+    </flow>
+    <flow name="get:\users\(userId):mysqlsapi-config">
+        <flow-ref doc:name="getUserById" doc:id="a6c57777-5127-4592-a3d3-06822aaf2c70" name="getUserById" />
+    </flow>
+    <flow name="post:\users\(userId)\subscription\(SubscriptionId)\alert:application\json:mysqlsapi-config">
+        <flow-ref doc:name="createAlert" doc:id="a8eeb5f7-ca6e-404c-856f-c92583b7446c" name="createAlert" />
+    </flow>
+    <flow name="post:\users\(userId)\subscription:application\json:mysqlsapi-config">
+        <flow-ref doc:name="createUserSubscriptions" doc:id="ce84d39f-ea78-47f6-bad5-1fd558e0a434" name="createUserSubscriptions" />
+    </flow>
+    <flow name="post:\users:application\json:mysqlsapi-config">
+        <flow-ref doc:name="createUser" doc:id="c66c4d24-ea87-404d-bb1a-f84326b42ea9" name="createUser" />
+    </flow>
+    <flow name="get:\subscribedUsers:mysqlsapi-config">
+        <flow-ref doc:name="subscribedUserList" doc:id="efe6a0eb-74fa-4e6b-b3ee-2535341b583b" name="subscribedUserList" />
+    </flow>
+    <flow name="get:\subsbedUsersForTimeWindow:mysqlsapi-config">
+        <flow-ref doc:name="getUserSubscriptions" doc:id="99c20b7e-dcbf-4420-b9e0-34a9d674aa47" name="getSubscUsersForTimeWindow" />
+    </flow>
+    <flow name="get:\subsbedUsersForTimeWindow\(Fromtime):mysqlsapi-config">
+        <flow-ref doc:name="getSubscUsersForFromTime" doc:id="c8c8b371-6027-4e6f-8848-825da6260125" name="getSubscUsersForFromTime" />
+    </flow>
+    <flow name="get:\subsbedUsersForFromTime:mysqlsapi-config">
+        <flow-ref doc:name="getSubscUsersForFromTime" doc:id="386e20d8-0f59-4469-b51a-3d3914455882" name="getSubscUsersForFromTime" />
+    </flow>
+</mule>

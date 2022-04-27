@@ -1,0 +1,8 @@
+%dw 2.0
+
+type auto_739692db_469c_43c7_92d0_32595b8df4bc_Input_Payload = {
+  oldPassword: String, 
+  newPassword: String, 
+  _?: Any
+}
+

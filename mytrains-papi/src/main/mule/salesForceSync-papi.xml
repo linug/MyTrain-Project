@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:email="http://www.mulesoft.org/schema/mule/email" xmlns:validation="http://www.mulesoft.org/schema/mule/validation"
+	xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:json-logger="http://www.mulesoft.org/schema/mule/json-logger" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:nrsapi="http://www.mulesoft.org/schema/mule/nrsapi" xmlns:my-sqlsapi="http://www.mulesoft.org/schema/mule/my-sqlsapi" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/my-sqlsapi http://www.mulesoft.org/schema/mule/my-sqlsapi/current/mule-my-sqlsapi.xsd
+http://www.mulesoft.org/schema/mule/nrsapi http://www.mulesoft.org/schema/mule/nrsapi/current/mule-nrsapi.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/json-logger http://www.mulesoft.org/schema/mule/json-logger/current/mule-json-logger.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd
+http://www.mulesoft.org/schema/mule/validation http://www.mulesoft.org/schema/mule/validation/current/mule-validation.xsd
+http://www.mulesoft.org/schema/mule/email http://www.mulesoft.org/schema/mule/email/current/mule-email.xsd">
+	<flow name="SalesForceSync-papiFlow" doc:id="136069d2-83ee-4b25-b25f-2675b189b303">
+		<http:listener doc:name="Listener" doc:id="c8c7ad8d-2783-4f59-9fe6-2608914349fc" config-ref="HTTP_Listener_config" path="/salessync" allowedMethods="PUT"/>
+		<json-logger:logger doc:name="startSalesForceSyncLogging" doc:id="be1603ec-bf70-4d54-b210-b85e937bc1a4" config-ref="JSON_Logger_Config" message="startSalesForceSyncLogging"/>
+		<os:retrieve doc:name="Retrieve creation date" doc:id="bb9ad599-04a0-462b-9c89-94f506eb105e" key="creationdate" target="creationdate" targetValue='#[payload as String {format: "yyyy-MM-dd HH:mm:ss"}]' objectStore="Object_store">
+			<os:default-value ><![CDATA["1000-01-01 00:00:00"]]></os:default-value>
+		</os:retrieve>
+		<my-sqlsapi:get-subscribed-users doc:name="Get subscribed users" doc:id="da66d8b7-1be7-4e7e-86cb-c919ac5120aa" config-ref="MySQLSAPI_Config" createdafter='#[vars.creationdate as String {format: "yyyy-MM-dd HH:mm:ss"}]'/>
+		<choice doc:name="Choice" doc:id="aa1722bb-faca-41cf-9f35-777df42c5be2" >
+			<when expression="#[not isEmpty (payload)]">
+				<ee:transform doc:name="Payload to Java" doc:id="37957586-7fb4-4b70-85be-1d58049ea467">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload map ((payload01, indexOfPayload01) -> {
+    "FirstName": payload01.FIRST_NAME as String default "",
+	"LastName": payload01.LAST_NAME as String default "",
+	"Phone": payload01.PHONE_NUMBER as String default "",
+	"Email": payload01.EMAIL_ID as String default ""
+})]]></ee:set-payload>
+			</ee:message>
+			<ee:variables>
+				<ee:set-variable variableName="creationdate"><![CDATA[max(payload.*CREATED_TIMESTAMP)]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+				<os:store doc:name="Store cration date" doc:id="bedeba35-4310-4d71-8493-bde0128951e2" key="creationdate" objectStore="Object_store">
+			<os:value><![CDATA[#[vars.creationdate]]]></os:value>
+		</os:store>
+				<salesforce:upsert doc:name="Create-Update Contacts  in SF" doc:id="e17c5a05-e308-411f-8929-12c34c96c143" config-ref="Salesforce_Config" objectType="Contact" externalIdFieldName="Email" />
+				<ee:transform doc:name="Payload to Json" doc:id="f73b32de-a318-4db4-854a-7026442739c8">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<json-logger:logger doc:name="createUpdateSalesForceSyncLogging" doc:id="7faf672b-1f35-45b4-b774-2c091c6466d4" config-ref="JSON_Logger_Config" message="createUpdateSalesForceSyncLogging" />
+			</when>
+		</choice>
+		<json-logger:logger doc:name="endSalesForceSyncLogging" doc:id="d45dc1a3-39a9-4e36-9148-ab01a680ca8b" config-ref="JSON_Logger_Config" message="endSalesForceSyncLogging"/>
+	</flow>
+
+</mule>
