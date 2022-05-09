@@ -15,6 +15,7 @@
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="nrsapi-config" />
+		<error-handler ref="global-error-handler" />
     </flow>
     <flow name="nrsapi-console">
         <http:listener config-ref="nrsapi-httpListenerConfig" path="/console/*">
@@ -27,6 +28,7 @@
             </http:error-response>
         </http:listener>
         <apikit:console config-ref="nrsapi-config" />
+		<error-handler ref="global-error-handler" />
     </flow>
     <flow name="get:\trainstatus:nrsapi-config">
         <flow-ref doc:name="trainStatus" doc:id="5b7d2605-7d01-4424-b39e-7fa2a0eddd34" name="trainStatus" />

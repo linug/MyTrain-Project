@@ -72,8 +72,10 @@
     </flow>
     <flow name="get:\subsbedUsersForTimeWindow\(Fromtime):mysqlsapi-config">
         <flow-ref doc:name="getSubscUsersForFromTime" doc:id="c8c8b371-6027-4e6f-8848-825da6260125" name="getSubscUsersForFromTime" />
+		<error-handler ref="global-error-handlerError_Handler" />
     </flow>
     <flow name="get:\subsbedUsersForFromTime:mysqlsapi-config">
         <flow-ref doc:name="getSubscUsersForFromTime" doc:id="386e20d8-0f59-4469-b51a-3d3914455882" name="getSubscUsersForFromTime" />
+		<error-handler ref="global-error-handlerError_Handler" />
     </flow>
 </mule>

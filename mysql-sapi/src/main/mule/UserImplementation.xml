@@ -49,17 +49,17 @@ payload map ( payload01 , indexOfPayload01 ) -> {
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
 ---
-{
-	User_Id: payload.USER_ID,
-	First_Name: payload.FIRST_NAME,
-	Last_Name: payload.LAST_NAME,
-	Email_ID: payload.EMAIL_ID,
-	Phone_Number: payload.PHONE_NUMBER,
-	Status_Type_ID: payload.STATUS_TYPE_ID,
-	created_timestamp: payload.CREATED_TIMESTAMP,
-	updated_timestamp: payload.UPDATED_TIMESTAMP,
-	
-}]]></ee:set-payload>
+payload map((item,index)->{
+	User_Id: item.USER_ID,
+	First_Name: item.FIRST_NAME,
+	Last_Name: item.LAST_NAME,
+	Email_ID: item.EMAIL_ID,
+	Phone_Number: item.PHONE_NUMBER,
+	Status_Type_ID: item.STATUS_TYPE_ID,
+	created_timestamp: item.CREATED_TIMESTAMP,
+	updated_timestamp: item.UPDATED_TIMESTAMP,
+})
+]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<json-logger:logger doc:name="End Logger" doc:id="899d1829-154c-4fec-9958-365a0b7ea69c" config-ref="JSON_Logger_Config" message="End Logging"/>

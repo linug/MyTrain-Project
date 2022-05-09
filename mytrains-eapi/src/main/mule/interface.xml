@@ -12,6 +12,7 @@
             </http:error-response>
         </http:listener>
         <apikit:router config-ref="customereapi-config" />
+		<error-handler ref="global-error-handler" />
     </flow>
     <flow name="customereapi-console">
         <http:listener config-ref="HTTP_Listener_config" path="/console/*">
@@ -24,6 +25,7 @@
             </http:error-response>
         </http:listener>
         <apikit:console config-ref="customereapi-config" />
+		<error-handler ref="global-error-handler" />
     </flow>
     <flow name="put:\Users\(userId)\UpdatePassword:application\json:customereapi-config">
 		<flow-ref doc:name="userChangePassword" doc:id="522b1af0-25bb-4630-a0f1-fae85c890bac" name="userChangePassword"/>
@@ -32,21 +34,7 @@
 		<flow-ref doc:name="updateSubscriptionId" doc:id="ebdb6e91-45ea-4265-b498-986c669772e5" name="updateSubscriptionId"/>
     </flow>
     <flow name="put:\Users\(userId):application\json:customereapi-config">
-        <ee:transform>
-            <ee:variables>
-                <ee:set-variable variableName="userId">attributes.uriParams.'userId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  message: "User details updated successfully"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="updateUser" doc:id="7d30ca90-b2af-4275-a7de-ba6727362400" name="updateUser"/>
     </flow>
     <flow name="get:\Users\(userId)\subscription\(SubscriptionId)\Alerts:customereapi-config">
         <ee:transform>
@@ -121,28 +109,7 @@ output application/json
 		<flow-ref doc:name="getSubscriptionById" doc:id="51328a88-d087-49e9-869f-a73b373213e1" name="getSubscriptionById"/>
     </flow>
     <flow name="get:\Users\(userId):customereapi-config">
-        <ee:transform>
-            <ee:variables>
-                <ee:set-variable variableName="userId">attributes.uriParams.'userId'</ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        <ee:transform>
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
-output application/json
----
-{
-  User_Id: "00u3u96x25K8fhkeo5d7",
-  Email_ID: "isaac@test.com",
-  Status_Type_ID: 1,
-  First_Name: "Isaac",
-  Last_Name: "Brock",
-  Phone_Number: "+44 783456234235",
-  created_timestamp: "2022-02-09T06:18:29.000Z",
-  updated_timestamp: "2022-02-09T06:18:29.000Z"
-}]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
+		<flow-ref doc:name="getUserById" doc:id="cc61c051-f81a-40b6-97d7-22e14ed12dbf" name="getUserById"/>
     </flow>
     <flow name="post:\Login:application\json:customereapi-config">
 		<flow-ref doc:name="userLogin" doc:id="45ce5dbb-60b2-4434-957d-1121d1997948" name="userLogin"/>

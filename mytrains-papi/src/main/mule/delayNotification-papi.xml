@@ -74,7 +74,7 @@ output application/json
 						<parse-template doc:name="Parse Template" doc:id="363e41c3-2250-4539-aaf9-84bf3317e5fb" target="Emailbody" targetValue="#[payload]">
 							<content >Delay in your train between #[payload.SOURCE_LOCATION] and #[payload.DESTINATION_LOCATION] 
 
-Dear #[payload.FIRST_NAME] #[payload.LAST_NAME] 
+Dear #[payload.FIRST_NAME ++ &quot; &quot; ++ payload.LAST_NAME] 
  
 Please find the Delay details below 
  
@@ -82,7 +82,7 @@ Your Train Scheduled for #[vars.DelayDetail.STA] is arriving at #[vars.DelayDeta
 </content>
 						</parse-template>
 						<try doc:name="Try" doc:id="61f5ec2a-0754-412d-a1cf-d253b6e111a0" >
-							<email:send doc:name="Send" doc:id="901a6084-9150-4368-8a3a-d723aab9e627" config-ref="Email_SMTP" fromAddress="linu83@gmail.com" subject='#["Delay in your train between " ++ payload.SOURCE_LOCATION ++ " and " ++ payload.DESTINATION_LOCATION]'>
+							<email:send doc:name="Send" doc:id="901a6084-9150-4368-8a3a-d723aab9e627" config-ref="Email_SMTP" fromAddress="linu.broadband@gmail.com" subject='#["Delay in your train between " ++ payload.SOURCE_LOCATION ++ " and " ++ payload.DESTINATION_LOCATION]'>
 							<email:to-addresses>
 								<email:to-address value="linu.broadband@gmail.com" />
 							</email:to-addresses>

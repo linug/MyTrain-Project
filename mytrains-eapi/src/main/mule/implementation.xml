@@ -78,10 +78,32 @@ payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 	</flow>
+	<flow name="getUserById" doc:id="dac7dd70-a5cb-46e6-8ecf-cf7104c7d0c5" >
+		<my-sqlsapi:get-user-by-user-id doc:name="Get user by user id" doc:id="98aed686-6328-4ebe-a928-efbd537a7eec" config-ref="MySQLSAPI_Config" user-id="#[attributes.uriParams.userId]"/>
+		<ee:transform doc:name="output To Json" doc:id="7c0247fb-a1c5-4184-9a07-93ccc2033aad" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="updateUser" doc:id="e18bf4c9-52ef-4c24-9b48-c67cfdd19b07" >
+		<my-sqlsapi:update-user-by-user-id doc:name="Update user by user id" doc:id="8c0c0dc3-65aa-49cc-bff7-23363a3e7464" config-ref="MySQLSAPI_Config" user-id="#[attributes.uriParams.userId]"/>
+		<ee:transform doc:name="output To Json" doc:id="10db24dc-0189-4f3b-9362-c17a35ca6ec0" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
 	<flow name="getOktaUsers" doc:id="2a87aeec-b86e-4f03-aae3-3e7bd1224163" >
 		<http:listener doc:name="Listener" doc:id="cd20db25-a377-4b14-af67-8c2ed6ee0777" config-ref="HTTP_Listener_config" path="/oktaUsers" allowedMethods="GET"/>
 		<oktasapi:get-users doc:name="Get users" doc:id="304d935a-d711-47e1-82b9-55221644cd3e" config-ref="OKTASAPI_Config"/>
-		<ee:transform doc:name="Transform Message" doc:id="f6aea0e8-c7d9-41f7-92da-4891d68206d8" >
+		<ee:transform doc:name="output To Json" doc:id="f6aea0e8-c7d9-41f7-92da-4891d68206d8" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -92,7 +114,7 @@ payload]]></ee:set-payload>
 	</flow>
 	<flow name="getRegisteredUsers" doc:id="4db75653-df39-4ba2-ba72-5ee296f2ee1a" >
 		<my-sqlsapi:get-users doc:name="Get users" doc:id="2a1fbac5-be04-4aeb-877c-e06fce51dbb1" config-ref="MySQLSAPI_Config"/>
-		<ee:transform doc:name="Transform Message" doc:id="479bb7a6-e057-4123-9231-8e5558610e18" >
+		<ee:transform doc:name="output To Json" doc:id="479bb7a6-e057-4123-9231-8e5558610e18" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -103,7 +125,7 @@ payload]]></ee:set-payload>
 	</flow>
 	<flow name="userChangePassword" doc:id="d2e3a4a9-bca5-4c07-9d7b-f5bcd260d1b7" >
 		<oktasapi:update-change-passwords-by-user-id doc:name="Update change passwords by user id" doc:id="9b8913d8-5c55-4c56-885f-0e8f55e90eea" user-id="#[attributes.uriParams.userId]" config-ref="OKTASAPI_Config"/>
-		<ee:transform doc:name="Transform Message" doc:id="d973f139-e2a2-478c-8000-bae56947cb9b" >
+		<ee:transform doc:name="output To Json" doc:id="d973f139-e2a2-478c-8000-bae56947cb9b" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -115,7 +137,7 @@ payload]]></ee:set-payload>
 	<flow name="userPasswordRecovery" doc:id="88c764d8-d7fd-4eb5-848c-f1c402ec0d9e" >
 		<http:listener doc:name="Listener" doc:id="0649b957-1740-4bce-86ca-9b81fc6a3872" config-ref="HTTP_Listener_config" path="/passwordrecovery" allowedMethods="POST"/>
 		<oktasapi:create-password-recovery doc:name="Create password recovery" doc:id="ac407a9f-304b-4c0d-9ac7-55bae60a20b8" config-ref="OKTASAPI_Config"/>
-		<ee:transform doc:name="Transform Message" doc:id="dcd4c651-54e6-4609-88df-59055e1a8ed0" >
+		<ee:transform doc:name="output To Json" doc:id="dcd4c651-54e6-4609-88df-59055e1a8ed0" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -149,7 +171,7 @@ output application/json
 			</ee:variables>
 		</ee:transform>
 		<my-sqlsapi:create-subscription-by-user-id doc:name="Create subscription by user id" doc:id="483a9370-c879-4187-aacf-0d1444f94038" user-id="#[attributes.uriParams.userId]" config-ref="MySQLSAPI_Config"/>
-		<ee:transform doc:name="Transform Message" doc:id="b63af3f9-a0a6-4f66-a728-cb6008787f8e" >
+		<ee:transform doc:name="output To Json" doc:id="b63af3f9-a0a6-4f66-a728-cb6008787f8e" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -160,7 +182,7 @@ output application/json
 	</flow>
 	<flow name="getUserSubscriptions" doc:id="4f453dfb-03c1-4cd1-9ffb-632ccae29ba5">
 		<my-sqlsapi:get-subscriptions-by-user-id doc:name="Get subscriptions by user id" doc:id="72e63e32-b4de-42cc-b821-4ceeb555f23a" user-id="#[attributes.uriParams.userId]" config-ref="MySQLSAPI_Config"/>
-		<ee:transform doc:name="Transform Message" doc:id="bf74979c-fa13-4a72-b650-9b93cb071654">
+		<ee:transform doc:name="output To Json" doc:id="bf74979c-fa13-4a72-b650-9b93cb071654">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -171,7 +193,7 @@ payload]]></ee:set-payload>
 	</flow>
 	<flow name="getSubscriptionById" doc:id="04870778-cd31-453c-90be-daa7ed57aa7c" >
 		<my-sqlsapi:get-subscription-by-user-id-subscription-id doc:name="Get subscription by user id subscription id" doc:id="cc971713-1222-4881-b0b7-6f5ea069368a" user-id="#[attributes.uriParams.userId]" subscription-id="#[attributes.uriParams.SubscriptionId]" config-ref="MySQLSAPI_Config"/>
-		<ee:transform doc:name="Transform Message" doc:id="c3e4d029-2449-4750-aa3c-748e3559251f" >
+		<ee:transform doc:name="output To Json" doc:id="c3e4d029-2449-4750-aa3c-748e3559251f" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -181,7 +203,7 @@ payload]]></ee:set-payload>
 		</ee:transform>
 	</flow>
 	<flow name="updateSubscriptionId" doc:id="4ceef748-9389-4b69-ad56-a843fd1fec3c" >
-		<ee:transform doc:name="Transform Message" doc:id="2eb42ed7-968d-4cd0-9db4-6a1056a49533" >
+		<ee:transform doc:name="input To Json" doc:id="2eb42ed7-968d-4cd0-9db4-6a1056a49533" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -190,7 +212,7 @@ payload]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<my-sqlsapi:update-subscription-by-user-id-subscription-id doc:name="Update subscription by user id subscription id" doc:id="4e303fbb-c788-4094-ae74-1f4e51abd134" user-id="#[attributes.uriParams.userId]" subscription-id="#[attributes.uriParams.SubscriptionId]" config-ref="MySQLSAPI_Config"/>
-		<ee:transform doc:name="Transform Message" doc:id="acbdfd63-bcad-4b62-abff-ade563f9efa7" >
+		<ee:transform doc:name="output To Json" doc:id="acbdfd63-bcad-4b62-abff-ade563f9efa7" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
@@ -201,7 +223,7 @@ payload]]></ee:set-payload>
 	</flow>
 	<flow name="getServiceNowIncidents" doc:id="eeecda95-38f7-48e6-8b29-dcc76c70134d" >
 		<http:listener doc:name="Listener" doc:id="414015fa-da6d-47db-92eb-888230d08ad1" config-ref="HTTP_Listener_config" path="/Incidents"/>
-		<ee:transform doc:name="Transform Message" doc:id="2376060f-612b-45dd-a426-e98a2ba507e5" >
+		<ee:transform doc:name="input To Xml" doc:id="2376060f-612b-45dd-a426-e98a2ba507e5" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[
 %dw 2.0
@@ -217,7 +239,7 @@ ns ns0 https://dev95663.service-now.com/incident
 			</ee:message>
 		</ee:transform>
 		<servicenow:invoke service="incident" operation="getRecords" doc:name="Invoke" doc:id="18630848-a55d-482d-a110-5b049a4f4e57" config-ref="ServiceNow_Config" showReferenceValues="ALL"/>
-		<ee:transform doc:name="Transform Message" doc:id="f7a30518-a3b3-4f8d-ad4e-4056b1254c8b" >
+		<ee:transform doc:name="output To Json" doc:id="f7a30518-a3b3-4f8d-ad4e-4056b1254c8b" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/json
